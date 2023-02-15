@@ -18,9 +18,7 @@ if (!require('stringr')) install.packages('stringr'); library('stringr') #str_to
 if (!require('viridis')) install.packages('viridis'); library('viridis') #color for density
 if (!require('htmlwidgets')) install.packages('htmlwidgets'); library('htmlwidgets') 
 if (!require('rmarkdown')) install.packages('rmarkdown'); library('rmarkdown') ## for the report
-
-####
-#export data to export
+#if (!require('tinytex')) install.packages('tinytex'); library('tinytex') ## for the report
 
 ##### script R shiny
 options(shiny.reactlog = TRUE)
@@ -238,8 +236,9 @@ ui <- navbarPage(
                                       fileInput("file.extradata", "Choose File (.csv/.xls/.xlsx)",
                                                 multiple = TRUE,
                                                 accept = c("text/csv",
-                                                           "text/comma-separated-values,text/plain",
-                                                           ".csv")),
+                                                           "text/comma-separated-values",
+                                                           ".csv",
+                                                           ".xlsx",".xls")),
                                       tags$h5(style = "color: blue;","Choose the column with the same Unique object ID, then press Merge "),
                                       uiOutput("set.columnID"),
                                       tags$br(),
@@ -288,8 +287,9 @@ ui <- navbarPage(
                                       fileInput("file.fit", "Choose File (.csv/.xls/.xlsx)",
                                                 multiple = TRUE,
                                                 accept = c("text/csv",
-                                                           "text/comma-separated-values,text/plain",
-                                                           ".csv")),  
+                                                           "text/comma-separated-values",
+                                                           ".csv",
+                                                           ".xlsx",".xls")),  
                                       tags$h5(style = "color: blue;","Choose the column with the Unique object ID, then press Import refit data"),
                                       column(12,
                                              column(8, uiOutput("set.columnID.for.fit"),),
@@ -622,6 +622,11 @@ ui <- navbarPage(
                                         ), #end tabpanel
                                         tabPanel(tags$h5("Export settings"), 
                                                  br(),
+                                                 radioButtons("docpdfhtml", "Export format",
+                                                              choices = c(html = "html"),
+                                                              
+                                                              selected = "html", inline=TRUE),
+                                                 br(),
                                                  fluidRow(
                                                    column(6, downloadButton("export.Rmarkdown", "Export settings as Rmarkdown document")),
                                                    )
@@ -723,11 +728,11 @@ observeEvent(!is.null(fileisupload()), { ## add two necessary columns for the re
      }) #end observe 
   
 observeEvent(input$reset.BDD, { ##reset data
-  df$df <- NULL
-  df$df2 <- NULL
-  df.sub<-NULL
+  fileisupload(NULL)
   shinyjs::refresh()
   shinyjs::reset('file1')
+  df$df <- NULL
+  df$df2 <- NULL
 }, priority = 1000)
 
 #### others options ----
@@ -1392,7 +1397,6 @@ observeEvent(input$goButton.set.columnID.for.fit, {
   df$file.fit2[,input$setID]<-as.character(df$file.fit2[,input$setID]) ## same format to avoid pb
   df$df[,input$setID]<-as.character(df$df[,input$setID])                ## same format to avoid pb
   data.fit(df$file.fit2)
-  
 
 }) 
 
@@ -1420,7 +1424,10 @@ observeEvent(data.fit(), {
    colnames(m2)[which(names(m2) == paste0(input$setx,".2"))] <- "xend"
    colnames(m2)[which(names(m2) == paste0(input$sety,".2"))] <- "yend"
    colnames(m2)[which(names(m2) == paste0(input$setz,".2"))] <- "zend"
+   m2<-m2 %>% relocate(shapeX.2, text.2,null.2)
+
   table.fit <- cbind(m1, m2[,4:ncol(m2)])
+
   idx <- c(rbind(1:nrow(m1), 1:nrow(m2)+nrow(m1)))
   table.fit2 <- table.fit2[idx,]
   tt <- sapply(LcombiRow,ncol)*2
@@ -1429,9 +1436,11 @@ observeEvent(data.fit(), {
   table.fit2 <- cbind(table.fit2, paste0(v1, ".", v2))
   colnames(table.fit2)[which(names(table.fit2) == 'paste0(v1, ".", v2)')] <- "fit.2"
   table.fit2<-table.fit2 %>% relocate(shapeX, text,null)
+  table.fit<-table.fit %>% relocate(shapeX, text,null)
   data.fit2(table.fit)
   data.fit.3D(table.fit2)
   data.fit3(table.fit)
+  
   data.refit.choose(names(table.fit2)) ## for color of refit
   showModal(modalDialog(
     title = "Refit data", 
@@ -1464,8 +1473,12 @@ observeEvent(input$Merge2, {
 })
 
 ## table to show refit ----
-output$Fit.table.output<- renderPrint({data.fit3()})
-
+output$Fit.table.output<- renderPrint({
+  if (is.null(data.fit3())) { "no refit"} else {
+  data.fit3()[,4:ncol(data.fit3())]}
+    })
+  
+  
 ##### ortho slide import ----
 observe({                                  ### ortho xy
     req(input$file2)
@@ -1553,29 +1566,34 @@ HTML(paste(textnbobject()))
 })
 
 output$nb6=renderUI({
+  req(!is.null(fileisupload()))
   req(!is.null(df.sub()))
   HTML(paste("Number of rows imported:",sum(nrow(df$df)-(max(sum(is.na(as.numeric(df$df[,input$setx]))),sum(is.na(as.numeric(df$df[,input$sety]))),sum(is.na(as.numeric(df$df[,input$setz])))))),"for a total of", nrow(df$df), "rows present in the dataset"))
 })
 
 output$ylimits=renderUI({
+  req(!is.null(fileisupload()))
   req(input$sety)
   ymax= df$df[,input$sety] %>% as.numeric() %>%ceiling() %>% max(na.rm = TRUE)
   ymin=df$df[,input$sety] %>% as.numeric() %>% floor() %>% min(na.rm = TRUE)
   sliderInput('yslider','y limits',min=ymin,max=ymax,value=c(ymin,ymax),step=stepY())
 })
 output$xlimits=renderUI({
+  req(!is.null(fileisupload()))
   req(input$setx)
   xmax = df$df[,input$setx] %>% ceiling() %>% max(na.rm = TRUE)
   xmin=df$df[,input$setx] %>% floor() %>% min(na.rm = TRUE)
   sliderInput('xslider','x limits',min=xmin,max=xmax,value=c(xmin,xmax),step=stepX())
 })
 output$zlimits=renderUI({
+  req(!is.null(fileisupload()))
   req(input$setz)
   zmax = df$df[,input$setz] %>% ceiling() %>% max(na.rm = TRUE)
   zmin=df$df[,input$setz] %>% floor() %>% min(na.rm = TRUE)
   sliderInput('zslider','z limits',min=zmin,max=zmax,value=c(zmin,zmax),step=stepZ())
 })
 output$Date=renderUI({
+  req(!is.null(fileisupload()))
   req(input$setdate)
   dmin=min(as.numeric(df$df[,input$setdate]), na.rm=T)
   dmax=max(as.numeric(df$df[,input$setdate]), na.rm=T)
@@ -1849,12 +1867,14 @@ output$var.gris.2D.1=renderUI({
     }) 
 
 output$sectionXx3=renderUI({
+  req(!is.null(fileisupload()))
   req(input$pi2)
   xmin=0
   xmax=input$xslider[2]-input$xslider[1]
   sliderInput('ssectionXx3','x: min/max',min=xmin,max=xmax,value=c(xmin,xmax),step=0.05)
 })
 output$sectionXy3=renderUI({
+  req(!is.null(fileisupload()))
   req(input$pi2)
   ymin=0
   ymax=input$yslider[2]-input$yslider[1]
@@ -1967,7 +1987,8 @@ observeEvent(input$Change, {
 
 ##### creation df.sub----
 df.sub <- reactive({ # that would be used to create plot
-    req(!is.null(input$xslider))
+  req(!is.null(fileisupload()))  
+  req(!is.null(input$xslider))
     req(inputcolor())
     df.sub<-df$df
     plotcol<-df.sub[,inputcolor()]
@@ -2049,6 +2070,7 @@ rotated.table<-reactive({
 
 ##### output.contents ----  
 output$contents <- renderTable({
+  req(!is.null(fileisupload()))
     isTruthy(df.sub())
     df.5<-df.sub()[1:10,]
     df.6<-cbind.data.frame(df.5[,input$setx],df.5[,input$sety],df.5[,input$setz],df.5[,input$setID],
@@ -2248,12 +2270,10 @@ plot2D.react<-reactive({
         
         if (input$var.fit.table == "yes" & !is.null(data.fit.3D())){
           colorvalues<-unlist(colorvalues())
-  
           data.fit.3D<-data.fit3() %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
-          data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[,input$setREM],levels(as.factor(data.fit.3D[,input$setREM])))] # set up the list of color 
-          
+          data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
           if (is.null(colorvalues)) {
-            data.fit.3D$color.fit <-c("blue")
+            data.fit.3D$color.fit <-c("black")
           }
           switch(input$var1,
                  xy={
@@ -2274,14 +2294,14 @@ plot2D.react<-reactive({
                    })
           
          p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
-                                                 yend=.data[[var2end]]), color=data.fit.3D$color.fit,size=input$w2, inherit.aes = F)
+                                                 yend=.data[[var2end]]), color=data.fit.3D$color.fit,linewidth=input$w2, inherit.aes = F)
           }
 
       p<-p+scale_fill_manual(values=unlist(myvaluesx))+
         scale_shape_manual(values=shape.level)+
         scale_size_manual(values=c(size.scale,min.size2))+
         xlab(paste(var))+ylab(paste(var2))+
-      theme_linedraw()
+      theme_linedraw()+ theme(legend.title = element_blank())+ theme(legend.position='none')
       #ggplotly(p, tooltip = c("text") )
     }
     p <-p %>%
@@ -2300,7 +2320,7 @@ plot2D.react<-reactive({
 ##### 2D slice ---- 
 set.var.2d.slice<-reactiveVal()
 output$range.2d.slice=renderUI({
-
+  req(!is.null(fileisupload()))
   req(input$var.2d.slice)
   set.var.2d.slice<- switch(input$var.2d.slice,
                           xz = setYY(),
@@ -2648,7 +2668,7 @@ output$downloadDatadensity <- downloadHandler(
 # refit table
 output$downloadData_redata<- downloadHandler(
   filename = function() {
-    paste0(Sys.Date(),"refit_table.csv",sep="")
+    paste0(Sys.Date(),"_refit_table.csv",sep="")
   },
   content = function(file) {
     write.table(data.fit3()[,4:ncol(data.fit3())], file, row.names = FALSE, sep=";",dec=".") 
@@ -2900,15 +2920,9 @@ if (!is.null(params$plotdens)) {params$plotrota}
 #### Rmarkdown report ----
 output$export.Rmarkdown<- downloadHandler( 
       filename = function() {
-        paste0(Sys.Date(),"_report_Rmarkdown",".html")
+        paste0(Sys.Date(),"_report_Rmarkdown",".", input$docpdfhtml)
       },
       content = function(file) {    
-        #   tempReport <- tempfile(fileext = ".Rmd")
-        # #file.copy("report.Rmd", tempReport, overwrite = TRUE)
-        #   src <- normalizePath('report.Rmd')
-        #   owd <- setwd(tempdir())
-        #   on.exit(setwd(owd))
-
         if (!is.null(data.fit3())){
         data.fit4<-data.fit3()[,4:ncol(data.fit3())]
         } else {
@@ -2949,10 +2963,10 @@ output$export.Rmarkdown<- downloadHandler(
         w.report()
         tmp_dir <- tempdir()
         tmp_pic2 <- file.path(tmp_dir,"logo1.png")
-        file.copy("logo1.png", tmp_pic2, overwrite = TRUE)
+        file.copy("www/logo1.png", tmp_pic2, overwrite = TRUE)
         tempReport <- tempfile(fileext = ".Rmd") # make sure to avoid conflicts with other shiny sessions if more params are used
         file.copy("report.Rmd", tempReport, overwrite = TRUE)
-        rmarkdown::render(tempReport, output_format = "html_document", output_file = file, output_options = list(self_contained = TRUE),
+        rmarkdown::render(tempReport, output_format = paste0(input$docpdfhtml,"_document"), output_file = file, output_options = list(self_contained = TRUE),
                           params = params2
         )
       }
