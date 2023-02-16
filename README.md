@@ -1,6 +1,6 @@
-# SEAHORS
-Spatial Exploration of ArcHaeological Objects in R Shiny
-[<img src="https://raw.githubusercontent.com/AurelienRoyer/SEAHORS/www/logo1.png"]([https://raymond.li/](https://github.com/AurelienRoyer/SEAHORS))
+# [<img src="https://raw.githubusercontent.com/AurelienRoyer/SEAHORS/main/www/logo1.png" height="60em" align="center"/>](https://github.com/AurelienRoyer/SEAHORS) SEAHORS
+# Spatial Exploration of ArcHaeological Objects in R Shiny
+
 
 SEAHORS is a R Shiny free open-source application, that allows easy and quick exploration of the spatial distribution of archaeological objects.
 The main goal of this application is to make the two and three-dimensional spatial exploration of archaeological data as user-friendly as possible, 
