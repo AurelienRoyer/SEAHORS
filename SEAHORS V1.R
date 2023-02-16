@@ -1,5 +1,5 @@
 #############################################################################################
-##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1 - Fev 2023
+##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1 - Feb 2023
 #############################################################################################
 
 ##### package needed
@@ -18,7 +18,7 @@ if (!require('stringr')) install.packages('stringr'); library('stringr') #str_to
 if (!require('viridis')) install.packages('viridis'); library('viridis') #color for density
 if (!require('htmlwidgets')) install.packages('htmlwidgets'); library('htmlwidgets') 
 if (!require('rmarkdown')) install.packages('rmarkdown'); library('rmarkdown') ## for the report
-#if (!require('tinytex')) install.packages('tinytex'); library('tinytex') ## for the report
+
 
 ##### script R shiny
 options(shiny.reactlog = TRUE)
@@ -575,7 +575,7 @@ ui <- navbarPage(
                                                                      ".csv")),  ),
                                                  )#end of column
                                         ),
-                                        tabPanel(tags$h5("Refit color"),
+                                        tabPanel(tags$h5("Refit customization"),
                                                  br(),
                                                  br(),
                                                  uiOutput("liste.Colors.refit"),
@@ -594,6 +594,11 @@ ui <- navbarPage(
                                                                                   ".csv")),  ),
                                                  
                                                  column (6,numericInput("w2", "thickness of lines",2, min = 1, max=10, width="50%")),
+                                                 br(),
+                                                 column (12,tags$hr(),),
+                                                 uiOutput("liste.var.refit"),
+                                                 br(),
+                                                 uiOutput("liste.varrefit"),
                                                  
                                                  ), #end of tabPanel
 
@@ -712,8 +717,7 @@ observeEvent(input$getData, {
 
 observeEvent(!is.null(fileisupload()), { ## add two necessary columns for the rest of manipulations, correct issues with comma and majuscule
     req(!is.null(fileisupload()))
-  null<-"0"
-
+    null<-"0"
     shapeX<-shape_all()
     df$df<-df$df2[,!sapply(df$df2, function(x) is.logical(x))] ##remove column without data
     if (input$set.dec == TRUE){
@@ -726,8 +730,9 @@ observeEvent(!is.null(fileisupload()), { ## add two necessary columns for the re
     nnrow.df.df(nrow(df$df))
     listinfosmarqueur(1)
      }) #end observe 
-  
-observeEvent(input$reset.BDD, { ##reset data
+
+# reset data
+observeEvent(input$reset.BDD, { 
   fileisupload(NULL)
   shinyjs::refresh()
   shinyjs::reset('file1')
@@ -752,6 +757,7 @@ observeEvent(input$point.size,{
 
 icon_svg_path = "M10,6.536c-2.263,0-4.099,1.836-4.099,4.098S7.737,14.732,10,14.732s4.099-1.836,4.099-4.098S12.263,6.536,10,6.536M10,13.871c-1.784,0-3.235-1.453-3.235-3.237S8.216,7.399,10,7.399c1.784,0,3.235,1.452,3.235,3.235S11.784,13.871,10,13.871M17.118,5.672l-3.237,0.014L12.52,3.697c-0.082-0.105-0.209-0.168-0.343-0.168H7.824c-0.134,0-0.261,0.062-0.343,0.168L6.12,5.686H2.882c-0.951,0-1.726,0.748-1.726,1.699v7.362c0,0.951,0.774,1.725,1.726,1.725h14.236c0.951,0,1.726-0.773,1.726-1.725V7.195C18.844,6.244,18.069,5.672,17.118,5.672 M17.98,14.746c0,0.477-0.386,0.861-0.862,0.861H2.882c-0.477,0-0.863-0.385-0.863-0.861V7.384c0-0.477,0.386-0.85,0.863-0.85l3.451,0.014c0.134,0,0.261-0.062,0.343-0.168l1.361-1.989h3.926l1.361,1.989c0.082,0.105,0.209,0.168,0.343,0.168l3.451-0.014c0.477,0,0.862,0.184,0.862,0.661V14.746z"
 
+### button for png dl
 dl_button <- list(
   name = "Download as .png",
   icon = list(
@@ -829,6 +835,7 @@ dataModal <- function() {
     )
   }
 }
+
 #function for refit
 seq2 <- function(from, to, by=1){
   if (to>=from){
@@ -837,7 +844,8 @@ seq2 <- function(from, to, by=1){
     return(NULL)
   }
 }
-#function for ortho from Rstoolbox
+
+#function for orthopho import from Rstoolbox
 .toRaster <- function(x) {
   if (inherits(x, "SpatRaster")) {
     return(stack(x))
@@ -964,7 +972,7 @@ ggRGB<-function(img, r = 3, g = 2, b = 1, scale, maxpixels = 5e+05,
     return(df_raster)
   }
 }
-##2D slice
+##function for 2D slice
 plotUI <- function(id) {
   ns <- NS(id)
   plotlyOutput(ns("plot"), height = height.size())
@@ -1035,7 +1043,6 @@ plotServer <- function(id,df.sub.a, Xvar, Yvar,liste.valeur.slice) {
   )
 }
 
-
 #function for color
 color.function<-function (levelofcolor,name,selected_rainbow,loadingfile){  
   uvalues <-levels(as.factor(levelofcolor))
@@ -1072,7 +1079,8 @@ color.function<-function (levelofcolor,name,selected_rainbow,loadingfile){
                          as.list(heat.colors(10)),
                          as.list(terrain.colors(10)),
                          as.list(cm.colors(10)),
-                         as.list(topo.colors(10))
+                         as.list(topo.colors(10)
+                                 )
           ),
           selected = selected2,
           options = list(`toggle-palette-more-text` = "Show more")
@@ -1083,6 +1091,8 @@ color.function<-function (levelofcolor,name,selected_rainbow,loadingfile){
     )
   )
 } # end of color.function
+
+
 ##### output loading slide ----
 
 liste.x<-reactiveVal(c("X.rotated","x","X","null","SPATIAL..X"))
@@ -1214,7 +1224,7 @@ observeEvent(input$checkbox.invZ, {
   df$df[,input$setz]<-df$df[,input$setz]*-1
 })
 
-####verification
+#### verification
 observeEvent(ignoreInit = TRUE, c(setXX(),setYY(),setZZ(),input$setID), {
   if( sum(is.na(as.numeric(df$df[,input$setx])))>0 || sum(is.na(as.numeric(df$df[,input$sety])))>0 || sum(is.na(as.numeric(df$df[,input$setz])))>0 || (dim(df$df[duplicated(df$df[,input$setID]),])[1]>0 & input$setID != "null")) {
 
@@ -1447,6 +1457,7 @@ observeEvent(data.fit(), {
     HTML(paste("Refit data have been merged."))
   ))
   })
+
 #### merge two columns ----
 
 output$set.col1=renderUI({
@@ -1603,7 +1614,7 @@ output$Date=renderUI({
 })
 
 
-##### output additional Setting  slide ----
+##### output additional Setting slide ----
  
 observeEvent(input$stepXsize, {
  stepX(input$stepXsize)
@@ -1671,7 +1682,6 @@ observeEvent(input$optioninfosfigplotly, {
 
 ####liste infos  ----
 observeEvent(req(!is.null(listinfosmarqueur())),{
-
   df$df$text<-""}
 )
 
@@ -1703,7 +1713,6 @@ mypaletteofcolors<-reactiveVal()
 
 observeEvent(df$file.color,{ 
   mypaletteofcolors(df$file.color[2])
-  #mypaletteofcolors(c("#4ce74c","#a52a2a","#800080"))
 })
 
 basiccolor= reactive({
@@ -1711,7 +1720,6 @@ basiccolor= reactive({
   name<-"colorvar"
   color.function(df$df[[inputcolor()]],name,1,mypaletteofcolors())
 }) 
-
 
  save.col2<-observeEvent(myvaluesx(),{ 
    if (length(unlist(myvaluesx()))>1) {
@@ -1757,12 +1765,12 @@ output$colors2 <- renderUI({
   basiccolor()
 })
 
+
 #color for refits ----
 data.refit.choose<-reactiveVal(NULL)
 inputcolor.refit<-reactiveVal("null")
 
-
- output$liste.Colors.refit=renderUI({
+output$liste.Colors.refit=renderUI({
    req(!is.null(fileisupload()))
    req(!is.null(data.refit.choose()))
    selectInput("Colors.rerefit", h4("Refit variable to be colored"),
@@ -1831,6 +1839,33 @@ observe({
                           xls = readxl::read_xls(input$file.color.fit$datapath),
                           xlsx = readxl::read_xlsx(input$file.color.fit$datapath))
 })
+
+### variable subset refits ----
+react.var.rerefit<-reactiveVal("null")
+react.listevarrefit<-reactiveVal("0")
+
+output$liste.var.refit=renderUI({
+  req(!is.null(fileisupload()))
+  req(!is.null(data.refit.choose()))
+  selectInput("var.rerefit", h4("Subsetting refit"),
+              choices = data.refit.choose()[c(3:length(data.refit.choose()))],
+              selected = data.refit.choose()[1])
+})
+
+output$liste.varrefit=renderUI({
+  req(!is.null(fileisupload()))
+  req(!is.null(data.refit.choose()))
+  checkboxGroupInput("listevarrefit", h4("Select the refit modalities to be shown"),
+                     choices = levels(as.factor(data.fit.3D()[,input$var.rerefit])), selected = factor(data.fit.3D()[,input$var.rerefit]))
+})
+
+observeEvent(input$var.rerefit,{
+  react.var.rerefit(input$var.rerefit)
+})
+observeEvent(input$listevarrefit,{
+  react.listevarrefit(input$listevarrefit)
+})
+
 
 ##### ouput 2D and 3D slide ----
 output$sectionXy2=renderUI({
@@ -1930,8 +1965,6 @@ create.newgroup <- observeEvent(input$go.ng, {
     colnames(df$df)[ncol(df$df)]<-c(input$text.new.group)
 })
 
-
-
 output$brushed<- renderPrint({
     g1 <- df$df
     d <- event_data('plotly_selected')
@@ -1951,9 +1984,7 @@ output$brushed<- renderPrint({
            yx={   var<-setYY() 
            var2<-setXX() })
     
-    WW<-which(g1[,input$setx] %in% dd[,1] & g1[,input$sety] %in% dd[,2]) ## acorriger !
-    #WW<-which(g1[[var]] %in% dd[,1] & g1[[var2]] %in% dd[,2]) 
-    
+    WW<-which(g1[[var]] %in% dd[,1] & g1[[var2]] %in% dd[,2]) 
     vv<-df$df[WW,3:ncol(df$df)]
     vv <<- vv
     vv
@@ -2126,6 +2157,8 @@ if (!is.null(data.fit.3D()) && input$var.fit.3D == "yes"){
     data.fit.3D<-data.fit.3D()
     data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub[,input$setID]))
     data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
+    data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
+    
     p<-add_trace(p,x = ~data.fit.3D[,setXX()], y = ~data.fit.3D[,setYY()], z = ~data.fit.3D[,setZZ()], split = ~data.fit.3D[,input$setREM],
                         line = list(color=~data.fit.3D$color.fit),
                          type = "scatter3d", mode = "lines", showlegend = legendplotlyfig(), inherit = F)
@@ -2236,6 +2269,9 @@ plot2D.react<-reactive({
               data.fit.3D$color.fit[((data.fit.3D[,input$setx] %in% data.fit.3D.2[,input$setx]) & (data.fit.3D[,input$sety] %in% data.fit.3D.2[,input$sety]) & (data.fit.3D[,input$setz] %in% data.fit.3D.2[,input$setz]))]<-c("#000000") # Black color for refit variable mixing 
               }}} #end of if
            
+         data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
+
+       
           p<-add_trace(p,x = ~data.fit.3D[[var]], y = ~data.fit.3D[[var2]], split = ~data.fit.3D[,input$setREM],   
                        line = list(color=~data.fit.3D$color.fit,width=input$w2),
                        type = "scatter", mode = "lines", showlegend = legendplotlyfig(), inherit = F)
@@ -2275,6 +2311,8 @@ plot2D.react<-reactive({
           if (is.null(colorvalues)) {
             data.fit.3D$color.fit <-c("black")
           }
+          data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
+          
           switch(input$var1,
                  xy={
                    varend<-"xend"
@@ -2302,7 +2340,6 @@ plot2D.react<-reactive({
         scale_size_manual(values=c(size.scale,min.size2))+
         xlab(paste(var))+ylab(paste(var2))+
       theme_linedraw()+ theme(legend.title = element_blank())+ theme(legend.position='none')
-      #ggplotly(p, tooltip = c("text") )
     }
     p <-p %>%
       config(displaylogo = FALSE,
@@ -2376,7 +2413,6 @@ output$plot.2dslide <- renderUI({
 
   ns <- session$ns
  tagList(
-
     lapply(1:ratio.slice(),
            function(i) {
              plotUI(paste0("plot", i))
@@ -2567,10 +2603,8 @@ output$plot2Drota2<- renderUI({
   })
  
 output$plot2d3 <- renderPlotly({ 
-
   req(input$pi2)
   req(input$ssectionXy3)
-    
     myvaluesx<-unlist(myvaluesx())
     if (is.null(unlist(myvaluesx))) {
       myvaluesx <-c("blue","red","green")
@@ -2639,13 +2673,11 @@ options(shiny.usecairo=T)
 output$downloadData2D <- downloadHandler(
   filename = function() {
     paste("plot2D - ",paste(input$file1$name)," - ", Sys.Date(), ".html", sep="")
-
   },
   content = function(file) {
     htmlwidgets::saveWidget(as_widget(session_store$plt2D), file, selfcontained = TRUE)
   }
 )
-
 
 ##2d plot slice
 output$downloadData2d.slice <- downloadHandler(
@@ -2752,7 +2784,8 @@ output$table <-  DT::renderDataTable(
      ))  
 )#end renderDataTable
 
-#
+#### rmarkdown report template ----
+
 w.report<-function(){ 
   writeLines(con = "report.Rmd", text = "---
 title: 'Welcome to *SEAHORS*  report'
@@ -2917,7 +2950,7 @@ if (!is.null(params$plotdens)) {params$plotrota}
 }
 
 
-#### Rmarkdown report ----
+#### Rmarkdown report export ----
 output$export.Rmarkdown<- downloadHandler( 
       filename = function() {
         paste0(Sys.Date(),"_report_Rmarkdown",".", input$docpdfhtml)
@@ -2973,9 +3006,6 @@ output$export.Rmarkdown<- downloadHandler(
     )
 
 } # end server
-
-
-
 
 shinyApp(ui, server)
 
