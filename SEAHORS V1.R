@@ -161,7 +161,7 @@ ui <- navbarPage(
   and to visualise their distributions using interactive 3D and 2D plots </p>
    <br>
    <p> An overview of the possibility was published by: </p>
-   <p> Royer, A., Discamps, E., Thomas, M. & Plutniak, S. - SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny. Peer Community Journal, 2023 
+   <p> Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (2023) - SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny. Peer Community Journal, 2023 
    <a href=https://peercommunityjournal.org/articles/ target=_blank>https://peercommunityjournal.org/articles/</a></p>
    <p>A video explaining the features is also available <a href=https://peercommunityjournal.org/articles/ target=_blank>here</a></p>
   <br>
