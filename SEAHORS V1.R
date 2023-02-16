@@ -2833,9 +2833,11 @@ library(DT)
 ```
 
 ```{r, echo=FALSE}
+if (file.exists(paste0(getwd(),'/logo1.png'))){
 htmltools::img(src = knitr::image_uri(file.path(getwd(), 'logo1.png')), 
                alt = 'logo', 
                style = 'position:absolute; top:0; right:0; padding:10px; height:150px ;')
+}
 ```
 
 
