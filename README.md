@@ -11,11 +11,18 @@ SEAHORS can generate five types of plots: 3D, 2D and density plots, as well as p
 of projection to explore spatial organisation without constraint of the grid orientation. SEAHORS has visualization tools with several sorting and formatting keys 
 (colours) applicable to coordinates and all possible analysis variables (i.e. levels, splits, analytical attributes).
 
+## Installation 
+
+Install R (https://www.r-project.org/) and eventually Rstudio Desktop (https://posit.co/download/rstudio-desktop/) to have a more comfortable R environment. <br>
+Open the script in R or Rstudio. <br>
+To execute your code in the R script, you can either highlight the code and click on Run, you can highlight the code and press CTRL + Enter on your keyboard, or you can can click in Rstudio on the "Run App" button (at the top of the editor).<br>
+The application will be launched automatically and the necessary R package will be installed automatically the first time. <br>
+The first launch may therefore take some time. 
 
 ## Demonstration and tutorial
 Demonstration instances of the application are deployed on the Huma Num Shiny server:
 
-https://aurelienroyer.shinyapps.io/Seahors/
+https://aurelienroyer.shinyapps.io/Seahors/ <br>
 A tutorial video of SEAHORS is available here: xxxx.
 
 
