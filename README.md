@@ -27,7 +27,9 @@ and in French:  xxxx <br>
 A web application is deployed on the Huma Num Shiny server: https://aurelienroyer.shinyapps.io/Seahors/ <br>
 
 ## Data accessibility of Cassenade as example: 
-https://nakala.fr/10.34847/nkl.e30aie2u
+ Spatial data: https://nakala.fr/10.34847/nkl.e30aie2u
+ Refit: https://nakala.fr/10.34847/nkl.fe27j10z
+ Orthophoto: https://nakala.fr/10.34847/nkl.7ea78e6u
 
 ## Reference
 Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (2023). SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny.
