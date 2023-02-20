@@ -620,10 +620,23 @@ ui <- navbarPage(
                                         ),
                                         tabPanel(tags$h5("Record new group"), 
                                                  br(),
-                                                 fluidRow(
+                                                 br(),
+                                                 column (12,tags$h3("Record new group"),
+                                                 br(),
                                                    textInput("text.new.group", label="Name of the new group variable",value = "new.group"),
                                                    uiOutput("liste.newgroup"),
-                                                   actionButton("go.ng", "Create"),)
+                                                   actionButton("go.ng", "Create"),
+                                                 br(),
+                                                 br(),),
+                                                 column (12,
+                                                         hr(style = "border-top: 1px solid #000000;"), 
+                                                         br(),
+                                                         tags$h3("Rename new group modality"),
+                                                 uiOutput("liste.newgroup2"),
+                                                 uiOutput("liste.newgroup4"),
+                                                 textInput("text.new.group2", label=h5("New name of the modality"),value = "new.modality"),
+                                                 actionButton("go.ng2", "Modify"),),
+                                                 
                                         ), #end tabpanel
                                         tabPanel(tags$h5("Export settings"), 
                                                  br(),
@@ -1963,6 +1976,7 @@ create.newgroup <- observeEvent(input$go.ng, {
     values$newgroup <- c(values$newgroup, input$text.new.group)
     df$df<-cbind(df$df,new.group)
     colnames(df$df)[ncol(df$df)]<-c(input$text.new.group)
+
 })
 
 output$brushed<- renderPrint({
@@ -1999,6 +2013,26 @@ observeEvent(input$Change, {
         input$NewGroup
   removeModal()
 }) # end of Observe Event
+
+#rename
+output$liste.newgroup2=renderUI({
+  req(!is.null(fileisupload()))
+  selectInput("liste.newgroup.rename", label = h5("Select the new group"), 
+              choices = values$newgroup, 
+              selected = values$newgroup[1])
+})
+output$liste.newgroup4=renderUI({
+  req(!is.null(fileisupload()))
+  req(!is.null(values$newgroup))
+  req(input$liste.newgroup.rename != "")
+  selectInput("liste.newgroup3", label = h5("Select the variable"), 
+              choices = factor(df$df[,input$liste.newgroup.rename]))
+})
+observeEvent(input$go.ng2, { 
+  req(!is.null(input$liste.newgroup3))
+  df$df[,input$liste.newgroup.rename][df$df[,input$liste.newgroup.rename]==input$liste.newgroup3]<-input$text.new.group2
+  })
+
 
 ##### simplification to checkboxgroupinput----
   observeEvent(input$all_artifact_entry, {
@@ -2838,6 +2872,7 @@ htmltools::img(src = knitr::image_uri(file.path(getwd(), 'logo1.png')),
                alt = 'logo', 
                style = 'position:absolute; top:0; right:0; padding:10px; height:150px ;')
 }
+
 ```
 
 
