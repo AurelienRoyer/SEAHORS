@@ -21,10 +21,10 @@ The application will be launched automatically and the necessary R package will 
 The first launch may therefore take some time. 
 
 ## Demonstration and tutorial
-The application overviewis in detailled the paper (xxxx) with the main feature of the application.
+The application overview is detailled the paper (Royer et al. preprint, see Reference) <br>
 
-A tutorial video of SEAHORS is available here in English: xxxx <br>
-and in French:  xxxx <br>
+A tutorial video of SEAHORS is available in English here: xxxx <br>
+and in French here:  xxxx <br>
 A web application is deployed on the Huma Num Shiny server: https://aurelienroyer.shinyapps.io/Seahors/ <br>
 
 ## Data accessibility of Cassenade as example: 
