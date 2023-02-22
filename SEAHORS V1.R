@@ -161,8 +161,10 @@ ui <- navbarPage(
   and to visualise their distributions using interactive 3D and 2D plots </p>
    <br>
    <p> An overview of the possibility was published by: </p>
-   <p> Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (2023) - SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny. Peer Community Journal, 2023 
+   <p> Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (submitted) - SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny. </p>
+   <p> Submitted to Peer Community Journal, 2023 
    <a href=https://peercommunityjournal.org/articles/ target=_blank>https://peercommunityjournal.org/articles/</a></p>
+   <p> Preprint: </p>
    <p>A video explaining the features is also available <a href=https://peercommunityjournal.org/articles/ target=_blank>here</a></p>
   <br>
    <p>The source code is openly published on the dedicated <a href=https://github.com/AurelienRoyer/SEAHORS/ target=_blank>github repository</a>
@@ -305,9 +307,9 @@ ui <- navbarPage(
                                       verbatimTextOutput("Fit.table.output"),
                                       downloadButton("downloadData_redata", "Download"),
                                       ),#end tabpanel
-                             tabPanel(tags$h5("Merge two columns"), 
+                             tabPanel(tags$h5("Concatenate two columns"), 
                                       tags$br(),
-                                      column(12,textInput("Merge.groupe", "Choose the name of the new column",value = "merging.col"),),
+                                      column(12,textInput("Merge.groupe", "Choose the name of the new column",value = "new.concatenate.col"),),
                                       tags$br(),
                                       column(8, uiOutput("set.col1"),),
                                       tags$br(),
@@ -322,7 +324,7 @@ ui <- navbarPage(
                                       tags$br(),
                                       column(8, uiOutput("set.col2"),),
                                       tags$br(),
-                                      column(8,actionButton("Merge2", "Merge the two columns"),),
+                                      column(8,actionButton("Merge2", "Concatenate the two columns"),),
                              ),
                              ),#end tabSETPanel
                     ),#end tabpanel
