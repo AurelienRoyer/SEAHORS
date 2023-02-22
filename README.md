@@ -32,4 +32,7 @@ A web application is deployed on the Huma Num Shiny server: https://aurelienroye
  Orthophoto: https://nakala.fr/10.34847/nkl.7ea78e6u <br>
 
 ## Reference
-Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (2023). SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny.
+Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (submitted). SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny.<br>
+Submitted to Peer Community Journal, 2023 
+   <a href=https://peercommunityjournal.org/articles/ target=_blank>https://peercommunityjournal.org/articles/</a> <br>
+   Preprint: 
