@@ -1379,7 +1379,8 @@ output$set.columnID.for.fit=renderUI({
 
 output$set.REM=renderUI({ 
   selectInput("setREM", h4("Select the column recording the unique ID of refit groups"),
-              choices = names(df$file.fit),
+              choices= names(df$file.fit)[!names(df$file.fit) %in% input$setcolumnID.for.fit],
+              #choices = names(df$file.fit),
               selected = c("refit","null"))
 }) 
 
@@ -2464,6 +2465,10 @@ output$plotdens <- renderUI({
 
 output$sectiondensityplot <- renderPlot({
   df.sub4<-df.sub()
+  myvaluesx<-unlist(myvaluesx())
+  if (is.null(unlist(myvaluesx))) {
+    myvaluesx <-c("red","blue","green")
+  }
   orthofile<-NULL
   if (input$var.ortho2 == "yes" ){
     orthofile <- switch(input$var3,
@@ -2494,14 +2499,18 @@ output$sectiondensityplot <- renderPlot({
 
   df.sub4$density <- get_density(df.sub4$var, df.sub4$var2, n = 100)
 
+
+
   # Density curve of x left panel 
   ydensity <- ggplot(df.sub4, aes(var, fill=factor(.data[[inputcolor()]]))) + 
     geom_density(alpha=.5) + 
+    scale_fill_manual( values = myvaluesx)+
     theme(legend.position = "none")
   
   # Density curve of y right panel 
   zdensity <- ggplot(df.sub4, aes(var2, fill=factor(.data[[inputcolor()]]))) + 
     geom_density(alpha=.5) + 
+    scale_fill_manual( values = myvaluesx)+
     theme(legend.position = "none")+coord_flip()
   blankPlot <- ggplot()+geom_blank(aes(1,1))+
     theme(plot.background = element_blank(), 
