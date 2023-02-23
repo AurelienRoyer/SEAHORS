@@ -3056,5 +3056,3 @@ output$export.Rmarkdown<- downloadHandler(
 } # end server
 
 shinyApp(ui, server)
-
-
