@@ -34,6 +34,6 @@ A web application is deployed on the Huma Num Shiny server: https://aurelienroye
 
 ## Reference
 Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (submitted). SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny.<br>
-Submitted to Peer Community Journal, 2023 
-   <a href=https://peercommunityjournal.org/articles/ target=_blank>https://peercommunityjournal.org/articles/</a> <br>
+Submitted to PCIArchaeology, 2023 
+   <a href=https://archaeo.peercommunityin.org/PCIArchaeology target=_blank> https://archaeo.peercommunityin.org/PCIArchaeology</a> <br>
    Preprint:  https://doi.org/10.5281/zenodo.7674699 
