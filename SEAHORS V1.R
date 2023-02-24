@@ -162,8 +162,8 @@ ui <- navbarPage(
    <br>
    <p> An overview of the possibility was published by: </p>
    <p> Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (submitted) - SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny. </p>
-   <p> Submitted to Peer Community Journal, 2023 
-   <a href=https://peercommunityjournal.org/articles/ target=_blank>https://peercommunityjournal.org/articles/</a></p>
+   <p> Submitted to PCIArchaeology, 2023 
+   <a href=https://archaeo.peercommunityin.org/PCIArchaeology target=_blank>https://archaeo.peercommunityin.org/PCIArchaeology/</a></p>
    <p> Preprint: https://doi.org/10.5281/zenodo.7674699 </p>
    <p>A video explaining the features is also available <a href=https://nakala.fr/10.34847/nkl.3fdd6h8j target=_blank>here</a></p>
   <br>
