@@ -34,6 +34,7 @@ css <- "
   margin-left: -6px !important;
 }"
 ui <- navbarPage(
+  windowTitle = "SEAHORS",
   fluidPage(
     useShinyjs(),
     theme = shinytheme(theme = "journal"),
