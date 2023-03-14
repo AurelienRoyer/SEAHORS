@@ -18,7 +18,8 @@ of projection to explore spatial organisation without constraint of the grid ori
 
 - Install R (https://www.r-project.org/) and optionally Rstudio Desktop (https://posit.co/download/rstudio-desktop/) to have a more comfortable R environment.
 - Open the script in R or Rstudio.
-- To execute your code in the R script, you can either highlight the code and click on Run, you can highlight the code and press CTRL + Enter on your keyboard, or you can can click in Rstudio on the "Run App" button (at the top of the editor).
+- To execute the R shiny script in R, you must highlight the code (“Select all” or CTRL + A) and click on “Run all” or press CTRL + R. 
+- To execute the R shiny script in R studio, you can either highlight the code (“Select all” or CTRL + A) and click on “Run selected lines” or CTRL + Enter, or simply  click on the "Run App" button (at the top of the editor window).
 
 The application will be launched automatically and the necessary R package will be installed automatically the first time.
 
