@@ -34,6 +34,7 @@ css <- "
   margin-left: -6px !important;
 }"
 ui <- navbarPage(
+  windowTitle = "SEAHORS",
   fluidPage(
     useShinyjs(),
     theme = shinytheme(theme = "journal"),
@@ -1250,7 +1251,7 @@ observeEvent(ignoreInit = TRUE, c(setXX(),setYY(),setZZ(),input$setID), {
        if( sum(is.na(as.numeric(df$df[,input$sety])))>0) {
          HTML(paste(sum(is.na(as.numeric(df$df[,input$sety]))), " Y value(s) was/were not included as not numerical<br>"))},
        if( sum(is.na(as.numeric(df$df[,input$setz])))>0) {
-         HTML(paste(sum(is.na(as.numeric(df$df[,input$setz]))), " Z value(s was/were not included as not numerical<br>"))},
+         HTML(paste(sum(is.na(as.numeric(df$df[,input$setz]))), " Z value(s) was/were not included as not numerical<br>"))},
        if(input$setID != "null" & dim(df$df[duplicated(df$df[,input$setID]),])[1]>0) { 
          HTML(paste(dim(df$df[duplicated(df$df[,input$setID]),])[1], " object ID(s) is/are not unique !<br> "))
          }
