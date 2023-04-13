@@ -1,5 +1,5 @@
 #############################################################################################
-##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1.x - 13 Apr 2023
+##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1.2 - 13 Apr 2023
 #############################################################################################
 #
 
@@ -469,22 +469,24 @@ ui <- navbarPage(
                                                     hr(style = "border-top: 1px solid #000000;"), 
                                                     ### a finir dessous 
                                                     column(12,
-                                                           column(6,downloadButton("downloadData2D.simple", "Download as .pdf")), 
-                                                           column(3,numericInput("height.size.b.simple", label = h5("Figure height"), value = 800),),
-                                                           column(3,numericInput("width.size.b.simple", label = h5("Figure width"), value = 1000),),
-                                                           column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),),),
-                                                  radioButtons("var.ortho.simple", "include ortho",
-                                                               choices = c(no = "no",
-                                                                           yes = "yes"),
-                                                               selected = "no", inline=TRUE),  
-                                                  tags$br(),
-                                                  radioButtons("var.fit.table.simple", "Include refits",
-                                                               choices = c(no = "no",
-                                                                           yes = "yes"),
-                                                               selected = "no", inline=TRUE),
-                                                  hr(style = "border-top: 0.5px solid #000000;"), 
-                                                  
-                                                  ### a finir dessus 
+                                                           column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
+                                                           column(2),
+                                                            column(3,numericInput("height.size.b.simple", label = h5("Figure height"), value = 800),),
+                                                  column(3,numericInput("width.size.b.simple", label = h5("Figure width"), value = 1000),),),),
+                                                  column(12,
+                                                           column(2,radioButtons("var.ortho.simple", "include ortho",
+                                                                        choices = c(no = "no",
+                                                                                    yes = "yes"),
+                                                                        selected = "no", inline=TRUE),  ),
+                                                           column(2, radioButtons("var.fit.table.simple", "Include refits",
+                                                                             choices = c(no = "no",
+                                                                              yes = "yes"),
+                                                                         selected = "no", inline=TRUE),),
+                                                         column(2),
+                                                         column(6,downloadButton("downloadData2D.simple", "Download as .pdf")), 
+                                                         hr(style = "border-top: 0.5px solid #000000;"), ),
+                                                         tags$br(),
+
                                                   
                                          ),#end tabpanel    
                              ), #end tabset panel
@@ -908,13 +910,13 @@ server <- function(input, output, session) {
     themes <- paste0(themes, "()")
     selectInput("themeforfigure.list", h4("Select theme for figure"),
                 choices = themes,
-                selected = themes[1])
-
+                selected = themes[5])
+  })
   
   themeforfigure.choice<-reactiveVal(c("theme_classic()"))
   observeEvent(input$themeforfigure.list,{
     themeforfigure.choice(c(input$themeforfigure.list))
-    print(themeforfigure.choice())
+
   })
   
   ##### function used in the script ----
@@ -2672,6 +2674,16 @@ server <- function(input, output, session) {
   
   output$sectiondensityplot <- renderPlot({
     df.sub4<-df.sub()
+    
+    min.size2<-minsize()
+    size.scale <- size.scale()
+    
+    df.sub3<-df.sub.minpoint()
+    if (nrow(df.sub3)>0){
+      df.sub4$point.size2[!((df.sub4[,input$setx] %in% df.sub3[,input$setx]) & (df.sub4[,input$sety] %in% df.sub3[,input$sety]) & (df.sub4[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+      
+    }
+    
     myvaluesx<-unlist(myvaluesx())
     if (is.null(unlist(myvaluesx))) {
       myvaluesx <-c("red","blue","green")
@@ -2732,11 +2744,12 @@ server <- function(input, output, session) {
             axis.text.y = element_blank(),
             axis.ticks = element_blank()
       )
-    
-    
+
     if (is.null(orthofile)){
       p<-ggplot(df.sub4,aes(var, var2, color = density)) + 
-        geom_point(aes(var, var2, color = density), alpha=transpar(), size=input$point.size3)+ 
+        #geom_point(aes(var, var2, color = density), alpha=transpar(), size=input$point.size3)+
+        geom_point(aes(var, var2, color = density), alpha=transpar(), size=df.sub4$point.size2)+ 
+        scale_size_manual(values=c(size.scale,min.size2))+
         labs(x = nameaxis[1],y = nameaxis[2])+
         match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
         {if (input$ratio.to.coord)coord_fixed()}
@@ -2932,6 +2945,12 @@ server <- function(input, output, session) {
     content = function(file) {
       htmlwidgets::saveWidget(as_widget(session_store$plt2D), file, selfcontained = TRUE)
     }
+  )
+output$downloadData2D.simple <- downloadHandler(
+    filename = function(){paste("plot2D - ",paste(input$file1$name)," - ", Sys.Date(), '.pdf', sep = '')},
+    content = function(file){
+      ggsave(session_store$plt2D.simple,filename=file, device = "pdf")
+    },
   )
   
   ##2d plot slice
