@@ -45,7 +45,7 @@ Submitted to [PCI Archaeology](https://archaeo.peercommunityin.org/PCIArchaeolog
 Preprint:  https://doi.org/10.5281/zenodo.7674699 
 
 ## Update
-### v1.1
+### v1.1 April 2023
 Add ggplot 2D tab :"Simple 2D plot" with pdf download and numeric imput to modify the projection ratio. 
 Add "Figure customization" tab : to modify the theme of ggplot figure ("Simple 2D plot" and "Density Plot")
 ### v1.2
