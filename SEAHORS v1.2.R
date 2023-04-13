@@ -471,22 +471,22 @@ ui <- navbarPage(
                                                     column(12,
                                                            column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
                                                            column(2),
-                                                            column(3,numericInput("height.size.b.simple", label = h5("Figure height"), value = 800),),
-                                                  column(3,numericInput("width.size.b.simple", label = h5("Figure width"), value = 1000),),),),
+                                                           column(3,numericInput("height.size.b.simple", label = h5("Figure height"), value = 800),),
+                                                           column(3,numericInput("width.size.b.simple", label = h5("Figure width"), value = 1000),),),),
                                                   column(12,
-                                                           column(2,radioButtons("var.ortho.simple", "include ortho",
-                                                                        choices = c(no = "no",
-                                                                                    yes = "yes"),
-                                                                        selected = "no", inline=TRUE),  ),
-                                                           column(2, radioButtons("var.fit.table.simple", "Include refits",
-                                                                             choices = c(no = "no",
-                                                                              yes = "yes"),
-                                                                         selected = "no", inline=TRUE),),
+                                                         column(2,radioButtons("var.ortho.simple", "include ortho",
+                                                                               choices = c(no = "no",
+                                                                                           yes = "yes"),
+                                                                               selected = "no", inline=TRUE),  ),
+                                                         column(2, radioButtons("var.fit.table.simple", "Include refits",
+                                                                                choices = c(no = "no",
+                                                                                            yes = "yes"),
+                                                                                selected = "no", inline=TRUE),),
                                                          column(2),
                                                          column(6,downloadButton("downloadData2D.simple", "Download as .pdf")), 
                                                          hr(style = "border-top: 0.5px solid #000000;"), ),
-                                                         tags$br(),
-
+                                                  tags$br(),
+                                                  
                                                   
                                          ),#end tabpanel    
                              ), #end tabset panel
@@ -663,7 +663,7 @@ ui <- navbarPage(
                                                   br(),
                                                   uiOutput("themeforfigure"),
                                                   br(),
-                                                 numericInput("fontsizeaxis", "font size of axis",12, min = 1, max=40),
+                                                  numericInput("fontsizeaxis", "font size of axis",12, min = 1, max=40),
                                                   
                                          ), #end of tabPanel
                                          tabPanel(tags$h5("Slider parameters"),
@@ -847,10 +847,10 @@ server <- function(input, output, session) {
     ),
     click = htmlwidgets::JS('function(gd) {Plotly.downloadImage(gd, {format: "png"}
                           ) }') )
-observeEvent(input$fontsizeaxis, {
-  font_size(input$fontsizeaxis)
+  observeEvent(input$fontsizeaxis, {
+    font_size(input$fontsizeaxis)
   }) 
-
+  
   ##### option size of figure ----
   
   observeEvent(input$height.size.a, {
@@ -918,12 +918,12 @@ observeEvent(input$fontsizeaxis, {
                 choices = themes,
                 selected = themes[5])
   })
-
+  
   
   themeforfigure.choice<-reactiveVal(c("theme_classic()"))
   observeEvent(input$themeforfigure.list,{
     themeforfigure.choice(c(input$themeforfigure.list))
-
+    
   })
   
   ##### function used in the script ----
@@ -2753,7 +2753,7 @@ observeEvent(input$fontsizeaxis, {
             axis.text.y = element_blank(),
             axis.ticks = element_blank()
       )
-
+    
     if (is.null(orthofile)){
       p<-ggplot(df.sub4,aes(var, var2, color = density)) + 
         #geom_point(aes(var, var2, color = density), alpha=transpar(), size=input$point.size3)+
@@ -2761,7 +2761,7 @@ observeEvent(input$fontsizeaxis, {
         scale_size_manual(values=c(size.scale,min.size2))+
         labs(x = nameaxis[1],y = nameaxis[2])+
         match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
-                {if (input$ratio.to.coord)coord_fixed()}
+        {if (input$ratio.to.coord)coord_fixed()}
       
     } else { p <-ggplot()+ ggRGB(img = orthofile,
                                  r = 1,
@@ -2957,7 +2957,7 @@ observeEvent(input$fontsizeaxis, {
       htmlwidgets::saveWidget(as_widget(session_store$plt2D), file, selfcontained = TRUE)
     }
   )
-output$downloadData2D.simple <- downloadHandler(
+  output$downloadData2D.simple <- downloadHandler(
     filename = function(){paste("plot2D - ",paste(input$file1$name)," - ", Sys.Date(), '.pdf', sep = '')},
     content = function(file){
       ggsave(session_store$plt2D.simple,filename=file, device = "pdf")
