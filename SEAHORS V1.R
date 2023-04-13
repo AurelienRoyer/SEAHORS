@@ -656,7 +656,12 @@ ui <- navbarPage(
                                                  uiOutput("liste.varrefit"),
                                                  
                                                  ), #end of tabPanel
-
+                                        tabPanel(tags$h5("Figure customization"),
+                                                 br(),
+                                                 br(),
+                                                uiOutput("themeforfigure"),
+                                                 
+                                        ), #end of tabPanel
                                         tabPanel(tags$h5("Slider parameters"),
                                                  br(),
 
@@ -749,7 +754,9 @@ server <- function(input, output, session) {
   ratioy<-reactiveVal(1) ## aspectratio y
   ratioz<-reactiveVal(1) ## aspectratio z
   ratio.simple<-reactiveVal(1)
-  
+#####
+
+    
 ##### Import data----
 
 observe({
@@ -890,6 +897,25 @@ observeEvent(input$ratio.to.coord.simple, {
   ratio.simple(input$ratio.to.coord.simple)
 })  
 
+output$themeforfigure=renderUI({
+  req(!is.null(fileisupload()))
+  themes <- ls("package:ggplot2", pattern = "^theme_")
+  themes <- themes[themes != "theme_get" &
+                     themes != "theme_set" &
+                     themes != "theme_replace" &
+                     themes != "theme_test" &
+                     themes != "theme_update"]
+  themes <- paste0(themes, "()")
+  selectInput("themeforfigure.list", h4("Select theme for figure"),
+              choices = themes,
+              selected = themes[2])
+})
+
+themeforfigure.choice<-reactiveVal(c("theme_classic()"))
+observeEvent(input$themeforfigure.list,{
+  themeforfigure.choice(c(input$themeforfigure.list))
+  print(themeforfigure.choice())
+})
 
 ##### function used in the script ----
 #function for density
@@ -2444,7 +2470,8 @@ plot2D.react<-reactive({
         scale_shape_manual(values=shape.level)+
         scale_size_manual(values=c(size.scale,min.size2))+
         xlab(paste(var))+ylab(paste(var2))+
-      theme_linedraw()+ theme(legend.title = element_blank())+ theme(legend.position='none')
+      theme(legend.title = element_blank())+
+        match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+ theme(legend.position='none')
     }
     p <-p %>%
       config(displaylogo = FALSE,
@@ -2561,9 +2588,10 @@ plot2D.simple.react<-reactive({
           scale_shape_manual(values=shape.level)+
           scale_size_manual(values=c(size.scale,min.size2))+
           xlab(paste(var))+ylab(paste(var2))+
-          theme_linedraw()+ theme(legend.title = element_blank())+ theme(legend.position='none')
+          theme(legend.title = element_blank())+
+          match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
+          theme(legend.position='none')
         
-
  p   
 #  }) #end isolate
  
@@ -2684,12 +2712,13 @@ output$sectiondensityplot <- renderPlot({
   ydensity <- ggplot(df.sub4, aes(var, fill=factor(.data[[inputcolor()]]))) + 
     geom_density(alpha=.5) + 
     scale_fill_manual( values = myvaluesx)+
+    match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
     theme(legend.position = "none")
   
   # Density curve of y right panel 
   zdensity <- ggplot(df.sub4, aes(var2, fill=factor(.data[[inputcolor()]]))) + 
     geom_density(alpha=.5) + 
-    scale_fill_manual( values = myvaluesx)+
+    scale_fill_manual( values = myvaluesx)+match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
     theme(legend.position = "none")+coord_flip()
   blankPlot <- ggplot()+geom_blank(aes(1,1))+
     theme(plot.background = element_blank(), 
@@ -2709,6 +2738,7 @@ if (is.null(orthofile)){
   p<-ggplot(df.sub4,aes(var, var2, color = density)) + 
     geom_point(aes(var, var2, color = density), alpha=transpar(), size=input$point.size3)+ 
     labs(x = nameaxis[1],y = nameaxis[2])+
+    match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
     {if (input$ratio.to.coord)coord_fixed()}
 
  } else { p <-ggplot()+ ggRGB(img = orthofile,
@@ -2736,6 +2766,7 @@ if (is.null(orthofile)){
   } else {
       p} 
   session_store$plotdensity <- p
+
   p
 }) #end output$sectiondensityplot  
   
