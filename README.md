@@ -30,7 +30,7 @@ The application overview is detailled the paper (Royer et al. preprint, see Refe
 
 A tutorial video of SEAHORS is available [in English](https://nakala.fr/10.34847/nkl.3fdd6h8j) and [in French](https://nakala.fr/10.34847/nkl.65bf1h72).
 
-A web application is deployed on the Huma Num Shiny server: https://aurelienroyer.shinyapps.io/Seahors/
+A web application of SEAHORS v1 is deployed on the  Shinyapps.io server: https://aurelienroyer.shinyapps.io/Seahors/
 
 ## Data accessibility of Cassenade as example
 
@@ -43,3 +43,10 @@ Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (submitted). SEAHORS: Spatia
 Submitted to [PCI Archaeology](https://archaeo.peercommunityin.org/PCIArchaeology), 2023 
 
 Preprint:  https://doi.org/10.5281/zenodo.7674699 
+
+## Update
+### v1.1
+Add ggplot 2D tab :"Simple 2D plot" with pdf download and numeric imput to modify the projection ratio. 
+Add "Figure customization" tab : to modify the theme of ggplot figure ("Simple 2D plot" and "Density Plot")
+### v1.2
+Correction DensityPlot and modification of point size. 
