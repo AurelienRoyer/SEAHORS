@@ -909,7 +909,7 @@ server <- function(input, output, session) {
     selectInput("themeforfigure.list", h4("Select theme for figure"),
                 choices = themes,
                 selected = themes[1])
-  })
+
   
   themeforfigure.choice<-reactiveVal(c("theme_classic()"))
   observeEvent(input$themeforfigure.list,{
