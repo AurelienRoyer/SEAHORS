@@ -43,3 +43,9 @@ Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (submitted). SEAHORS: Spatia
 Submitted to [PCI Archaeology](https://archaeo.peercommunityin.org/PCIArchaeology), 2023 
 
 Preprint:  https://doi.org/10.5281/zenodo.7674699 
+
+## Update
+### v1.1
+Add ggplot 2D tab :"Simple 2D plot" with pdf download and numeric imput to modify the projection ratio. 
+### v1.2
+Correction DensityPlot and modification of point size. 
