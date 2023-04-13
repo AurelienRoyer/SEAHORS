@@ -662,6 +662,8 @@ ui <- navbarPage(
                                                   br(),
                                                   br(),
                                                   uiOutput("themeforfigure"),
+                                                  br(),
+                                                 numericInput("fontsizeaxis", "font size of axis",12, min = 1, max=40),
                                                   
                                          ), #end of tabPanel
                                          tabPanel(tags$h5("Slider parameters"),
@@ -756,6 +758,7 @@ server <- function(input, output, session) {
   ratioy<-reactiveVal(1) ## aspectratio y
   ratioz<-reactiveVal(1) ## aspectratio z
   ratio.simple<-reactiveVal(1)
+  font_size<-reactiveVal(20)
   #####
   
   
@@ -844,7 +847,10 @@ server <- function(input, output, session) {
     ),
     click = htmlwidgets::JS('function(gd) {Plotly.downloadImage(gd, {format: "png"}
                           ) }') )
-  
+observeEvent(input$fontsizeaxis, {
+  font_size(input$fontsizeaxis)
+  }) 
+
   ##### option size of figure ----
   
   observeEvent(input$height.size.a, {
@@ -912,6 +918,7 @@ server <- function(input, output, session) {
                 choices = themes,
                 selected = themes[5])
   })
+
   
   themeforfigure.choice<-reactiveVal(c("theme_classic()"))
   observeEvent(input$themeforfigure.list,{
@@ -2590,8 +2597,10 @@ server <- function(input, output, session) {
       scale_shape_manual(values=shape.level)+
       scale_size_manual(values=c(size.scale,min.size2))+
       xlab(paste(var))+ylab(paste(var2))+
-      theme(legend.title = element_blank())+
       match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
+      theme(axis.title.x = element_text(size=font_size()),
+            axis.title.y = element_text(size=font_size()),
+            legend.title = element_blank())+
       theme(legend.position='none')
     
     p   
@@ -2752,7 +2761,7 @@ server <- function(input, output, session) {
         scale_size_manual(values=c(size.scale,min.size2))+
         labs(x = nameaxis[1],y = nameaxis[2])+
         match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
-        {if (input$ratio.to.coord)coord_fixed()}
+                {if (input$ratio.to.coord)coord_fixed()}
       
     } else { p <-ggplot()+ ggRGB(img = orthofile,
                                  r = 1,
@@ -2768,7 +2777,9 @@ server <- function(input, output, session) {
       p<-p+geom_density_2d(mapping=aes(var, var2, color = ..level..),data=df.sub4)}
     
     p<-p+scale_color_viridis()+
-      guides(fill = guide_legend(title = "Level"))
+      guides(fill = guide_legend(title = "Level"))+
+      theme(axis.title.x = element_text(size=font_size()),
+            axis.title.y = element_text(size=font_size()) )
     
     
     if (input$var.density.curves== "yes") {   
