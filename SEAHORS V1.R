@@ -1,5 +1,5 @@
 #############################################################################################
-##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1.11 - 13 Apr 2023
+##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1.1 - 13 Apr 2023
 #############################################################################################
 
 
