@@ -30,7 +30,7 @@ The application overview is detailled the paper (Royer et al. preprint, see Refe
 
 A tutorial video of SEAHORS is available [in English](https://nakala.fr/10.34847/nkl.3fdd6h8j) and [in French](https://nakala.fr/10.34847/nkl.65bf1h72).
 
-A web application of SEAHORS v1 is deployed on the Huma Num Shiny server: https://aurelienroyer.shinyapps.io/Seahors/
+A web application of SEAHORS v1 is deployed on the  Shinyapps.io server: https://aurelienroyer.shinyapps.io/Seahors/
 
 ## Data accessibility of Cassenade as example
 
