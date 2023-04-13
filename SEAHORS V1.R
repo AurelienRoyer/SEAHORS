@@ -1,6 +1,7 @@
 #############################################################################################
-##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1.1 - Apr 2023
+##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1.11 - 13 Apr 2023
 #############################################################################################
+
 
 ##### package needed
 if (!require('shiny')) install.packages('shiny'); library('shiny') #shiny
@@ -380,6 +381,10 @@ ui <- navbarPage(
                              uiOutput("var.fit.3D"),
                              ), #end tabPanel 
                     tabPanel("2D plot", 
+                             
+                             tabsetPanel(type = "tabs",
+                                         tabPanel(tags$h5("Advanced 2D plot"),
+                                                  
                              fluidRow(tags$br(),
                                       htmlOutput("nb2"),
                              tags$br(),
@@ -436,6 +441,53 @@ ui <- navbarPage(
                                column(9,
                                       verbatimTextOutput("brushed"))
                                     ) #end fluidrow
+                           ), #end sub-tabpanel
+                            
+                           tabPanel(tags$h5("Simple 2D plot"),
+                                    fluidRow(tags$br(),
+                                             htmlOutput("nb2.2"),
+                                             tags$br(),
+                                             #column(1,  actionButton("run_button2", "Display/refresh", icon = icon("play")),),
+                                             tags$br(),
+                                             tags$br(),
+                                             tags$br(),
+                                             column(12,      
+                                                    radioButtons("var1.simple", "section",
+                                                                 choices = c(xy = "xy",
+                                                                             yx = "yx",
+                                                                             yz = "yz",
+                                                                             xz = "xz"),
+                                                                 selected = "xy", inline=TRUE),
+                                                    tags$br(),),
+                                             
+                                             column(12,
+                                                    uiOutput("plot2Dbox.simple"),),
+                                             tags$br(),),
+                                    fluidRow(
+                                      tags$br(),
+                                      tags$br(),
+                                      hr(style = "border-top: 1px solid #000000;"), 
+                                      ### a finir dessous 
+                                      column(12,
+                                             column(6,downloadButton("downloadData2D.simple", "Download as .pdf")), 
+                                             column(3,numericInput("height.size.b.simple", label = h5("Figure height"), value = 800),),
+                                             column(3,numericInput("width.size.b.simple", label = h5("Figure width"), value = 1000),),),),
+                                            column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
+                                    radioButtons("var.ortho.simple", "include ortho",
+                                                 choices = c(no = "no",
+                                                             yes = "yes"),
+                                                 selected = "no", inline=TRUE),  
+                                    tags$br(),
+                                    radioButtons("var.fit.table.simple", "Include refits",
+                                                 choices = c(no = "no",
+                                                             yes = "yes"),
+                                                 selected = "no", inline=TRUE),
+                                    hr(style = "border-top: 0.5px solid #000000;"), 
+                                    
+                                    ### a finir dessus 
+ 
+                           ),#end tabpanel    
+                             ), #end tabset panel
                             ), #end tabPanel
         
                     tabPanel("2D slice",
@@ -696,6 +748,7 @@ server <- function(input, output, session) {
   ratiox<-reactiveVal(1) ## aspectratio X
   ratioy<-reactiveVal(1) ## aspectratio y
   ratioz<-reactiveVal(1) ## aspectratio z
+  ratio.simple<-reactiveVal(1)
   
 ##### Import data----
 
@@ -796,6 +849,13 @@ observeEvent(input$width.size.b, {
    width.size(input$width.size.b)
  })
 #
+observeEvent(input$height.size.b.simple, {
+  height.size(input$height.size.b.simple)
+})
+observeEvent(input$width.size.b.simple, {
+  width.size(input$width.size.b.simple)
+})
+#
 observeEvent(input$height.size.c, {
   height.size(input$height.size.c)
 })
@@ -826,6 +886,10 @@ observeEvent(input$ratioy, {
 observeEvent(input$ratioz, {
   ratioz(input$ratioz)
 })  
+observeEvent(input$ratio.to.coord.simple, {
+  ratio.simple(input$ratio.to.coord.simple)
+})  
+
 
 ##### function used in the script ----
 #function for density
@@ -1583,6 +1647,9 @@ output$nb=renderUI({
 output$nb2=renderUI({
   HTML(paste(textnbobject()))
 })
+output$nb2.2=renderUI({
+  HTML(paste(textnbobject()))
+})
 output$nb3=renderUI({
   HTML(paste(textnbobject()))
 })
@@ -2226,7 +2293,7 @@ p
 
 
 #### 2D plot ---- 
-
+##advanced plot
 output$plot2Dbox <- renderUI({
   plotlyOutput("sectionYplot", height = height.size())
 })
@@ -2388,9 +2455,122 @@ plot2D.react<-reactive({
 
     }) #end isolate
 
-}) #end output$sectionYplot
+}) #plot2D.react
 
+## simple 2D plot
+output$plot2Dbox.simple <- renderUI({
+  plotOutput("sectionYplot.simple", height = height.size(), width = width.size())
+})
+
+output$sectionYplot.simple <- renderPlot({
+  plot(plot2D.simple.react())
+  session_store$plt2D.simple<- plot2D.simple.react()
+})
+plot2D.simple.react<-reactive({ 
+  #input$run_button2
+  
+  min.size2<-minsize()
+  orthofile<-NULL
+  if (input$var.ortho.simple == "yes" ){
+    orthofile <- switch(input$var1.simple,
+                        xy = if(!is.null(input$file2)) {stack(input$file2$datapath)},
+                        yx = if(!is.null(input$file5)) {stack(input$file5$datapath)},
+                        xz = if(!is.null(input$file3)) {stack(input$file3$datapath)},
+                        yz = if(!is.null(input$file4)) {stack(input$file4$datapath)})
+  }
  
+#isolate ({
+    df.sub2<-df.sub() 
+    df.sub3<-df.sub.minpoint()
+    myvaluesx<-unlist(myvaluesx())
+    if (is.null(unlist(myvaluesx))) {
+      myvaluesx <-c("blue","red","green")
+    }
+    size.scale <- size.scale()
+    
+    if (nrow(df.sub3)>0){
+      df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+      
+    }
+    switch(input$var1.simple,
+           xy={var<-setXX()
+           var2<-setYY()       },
+           yz={   var<-setYY() 
+           var2<-setZZ()     },
+           xz={   var<-setXX()
+           var2<-setZZ()    },
+           yx={   var<-setYY() 
+           var2<-setXX() }
+    )
+    
+    shapeX<-df.sub2$shapeX
+    shape.level<-levels(as.factor(shapeX))
+    
+    p <-ggplot()
+       if (!is.null(orthofile)){
+         
+       p<-p+ ggRGB(img = orthofile,
+              r = 1,
+              g = 2,
+              b = 3,
+              maxpixels =500000,
+              ggLayer = T)
+       }   
+      
+      p<-p+geom_point(data = df.sub2,
+                   aes(x = .data[[var]],
+                       y = .data[[var2]],
+                       fill=layer2,
+                       size=as.factor(point.size2),
+                       shape=shapeX
+                   ))+
+coord_fixed(ratio.simple())
+      
+        
+      if (input$var.fit.table.simple == "yes" & !is.null(data.fit.3D())){
+        colorvalues<-unlist(colorvalues())
+        data.fit.3D<-data.fit3() %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
+        data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
+        if (is.null(colorvalues)) {
+          data.fit.3D$color.fit <-c("black")
+        }
+        data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
+        
+        switch(input$var1.simple,
+               xy={
+                 varend<-"xend"
+                 var2end<- "yend"
+               },
+               yz={
+                 varend<-"yend"
+                 var2end<- "zend"
+               },
+               xz={
+                 varend<-"xend"
+                 var2end<- "zend"
+               },
+               yx={
+                 varend<-"yend"
+                 var2end<- "xend"
+               })
+        
+        p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
+                                                yend=.data[[var2end]]), color=data.fit.3D$color.fit,linewidth=input$w2, inherit.aes = F)
+      }
+   ## a finir de cleaner
+      
+        p<-p+scale_fill_manual(values=unlist(myvaluesx))+
+          scale_shape_manual(values=shape.level)+
+       #   scale_size_manual(values=c(size.scale,min.size2))+
+          xlab(paste(var))+ylab(paste(var2))+
+          theme_linedraw()+ theme(legend.title = element_blank())+ theme(legend.position='none')
+       # 
+
+ p   
+#  }) #end isolate
+ 
+}) #end plot2D.react 
+  
 
 ##### 2D slice ---- 
 set.var.2d.slice<-reactiveVal()
