@@ -471,8 +471,8 @@ ui <- navbarPage(
                                       column(12,
                                              column(6,downloadButton("downloadData2D.simple", "Download as .pdf")), 
                                              column(3,numericInput("height.size.b.simple", label = h5("Figure height"), value = 800),),
-                                             column(3,numericInput("width.size.b.simple", label = h5("Figure width"), value = 1000),),),),
-                                            column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
+                                             column(3,numericInput("width.size.b.simple", label = h5("Figure width"), value = 1000),),
+                                            column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),),),
                                     radioButtons("var.ortho.simple", "include ortho",
                                                  choices = c(no = "no",
                                                              yes = "yes"),
@@ -2557,7 +2557,7 @@ coord_fixed(ratio.simple())
         p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
                                                 yend=.data[[var2end]]), color=data.fit.3D$color.fit,linewidth=input$w2, inherit.aes = F)
       }
-   ## a finir de cleaner
+   ## a finir de cleaner2
       
         p<-p+scale_fill_manual(values=unlist(myvaluesx))+
           scale_shape_manual(values=shape.level)+
