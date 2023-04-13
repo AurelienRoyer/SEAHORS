@@ -25,14 +25,17 @@ if (!require('rmarkdown')) install.packages('rmarkdown'); library('rmarkdown') #
 options(shiny.reactlog = TRUE)
 css <- "
 .radio-inline {
-  padding: 0 10px;
+  padding: 0 3px;
   text-align: center;
   margin-left: 0 !important;
+  line-height: 30px;
+
 }
 .radio-inline input {
   top: 20px;
   left: 50%;
   margin-left: -6px !important;
+  line-height: 30px;
 }"
 ui <- navbarPage(
   windowTitle = "SEAHORS",
@@ -47,12 +50,16 @@ ui <- navbarPage(
                    tags$hr(),
                    
                    tags$style(HTML(css)),
-                   radioButtons("bt2", h4("QUICK SIDEBAR"),
+
+                   radioButtons(
+                                "bt2", h4("QUICK SIDEBAR"),
                                 choices = c("Data" = 1,
                                             "Point size" = 2,
                                             "Point color" = 3,
-                                            "point shape" = 4),
-                                selected = "1", inline=TRUE),
+                                            "Point shape" = 4,
+                                            "Fig. options"=5),
+                                selected = "1", inline=TRUE), style = "font-size:90%",
+
                    tags$hr(),
                    conditionalPanel(condition="input.bt2==1",
                                     h4(style = "color: red;","Subsetting dataset"),
@@ -130,6 +137,24 @@ ui <- navbarPage(
                                            tagAppendAttributes(textOutput("text.shape"), style="white-space:pre-wrap;"),
                                     )
                                     
+                   ),# end of conditionalPanel
+                   conditionalPanel(condition="input.bt2==5",
+                                    h4(style = "color: red;","Figure options"),
+                                    tags$br(),
+                                    br(),
+                                    column(10,
+                                           column(4,numericInput("fontsizeaxis", "Axis font size",12, min = 1, max=40),),
+                                           column(4,numericInput("fontsizetick", "tick font size",12, min = 1, max=40),),),
+                                    column(10,
+                                           column(4,textInput("Name.X", label="Legends name of X",value = "X"),),
+                                           column(4,textInput("Name.Y", label="Legends name of Y",value = "Y"),),
+                                            column(4,textInput("Name.Z", label="Legends name of Z",value = "Z"),),),
+                                    column(10,
+                                           column(4,numericInput("Xtickmarks", "Position of X tick marks",1, min = 0, max=40),),
+                                                  column(4,numericInput("Ytickmarks", "Position of Y tick marks",1, min = 0, max=40),),
+                                    column(4,numericInput("Ztickmarks", "Position of Z tick marks",1, min = 0, max=40),),),
+                                    br(),
+                                    uiOutput("themeforfigure"),
                    )# end of conditionalPanel
       ), #end sidebarpanel
       
@@ -159,6 +184,7 @@ ui <- navbarPage(
    
    <i>SEAHORS</i> is dedicated to the intra-site spatial analysis of archaeological piece-plotted</p>
    
+   <p> v1.2</p>
    <p>This shiny R script makes possible to explore the spatial organisation of coordinate points taken on archaeological fields 
   and to visualise their distributions using interactive 3D and 2D plots </p>
    <br>
@@ -471,22 +497,22 @@ ui <- navbarPage(
                                                     column(12,
                                                            column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
                                                            column(2),
-                                                            column(3,numericInput("height.size.b.simple", label = h5("Figure height"), value = 800),),
-                                                  column(3,numericInput("width.size.b.simple", label = h5("Figure width"), value = 1000),),),),
+                                                           column(3,numericInput("height.size.b.simple", label = h5("Figure height"), value = 800),),
+                                                           column(3,numericInput("width.size.b.simple", label = h5("Figure width"), value = 1000),),),),
                                                   column(12,
-                                                           column(2,radioButtons("var.ortho.simple", "include ortho",
-                                                                        choices = c(no = "no",
-                                                                                    yes = "yes"),
-                                                                        selected = "no", inline=TRUE),  ),
-                                                           column(2, radioButtons("var.fit.table.simple", "Include refits",
-                                                                             choices = c(no = "no",
-                                                                              yes = "yes"),
-                                                                         selected = "no", inline=TRUE),),
+                                                         column(2,radioButtons("var.ortho.simple", "include ortho",
+                                                                               choices = c(no = "no",
+                                                                                           yes = "yes"),
+                                                                               selected = "no", inline=TRUE),  ),
+                                                         column(2, radioButtons("var.fit.table.simple", "Include refits",
+                                                                                choices = c(no = "no",
+                                                                                            yes = "yes"),
+                                                                                selected = "no", inline=TRUE),),
                                                          column(2),
                                                          column(6,downloadButton("downloadData2D.simple", "Download as .pdf")), 
                                                          hr(style = "border-top: 0.5px solid #000000;"), ),
-                                                         tags$br(),
-
+                                                  tags$br(),
+                                                  
                                                   
                                          ),#end tabpanel    
                              ), #end tabset panel
@@ -658,14 +684,7 @@ ui <- navbarPage(
                                                   uiOutput("liste.varrefit"),
                                                   
                                          ), #end of tabPanel
-                                         tabPanel(tags$h5("Figure customization"),
-                                                  br(),
-                                                  br(),
-                                                  uiOutput("themeforfigure"),
-                                                  br(),
-                                                 numericInput("fontsizeaxis", "font size of axis",12, min = 1, max=40),
-                                                  
-                                         ), #end of tabPanel
+
                                          tabPanel(tags$h5("Slider parameters"),
                                                   br(),
                                                   
@@ -758,7 +777,15 @@ server <- function(input, output, session) {
   ratioy<-reactiveVal(1) ## aspectratio y
   ratioz<-reactiveVal(1) ## aspectratio z
   ratio.simple<-reactiveVal(1)
-  font_size<-reactiveVal(20)
+  font_size<-reactiveVal(12)
+  font_tick<-reactiveVal(12)
+  nameX<-reactiveVal("X")
+  nameY<-reactiveVal("Y")
+  nameZ<-reactiveVal("Z")
+  Xtickmarks.size<-reactiveVal()
+  Ytickmarks.size<-reactiveVal()
+  Ztickmarks.size<-reactiveVal()
+  
   #####
   
   
@@ -847,10 +874,25 @@ server <- function(input, output, session) {
     ),
     click = htmlwidgets::JS('function(gd) {Plotly.downloadImage(gd, {format: "png"}
                           ) }') )
-observeEvent(input$fontsizeaxis, {
-  font_size(input$fontsizeaxis)
+  
+  #### other option figures
+  observeEvent(input$fontsizeaxis, {
+    font_size(input$fontsizeaxis)
   }) 
-
+  observeEvent(input$fontsizetick, {
+    font_tick(input$fontsizetick)
+  }) 
+  
+  observeEvent(input$Xtickmarks, {
+    Xtickmarks.size(input$Xtickmarks)
+  }) 
+  observeEvent(input$Ytickmarks, {
+    Ytickmarks.size(input$Ytickmarks)
+  }) 
+  observeEvent(input$Ztickmarks, {
+    Ztickmarks.size(input$Ztickmarks)
+  }) 
+  
   ##### option size of figure ----
   
   observeEvent(input$height.size.a, {
@@ -914,16 +956,16 @@ observeEvent(input$fontsizeaxis, {
                        themes != "theme_test" &
                        themes != "theme_update"]
     themes <- paste0(themes, "()")
-    selectInput("themeforfigure.list", h4("Select theme for figure"),
+    selectInput("themeforfigure.list", h4("Theme for 'Simple 2Dplot'"),
                 choices = themes,
                 selected = themes[5])
   })
-
+  
   
   themeforfigure.choice<-reactiveVal(c("theme_classic()"))
   observeEvent(input$themeforfigure.list,{
     themeforfigure.choice(c(input$themeforfigure.list))
-
+    
   })
   
   ##### function used in the script ----
@@ -1106,7 +1148,8 @@ observeEvent(input$fontsizeaxis, {
         output$plot <- renderPlotly({
           df.sub2<-df.sub()
           set.antivar.2d.slice<-c(setXX(),setYY())[c(setXX(),setYY())!=set.var.2d.slice()]
-          
+          set.antivar.2d.name<-c(nameX(),nameY())[c(setXX(),setYY())!=set.var.2d.slice()]
+          Xtickmarks.size<-c(Xtickmarks.size(),Ytickmarks.size())[c(setXX(),setYY())!=set.var.2d.slice()]
           yymax = df.sub2[,setZZ()] %>% ceiling() %>% max(na.rm = TRUE)
           yymin=df.sub2[,setZZ()] %>% floor() %>% min(na.rm = TRUE)
           
@@ -1142,8 +1185,16 @@ observeEvent(input$fontsizeaxis, {
           p<-p %>% layout(showlegend = legendplotlyfig(),
                           title = list(text=liste.valeur.slice,font=t2,x =0.1),
                           scene = list(aspectratio=list(x=1,y=1,z=1)),
-                          xaxis = list(title=paste(set.antivar.2d.slice), range=c(xymin,xymax)),
-                          yaxis=list(title=paste("z"), range=c(yymin,yymax)),
+                          xaxis = list(title=paste(set.antivar.2d.name), range=c(xymin,xymax),
+                                       dtick = Xtickmarks.size, 
+                                       tick0 = floor(min(df.sub.a[,Xvar])), 
+                                       tickmode = "linear",
+                                       titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+                          yaxis=list(title=paste(nameZ()), range=c(yymin,yymax),
+                                     dtick = Ztickmarks.size(), 
+                                     tick0 = floor(min(df.sub.a[,Yvar])), 
+                                     tickmode = "linear",
+                                     titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
                           dragmode = "select")%>%
             event_register("plotly_selecting")
           p <-p %>%
@@ -1269,16 +1320,19 @@ observeEvent(input$fontsizeaxis, {
   observeEvent(input$setx,{
     df$df[,input$setx]<-df$df[,input$setx]%>% as.numeric()
     setXX(input$setx)
+    nameX(input$setx)
   })
   
   observeEvent(input$sety,{
     df$df[,input$sety]<-df$df[,input$sety]%>% as.numeric()
     setYY(input$sety)
+    nameY(input$sety)
   })
   
   observeEvent(input$setz,{ 
     df$df[,input$setz]<-df$df[,input$setz]%>% as.numeric()
     setZZ(input$setz)
+    nameZ(input$setz)
   })
   
   output$set.nature=renderUI({
@@ -1337,6 +1391,19 @@ observeEvent(input$fontsizeaxis, {
   observeEvent(input$checkbox.invZ, {
     req(input$setz)
     df$df[,input$setz]<-df$df[,input$setz]*-1
+  })
+  
+  observeEvent(input$Name.X, {
+    req(input$setx)
+    nameX(input$Name.X)
+  })
+  observeEvent(input$Name.Y, {
+    req(input$sety)
+    nameY(input$Name.Y)
+  })
+  observeEvent(input$Name.Z, {
+    req(input$setz)
+    nameZ(input$Name.Z)
   })
   
   #### verification
@@ -2307,15 +2374,29 @@ observeEvent(input$fontsizeaxis, {
     p <- p %>% layout(
       showlegend = legendplotlyfig(),
       scene = list(
-        xaxis = list(title = input$setx,
-                     tickmode = "array"),
-        yaxis = list(title = input$sety),
-        zaxis = list(title = input$setz),
+        xaxis = list(title = nameX(),
+                     dtick = Xtickmarks.size(), 
+                     tick0 = floor(min(df.sub[,input$setx])), 
+                     tickmode = "linear",
+                     titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+        
+        yaxis = list(title = nameY(),
+                     dtick = Ytickmarks.size(), 
+                     tick0 = floor(min(df.sub[,input$sety])), 
+                     tickmode = "linear",
+                     titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+        zaxis = list(title = nameZ(),
+                     dtick = Ztickmarks.size(), 
+                     tick0 = floor(min(df.sub[,input$setz])), 
+                     tickmode = "linear",
+                     titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+
         camera = list(projection = list(type = 'orthographic')),
         aspectmode = "manual",
         aspectratio=list(x=ratiox(),y=ratioy(),z=ratioz())),
       autosize=FALSE
     )
+    
     p <-p %>%
       config(displaylogo = FALSE,
              modeBarButtonsToAdd = list(dl_button),
@@ -2366,13 +2447,31 @@ observeEvent(input$fontsizeaxis, {
       }
       switch(input$var1,
              xy={var<-setXX()
-             var2<-setYY()       },
+             var2<-setYY()       
+             axis.var.name<-nameX()
+             axis.var2.name<-nameY()
+             Xtickmarks.size<-Xtickmarks.size()
+             Ytickmarks.size<-Ytickmarks.size()
+             },
              yz={   var<-setYY() 
-             var2<-setZZ()     },
+             var2<-setZZ()     
+             axis.var.name<-nameY()
+             axis.var2.name<-nameZ()
+             Xtickmarks.size<-Ytickmarks.size()
+             Ytickmarks.size<-Ztickmarks.size()},
              xz={   var<-setXX()
-             var2<-setZZ()    },
+             var2<-setZZ()   
+             axis.var.name<-nameX()
+             axis.var2.name<-nameZ()
+             Xtickmarks.size<-Xtickmarks.size()
+             Ytickmarks.size<-Ztickmarks.size()
+             },
              yx={   var<-setYY() 
-             var2<-setXX() }
+             var2<-setXX() 
+             axis.var.name<-nameY()
+             axis.var2.name<-nameX()
+             Xtickmarks.size<-Ytickmarks.size()
+             Ytickmarks.size<-Xtickmarks.size()}
       )
       
       shapeX<-df.sub2$shapeX
@@ -2419,11 +2518,20 @@ observeEvent(input$fontsizeaxis, {
         } # end of refit 
         
         p <-  p %>% layout(showlegend = legendplotlyfig(),
-                           scene = list(         aspectmode = "manual",
-                                                 aspectratio=list(x=ratiox(),y=ratioy()),
-                                                 autosize=FALSE),
-                           xaxis = list(title=paste(var)),
-                           yaxis=list(title=paste(var2)),
+                           scene = list( aspectmode = "manual",
+                                          aspectratio=list(x=ratiox(),y=ratioy()),
+                                           autosize=FALSE),
+                           xaxis = list(title = paste(axis.var.name),
+                                        dtick = Xtickmarks.size, 
+                                        tick0 = floor(min(df.sub2[[var]])), 
+                                        tickmode = "linear",titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+                           
+                           yaxis = list(title = paste(axis.var2.name),
+                                        dtick = Ytickmarks.size, 
+                                        tick0 = floor(min(df.sub2[[var2]])), 
+                                        tickmode = "linear",
+                                        titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+
                            dragmode = "select")%>%
           event_register("plotly_selecting")
         
@@ -2478,9 +2586,17 @@ observeEvent(input$fontsizeaxis, {
         p<-p+scale_fill_manual(values=unlist(myvaluesx))+
           scale_shape_manual(values=shape.level)+
           scale_size_manual(values=c(size.scale,min.size2))+
-          xlab(paste(var))+ylab(paste(var2))+
-          theme(legend.title = element_blank())+
-          match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+ theme(legend.position='none')
+          xlab(paste(axis.var.name))+ylab(paste(axis.var2.name))+
+         # theme(legend.title = element_blank())+
+          match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+ theme(legend.position='none')+
+          theme(axis.title.x = element_text(size=font_size()),
+                axis.title.y = element_text(size=font_size()),
+                axis.text.x = element_text(size=font_tick()),
+                axis.text.y = element_text(size=font_tick()),
+                legend.title = element_blank())+
+          theme(legend.position='none')
+        p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xtickmarks.size))+
+          scale_y_continuous(breaks=seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Ytickmarks.size))
       }
       p <-p %>%
         config(displaylogo = FALSE,
@@ -2530,13 +2646,31 @@ observeEvent(input$fontsizeaxis, {
     }
     switch(input$var1.simple,
            xy={var<-setXX()
-           var2<-setYY()       },
+           var2<-setYY()       
+           axis.var.name<-nameX()
+           axis.var2.name<-nameY()
+           Xtickmarks.size<-Xtickmarks.size()
+           Ytickmarks.size<-Ytickmarks.size()
+           },
            yz={   var<-setYY() 
-           var2<-setZZ()     },
+           var2<-setZZ()     
+           axis.var.name<-nameY()
+           axis.var2.name<-nameZ()
+           Xtickmarks.size<-Ytickmarks.size()
+           Ytickmarks.size<-Ztickmarks.size()},
            xz={   var<-setXX()
-           var2<-setZZ()    },
+           var2<-setZZ()   
+           axis.var.name<-nameX()
+           axis.var2.name<-nameZ()
+           Xtickmarks.size<-Xtickmarks.size()
+           Ytickmarks.size<-Ztickmarks.size()
+           },
            yx={   var<-setYY() 
-           var2<-setXX() }
+           var2<-setXX() 
+           axis.var.name<-nameY()
+           axis.var2.name<-nameX()
+           Xtickmarks.size<-Ytickmarks.size()
+           Ytickmarks.size<-Xtickmarks.size()}
     )
     
     shapeX<-df.sub2$shapeX
@@ -2596,13 +2730,17 @@ observeEvent(input$fontsizeaxis, {
     p<-p+scale_color_manual(values=myvaluesx)+
       scale_shape_manual(values=shape.level)+
       scale_size_manual(values=c(size.scale,min.size2))+
-      xlab(paste(var))+ylab(paste(var2))+
+      xlab(paste(axis.var.name))+ylab(paste(axis.var2.name))+
       match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
       theme(axis.title.x = element_text(size=font_size()),
             axis.title.y = element_text(size=font_size()),
+            axis.text.x = element_text(size=font_tick()),
+            axis.text.y = element_text(size=font_tick()),
             legend.title = element_blank())+
       theme(legend.position='none')
-    
+
+    p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xtickmarks.size))+
+      scale_y_continuous(breaks=seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Ytickmarks.size))
     p   
     #  }) #end isolate
     
@@ -2709,19 +2847,28 @@ observeEvent(input$fontsizeaxis, {
            xy={
              df.sub4$var<-df.sub4[,input$setx]
              df.sub4$var2<- df.sub4[,input$sety]
-             nameaxis<-c("x","y") },
+             nameaxis<-c(nameX(),nameY()) 
+             Xtickmarks.size<-Xtickmarks.size()
+             Ytickmarks.size<-Ytickmarks.size()
+             },
            yz={
              df.sub4$var<-df.sub4[,input$sety]
              df.sub4$var2<- df.sub4[,input$setz]
-             nameaxis<-c("y","z") },
+             nameaxis<-c(nameY(),nameZ()) 
+             Xtickmarks.size<-Ytickmarks.size()
+             Ytickmarks.size<-Ztickmarks.size()},
            xz={
              df.sub4$var<-df.sub4[,input$setx]
              df.sub4$var2<- df.sub4[,input$setz]
-             nameaxis<-c("x","z")},
+             nameaxis<-c(nameX(),nameZ())
+             Xtickmarks.size<-Xtickmarks.size()
+             Ytickmarks.size<-Ztickmarks.size()},
            yx={
              df.sub4$var<-df.sub4[,input$sety]
              df.sub4$var2<- df.sub4[,input$setx]
-             nameaxis<-c("y","x")}
+             nameaxis<-c(nameY(),nameX())
+             Xtickmarks.size<-Ytickmarks.size()
+             Ytickmarks.size<-Xtickmarks.size()}
            
     )
     
@@ -2753,7 +2900,7 @@ observeEvent(input$fontsizeaxis, {
             axis.text.y = element_blank(),
             axis.ticks = element_blank()
       )
-
+    
     if (is.null(orthofile)){
       p<-ggplot(df.sub4,aes(var, var2, color = density)) + 
         #geom_point(aes(var, var2, color = density), alpha=transpar(), size=input$point.size3)+
@@ -2761,7 +2908,11 @@ observeEvent(input$fontsizeaxis, {
         scale_size_manual(values=c(size.scale,min.size2))+
         labs(x = nameaxis[1],y = nameaxis[2])+
         match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
-                {if (input$ratio.to.coord)coord_fixed()}
+        theme(axis.title.x = element_text(size=font_size()),
+              axis.title.y = element_text(size=font_size()),
+              axis.text.x = element_text(size=font_tick()),
+              axis.text.y = element_text(size=font_tick()))+
+        {if (input$ratio.to.coord)coord_fixed()}
       
     } else { p <-ggplot()+ ggRGB(img = orthofile,
                                  r = 1,
@@ -2779,8 +2930,11 @@ observeEvent(input$fontsizeaxis, {
     p<-p+scale_color_viridis()+
       guides(fill = guide_legend(title = "Level"))+
       theme(axis.title.x = element_text(size=font_size()),
-            axis.title.y = element_text(size=font_size()) )
-    
+            axis.title.y = element_text(size=font_size()),
+            axis.text.x = element_text(size=font_tick()),
+            axis.text.y = element_text(size=font_tick()),)
+    p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub4$var)),max(df.sub4$var),Xtickmarks.size))+
+      scale_y_continuous(breaks=seq(floor(min(df.sub4$var2)),max(df.sub4$var2),Ytickmarks.size))
     
     if (input$var.density.curves== "yes") {   
       
@@ -2867,8 +3021,16 @@ observeEvent(input$fontsizeaxis, {
     
     p <- p %>% layout(showlegend = legendplotlyfig(),
                       scene = list(aspectratio=list(x=ratiox(),y=ratioy(),z=ratioz())),
-                      xaxis = list(title=paste("x modified")),
-                      yaxis=list(title=paste("y modified")),
+                      xaxis = list(title=paste0(nameX()," modified"),
+                                   dtick = Xtickmarks.size(), 
+                                   tick0 = floor(min(df.sub5[["x2"]])), 
+                                   tickmode = "linear",
+                                   titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+                      yaxis=list(title=paste(nameY()," modified"),
+                                 dtick = Ytickmarks.size(), 
+                                 tick0 = floor(min(df.sub5[["y2"]])), 
+                                 tickmode = "linear",
+                                 titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
                       dragmode = "select")%>%
       event_register("plotly_selecting") 
     p <-p %>%
@@ -2899,9 +3061,9 @@ observeEvent(input$fontsizeaxis, {
     
     switch(input$var.section2D,
            xz={var<-"x2"
-           var3<-"X modified"},
+           var3<-paste0(nameX()," modified")},
            yz={   var<-"y2"
-           var3<-"Y modified" })
+           var3<-paste0(nameY()," modified") })
     shapeX<-df.sub5$shapeX
     shape.level<-levels(as.factor(shapeX))
     df.sub5$point.size2<-size.scale()
@@ -2925,8 +3087,16 @@ observeEvent(input$fontsizeaxis, {
     )
     p <-p %>% layout(showlegend = legendplotlyfig(),
                      scene = list(aspectratio=list(x=ratiox(),y=ratioy(),z=ratioz())),
-                     xaxis = list(title=paste(var3)),
-                     yaxis=list(title=paste("z")),
+                     xaxis = list(title=paste0(var3),
+                                  dtick = Xtickmarks.size(), 
+                                  tick0 = floor(min(df.sub5[[var]])), 
+                                  tickmode = "linear",
+                                  titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+                     yaxis=list(title=paste(nameZ()),
+                                dtick = Ytickmarks.size(), 
+                                tick0 = floor(min(df.sub5[,input$setz])), 
+                                tickmode = "linear",
+                                titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
                      dragmode = "select")%>%
       event_register("plotly_selecting")
     p <-p %>%
@@ -2957,7 +3127,7 @@ observeEvent(input$fontsizeaxis, {
       htmlwidgets::saveWidget(as_widget(session_store$plt2D), file, selfcontained = TRUE)
     }
   )
-output$downloadData2D.simple <- downloadHandler(
+  output$downloadData2D.simple <- downloadHandler(
     filename = function(){paste("plot2D - ",paste(input$file1$name)," - ", Sys.Date(), '.pdf', sep = '')},
     content = function(file){
       ggsave(session_store$plt2D.simple,filename=file, device = "pdf")
