@@ -141,7 +141,10 @@ ui <- navbarPage(
                    conditionalPanel(condition="input.bt2==5",
                                     h4(style = "color: red;","Figure options"),
                                     tags$br(),
-                                    br(),
+                                    column(10,column(5,numericInput("height.size.b", label = h5("Figure height"), value = 800),),
+                                    column(5,numericInput("width.size.b", label = h5("Figure width"), value = 1000),),
+                                    tags$hr(),),
+                                    tags$br(),
                                     column(10,
                                            column(4,numericInput("fontsizeaxis", "Axis font size",12, min = 1, max=40),),
                                            column(4,numericInput("fontsizetick", "tick font size",12, min = 1, max=40),),),
@@ -153,7 +156,8 @@ ui <- navbarPage(
                                            column(4,numericInput("Xtickmarks", "Position of X tick marks",1, min = 0, max=40),),
                                                   column(4,numericInput("Ytickmarks", "Position of Y tick marks",1, min = 0, max=40),),
                                     column(4,numericInput("Ztickmarks", "Position of Z tick marks",1, min = 0, max=40),),),
-                                    br(),
+                                    column(12,br(),
+                                    hr(),),
                                     uiOutput("themeforfigure"),
                    )# end of conditionalPanel
       ), #end sidebarpanel
@@ -396,7 +400,7 @@ ui <- navbarPage(
                                                           column (4,numericInput("ratioy", "Y ratio", 1, min = 1,  max=10, width="50%")),
                                                           column (4,numericInput("ratioz", "Z ratio", 1, min = 1,  max=10, width="50%")),),
                                       ),
-                                      column(4,numericInput("height.size.a", label = h5("Figure height"), value = 800),),),),
+                                      ),),
                              tags$br(),
                              tags$br(),
                              tags$br(),
@@ -434,10 +438,7 @@ ui <- navbarPage(
                                                     tags$br(),
                                                     tags$br(),
                                                     hr(style = "border-top: 1px solid #000000;"), 
-                                                    column(12,
-                                                           column(6,downloadButton("downloadData2D", "Download as .HTML")),
-                                                           column(3,numericInput("height.size.b", label = h5("Figure height"), value = 800),),
-                                                           column(3,numericInput("width.size.b", label = h5("Figure width"), value = 1000),),),),
+    
                                                   radioButtons("var.ortho", "include ortho",
                                                                choices = c(no = "no",
                                                                            yes = "yes"),
@@ -447,6 +448,9 @@ ui <- navbarPage(
                                                                choices = c(no = "no",
                                                                            yes = "yes"),
                                                                selected = "no", inline=TRUE),
+                                                  column(2),
+                                                  column(6,downloadButton("downloadData2D", "Download as .HTML")), ),
+                                                  
                                                   hr(style = "border-top: 0.5px solid #000000;"), 
                                                   fluidRow(column(8,
                                                                   tags$br(),
@@ -473,8 +477,6 @@ ui <- navbarPage(
                                                   fluidRow(tags$br(),
                                                            htmlOutput("nb2.2"),
                                                            tags$br(),
-                                                           #column(1,  actionButton("run_button2", "Display/refresh", icon = icon("play")),),
-                                                           tags$br(),
                                                            tags$br(),
                                                            tags$br(),
                                                            column(12,      
@@ -497,8 +499,8 @@ ui <- navbarPage(
                                                     column(12,
                                                            column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
                                                            column(2),
-                                                           column(3,numericInput("height.size.b.simple", label = h5("Figure height"), value = 800),),
-                                                           column(3,numericInput("width.size.b.simple", label = h5("Figure width"), value = 1000),),),),
+                                                           ),
+                                                    ),
                                                   column(12,
                                                          column(2,radioButtons("var.ortho.simple", "include ortho",
                                                                                choices = c(no = "no",
@@ -519,21 +521,27 @@ ui <- navbarPage(
                     ), #end tabPanel
                     
                     tabPanel("2D slice",
-                             fluidRow(tags$br(),
-                                      htmlOutput("nb3"),
+                             tags$br(),
+                             htmlOutput("nb3"),
+                             column(12,
+                                    column(6,radioButtons("var.2d.slice", "section",
+                                                 choices = c(#xy = "xy",
+                                                   #yx = "yx",
+                                                   yz = "yz",
+                                                   xz = "xz"),
+                                                 selected = "yz", inline=TRUE),
+                                    tags$br(),),
+                                    column(2),
+                                    column(3,checkboxInput("advanced.slice",label="Advanced plot", value=TRUE)),
+                                    ),
+                             
+                             column(12, numericInput("step2dslice", HTML("Thickness of slices <br> (lower this parameter to get more slices)"), 4, min = 0.1, max=10,step = 1, width="50%")),
+                             column(12, uiOutput("range.2d.slice")),
+
+                                                  
+                             fluidRow(
                                       tags$br(),
                                       tags$br(),
-                                      column(12,
-                                             radioButtons("var.2d.slice", "section",
-                                                          choices = c(#xy = "xy",
-                                                            #yx = "yx",
-                                                            yz = "yz",
-                                                            xz = "xz"),
-                                                          selected = "yz", inline=TRUE),
-                                             tags$br(),),
-                                      
-                                      column(12, numericInput("step2dslice", HTML("Thickness of slices <br> (lower this parameter to get more slices)"), 4, min = 0.1, max=10,step = 1, width="50%")),
-                                      column(12, uiOutput("range.2d.slice")),
                                       tags$br(),
                                       tags$br(),
                                       column(12,
@@ -542,15 +550,12 @@ ui <- navbarPage(
                              ),# end of fluidrow
                              hr(style = "border-top: 1px solid #000000;"), 
                              fluidRow(column(12,
+                                             column(2,numericInput("ratio.to.coord.simple.2", label = h5("Ratio figure"), value = 1),),
                                              column(12, downloadButton("downloadData2d.slice", "Download as .HTML")),
-                                             column(5,
-                                                    numericInput("height.size.c", label = h5("Figure height"), value = 400),),
-                                             column(5,
-                                                    numericInput("width.size.c", label = h5("Figure width"), value = 600),),
-                                             #column(8,
-                                             #      numericInput("point.size5", "Default point size", 2, min = 1, max=20, width="50%"),),
                              ),),#end of fluidrow
-                    ), #end tabPanel
+
+                    ),#end tabPanel 2D slice
+                    
                     tabPanel("Rotated 2D plot",
                              tags$br(),
                              htmlOutput("nb4"),
@@ -566,12 +571,7 @@ ui <- navbarPage(
                                       tags$br(),
                                       tags$br(),),
                              hr(style = "border-top: 1px solid #000000;"), 
-                             fluidRow(column(12,
-                                             column(5,
-                                                    numericInput("height.size.d", label = h5("Figure height"), value = 800),),
-                                             column(5,
-                                                    numericInput("width.size.d", label = h5("Figure width"), value = 1000),),
-                             ),
+                             fluidRow(
                              tags$br(),
                              column(12,actionButton("transferxyz", "Replace XYZ data with the newly computed rotated XYZ coordinates"),),
                              ),#end of fluidrow
@@ -606,26 +606,20 @@ ui <- navbarPage(
                                                                                yx = "yx",
                                                                                yz = "yz",
                                                                                xz = "xz"), inline=TRUE),),
-                                             column(8, downloadButton("downloadDatadensity", "Download as .pdf")),),
-                                      column(12,  
-                                             column(4,
-                                                    numericInput("height.size.e", label = h5("Figure height"), value = 800),),
-                                             column(4,
-                                                    numericInput("width.size.e", label = h5("Figure width"), value = 1000),),
-                                             column(2,checkboxInput("ratio.to.coord", label = "Aspect ratio = 1", value = F),),
-                                      ),
-                                      column(12,
-                                             radioButtons("var.ortho2", "Include ortho",
-                                                          choices = c(no = "no",
-                                                                      yes = "yes"),
-                                                          selected = "no", inline=TRUE),
-                                             tags$hr(),
-                                             column(4, numericInput("alpha.density", "Transparency", 1, min = 0, max=1, width="50%"),),
-                                             column(4, numericInput("point.size3", "Point size", 1, min = 1, max=20, width="50%"),),
+                                             column(5, downloadButton("downloadDatadensity", "Download as .pdf")),
+                                             column(2,checkboxInput("ratio.to.coord", label = "Ratio = 1:1", value = F),),
                                       ),
                                       tags$hr(),
                                       column(12,
+                                             column(6,radioButtons("var.ortho2", "Include ortho",
+                                                          choices = c(no = "no",
+                                                                      yes = "yes"),
+                                                          selected = "no", inline=TRUE),),
                                              tags$hr(),
+                                             
+                                      ),
+                                      
+                                      column(12,
                                              column(4, radioButtons("var.plotlyg.lines", "include density lines",
                                                                     choices = c(no = "no",
                                                                                 yes = "yes"),selected = "no"),),
@@ -633,6 +627,7 @@ ui <- navbarPage(
                                              column(4,radioButtons("var.density.curves", "include density curves",
                                                                    choices = c(no = "no",
                                                                                yes = "yes"),selected = "no"),),),
+                                      column(4, sliderInput("alpha.density", "Point transparency",  min = 0, max=1, value=1, width="50%"),),
                                       tags$br(),
                                       tags$br(),
                                       tags$hr(),
@@ -655,7 +650,7 @@ ui <- navbarPage(
                                                                                multiple = TRUE,
                                                                                accept = c("text/csv",
                                                                                           "text/comma-separated-values,text/plain",
-                                                                                          ".csv")),  ),
+                                                                                          ".csv")), ),
                                                   )#end of column
                                          ),
                                          tabPanel(tags$h5("Refit customization"),
@@ -948,7 +943,9 @@ server <- function(input, output, session) {
   observeEvent(input$ratio.to.coord.simple, {
     ratio.simple(input$ratio.to.coord.simple)
   })  
-  
+  observeEvent(input$ratio.to.coord.simple.2, {
+    ratio.simple(input$ratio.to.coord.simple.2)
+  })    
   output$themeforfigure=renderUI({
     req(!is.null(fileisupload()))
     themes <- ls("package:ggplot2", pattern = "^theme_")
@@ -1134,10 +1131,14 @@ server <- function(input, output, session) {
   ##function for 2D slice
   plotUI <- function(id) {
     ns <- NS(id)
-    plotlyOutput(ns("plot"), height = height.size())
+    if (input$advanced.slice==TRUE){
+    plotlyOutput(ns("plot"), height = height.size()) } else {
+      
+    plotOutput(ns("plot.2"), height = height.size())
+    }
     
   }
-  
+
   plotServer <- function(id,df.sub.a, Xvar, Yvar,liste.valeur.slice) {
     
     moduleServer(
@@ -1147,7 +1148,9 @@ server <- function(input, output, session) {
           family = "Arial",
           size = 14,
           color = "red")
+        
         output$plot <- renderPlotly({
+          
           df.sub2<-df.sub()
           set.antivar.2d.slice<-c(setXX(),setYY())[c(setXX(),setYY())!=set.var.2d.slice()]
           set.antivar.2d.name<-c(nameX(),nameY())[c(setXX(),setYY())!=set.var.2d.slice()]
@@ -1206,10 +1209,72 @@ server <- function(input, output, session) {
                      format = "svg")
             )
           
-        })
+        }) # end of renderPlotly
+
       }
     )
   }
+  plotServer.simple <- function(id,df.sub.a, Xvar, Yvar,liste.valeur.slice) {
+    moduleServer(
+      id,
+      function(input, output, session) {
+        t2 <- list(
+          family = "Arial",
+          size = 14,
+          color = "red")
+        output$plot.2 <- renderPlot({
+          df.sub2<-df.sub()
+          set.antivar.2d.slice<-c(setXX(),setYY())[c(setXX(),setYY())!=set.var.2d.slice()]
+          set.antivar.2d.name<-c(nameX(),nameY())[c(setXX(),setYY())!=set.var.2d.slice()]
+          Xtickmarks.size<-c(Xtickmarks.size(),Ytickmarks.size())[c(setXX(),setYY())!=set.var.2d.slice()]
+          yymax = df.sub2[,setZZ()] %>% ceiling() %>% max(na.rm = TRUE)
+          yymin=df.sub2[,setZZ()] %>% floor() %>% min(na.rm = TRUE)
+          
+          xymax = df.sub2[,set.antivar.2d.slice] %>% ceiling() %>% max(na.rm = TRUE)
+          xymin=df.sub2[,set.antivar.2d.slice] %>% floor() %>% min(na.rm = TRUE)
+          
+          df.sub.a<-as.data.frame(df.sub.a)
+          min.size2<-minsize()
+          size.scale <- size.scale()
+          myvaluesx<-unlist(myvaluesx())
+          if (is.null(unlist(myvaluesx))) {
+            myvaluesx <-c("blue","red","green")
+          }
+          shapeX<-df.sub.a$shapeX
+          shape.level<-levels(as.factor(shapeX))
+         print(xymin)
+          p <-ggplot()
+          p<-p+geom_point(data = df.sub.a,
+                          aes(x = .data[[set.antivar.2d.slice]],
+                              y = .data[[setZZ()]],
+                               col=factor(layer2),
+                               #size=point.size2,
+                               shape=shapeX  ## ne marche pas 
+                          ))+
+            coord_fixed(ratio.simple())
+          p<-p+scale_color_manual(values=myvaluesx)+
+            scale_shape_manual(values=shape.level)+
+            scale_size_manual(values=c(size.scale,min.size2))+
+            xlab(paste(set.antivar.2d.name))+ylab(nameZ())+
+            match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
+            theme(axis.title.x = element_text(size=font_size()),
+                  axis.title.y = element_text(size=font_size()),
+                  axis.text.x = element_text(size=font_tick()),
+                  axis.text.y = element_text(size=font_tick()),
+                  legend.title = element_blank())+
+            theme(legend.position='none')
+          
+          p<-p+scale_x_continuous(limits= c(xymin,xymax), breaks=seq(floor(min(xymin)),max(xymax),Xtickmarks.size))+
+          scale_y_continuous(limits= c(yymin,yymax),breaks=seq(floor(min(yymin)),max(yymax),Ztickmarks.size()))
+          p 
+          
+
+        }) # end of renderPlotly
+        
+      }
+    )
+  }
+  
   
   #function for color
   color.function<-function (levelofcolor,name,selected_rainbow,loadingfile){  
@@ -1763,7 +1828,9 @@ server <- function(input, output, session) {
   output$nb5=renderUI({
     HTML(paste(textnbobject()))
   })
-  
+  output$nb8=renderUI({
+    HTML(paste(textnbobject()))
+  })
   output$nb6=renderUI({
     req(!is.null(fileisupload()))
     req(!is.null(df.sub()))
@@ -2764,14 +2831,14 @@ server <- function(input, output, session) {
   })
   
   ratio.slice<-reactiveVal(1)
-  observeEvent(c(input$range2dslice, input$step2dslice), {
+  observeEvent(c(input$range2dslice, input$step2dslice,input$advanced.slice), {
     req(!is.null(input$range2dslice))
     ratio.slice<-(max(input$range2dslice)-min(input$range2dslice))/input$step2dslice 
     ratio.slice<-ceiling(ratio.slice)
     if (ratio.slice<1) {
       ratio.slice<-1
     }
-    
+
     ratio.slice(ratio.slice)
     df.sub.list<-vector("list", ratio.slice)
     min.size2<-minsize()
@@ -2795,14 +2862,23 @@ server <- function(input, output, session) {
       liste.valeur.slice[j]<-paste("2D slice from ",val," to ",val2, " in ",set.var.2d.slice()," axis")
       df.sub.list[[j]]<- filter (df.sub2, .data[[set.var.2d.slice]]>= val, .data[[set.var.2d.slice]]<=val2)
     }
+    if (input$advanced.slice==TRUE){
+
     plotServerList <- lapply(
       1:ratio.slice,
       function(i) {
         plotServer(paste0("plot", i),df.sub.list[i],set.antivar.2d.slice,setZZ(),liste.valeur.slice[i])
+      }    ) 
+    } else { 
+       plotServerList <- lapply(
+        1:ratio.slice,
+        function(i) {
+          plotServer.simple(paste0("plot", i),df.sub.list[i],set.antivar.2d.slice,setZZ(),liste.valeur.slice[i])
+        })
       }
-    )
     
   })
+  
   
   output$plot.2dslide <- renderUI({
     
@@ -2905,7 +2981,6 @@ server <- function(input, output, session) {
     
     if (is.null(orthofile)){
       p<-ggplot(df.sub4,aes(var, var2, color = density)) + 
-        #geom_point(aes(var, var2, color = density), alpha=transpar(), size=input$point.size3)+
         geom_point(aes(var, var2, color = density), alpha=transpar(), size=df.sub4$point.size2)+ 
         scale_size_manual(values=c(size.scale,min.size2))+
         labs(x = nameaxis[1],y = nameaxis[2])+
