@@ -874,6 +874,7 @@ server <- function(input, output, session) {
     ),
     click = htmlwidgets::JS('function(gd) {Plotly.downloadImage(gd, {format: "png"}
                           ) }') )
+
   
   #### other option figures
   observeEvent(input$fontsizeaxis, {
@@ -892,6 +893,7 @@ server <- function(input, output, session) {
   observeEvent(input$Ztickmarks, {
     Ztickmarks.size(input$Ztickmarks)
   }) 
+
   
   ##### option size of figure ----
   
@@ -2908,10 +2910,12 @@ server <- function(input, output, session) {
         scale_size_manual(values=c(size.scale,min.size2))+
         labs(x = nameaxis[1],y = nameaxis[2])+
         match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
+
         theme(axis.title.x = element_text(size=font_size()),
               axis.title.y = element_text(size=font_size()),
               axis.text.x = element_text(size=font_tick()),
               axis.text.y = element_text(size=font_tick()))+
+
         {if (input$ratio.to.coord)coord_fixed()}
       
     } else { p <-ggplot()+ ggRGB(img = orthofile,
