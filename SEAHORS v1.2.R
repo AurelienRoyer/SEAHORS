@@ -1248,7 +1248,7 @@ server <- function(input, output, session) {
                           aes(x = .data[[set.antivar.2d.slice]],
                               y = .data[[setZZ()]],
                                col=factor(layer2),
-                               #size=point.size2,
+                               #size=point.size2, ## ne marche pa
                                shape=shapeX  ## ne marche pas 
                           ))+
             coord_fixed(ratio.simple())
