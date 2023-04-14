@@ -45,9 +45,11 @@ Submitted to [PCI Archaeology](https://archaeo.peercommunityin.org/PCIArchaeolog
 Preprint:  https://doi.org/10.5281/zenodo.7674699 
 
 ## Update
-### v1.1 April 2023
+### v1.1 to 1.3 April 2023
 Add ggplot 2D tab :"Simple 2D plot" with pdf download and numeric imput to modify the projection ratio. 
 
-Add "Figure customization" tab : to modify the theme of ggplot figure ("Simple 2D plot" and "Density Plot")
-### v1.2
-Correction DensityPlot and modification of point size. 
+Add "Figure options" conditional panel : to modify the theme of ggplot figure ("Simple 2D plot" and "Density Plot")
+
+Correction DensityPlot and modification of point size and transparency. 
+
+Add ggplot 2D slide, activated unchecking the button "advanced plot". 
