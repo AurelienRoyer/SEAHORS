@@ -1,0 +1,82 @@
+Point;LithFaune;CotTam;Rem;Type;Qualite;Ensemble;X;Y;Z
+K50_2;Lith;Cot;Lith1;débitage;3;SUP;100.12;99.686;-0.471
+K51_14;Lith;Cot;Lith1;débitage;3;SUP;100.948;100.165;-0.55
+J51_13;Lith;Cot;Lith2;débitage;3;SUP;99.613;100.564;-0.515
+K50_6;Lith;Cot;Lith2;débitage;3;SUP;100.761;99.6865;-0.455
+J50_2;Lith;CotTam;Lith3;raccord;3;SUP;99.619;99.703;-0.338
+K50d3;Lith;CotTam;Lith3;raccord;3;SUP;;;
+J51_7;Lith;Cot;Lith4;raccord frais;2;SUP;99.745;100.258;-0.438
+J51_8;Lith;Cot;Lith4;raccord frais;2;SUP;99.739;100.238;-0.466
+J51_10;Lith;Cot;Lith5;débitage;3;SUP;99.65;100.452;-0.491
+J51_22;Lith;Cot;Lith5;débitage;3;SUP;100.002;100.625;-0.556
+J51_9;Lith;Cot;Lith5;débitage;3;SUP;99.442;100.444;-0.467
+J50_3;Lith;Cot;Lith6;raccord frais;2;SUP;99.994;99.8625;-0.326
+J50_5;Lith;Cot;Lith6;raccord frais;2;SUP;100.058;99.8315;-0.363
+J51_14;Lith;Cot;Lith7;raccord;3;SUP;99.417;100.438;-0.499
+K51_5;Lith;Cot;Lith7;raccord;3;SUP;100.12;100.666;-0.52
+K50_18;Lith;Cot;Lith8;débitage;3;SUP;100.864;99.502;-0.71
+L51_130;Lith;Cot;Lith8;débitage;3;SUP;101.476;100.255;-0.55
+L51_166;Lith;Cot;Lith9;débitage;3;SUP;101.809;101.054;-0.609
+L51_75;Lith;Cot;Lith9;débitage;3;SUP;101.627;100.604;-0.49
+K52_49;Lith;Cot;Lith10;débitage;3;SUP;100.701;101.606;-0.55
+L50_10;Lith;Cot;Lith10;débitage;3;SUP;101.355;99.833;-0.448
+K52_90;Lith;Cot;Lith11;raccord frais;2;SUP;100.74;101.327;-0.617
+K52_92;Lith;Cot;Lith11;raccord frais;2;SUP;100.751;101.299;-0.623
+K52_176;Lith;Cot;Lith12;raccord;3;SUP;100.287;101.789;-0.661
+K52_182;Lith;Cot;Lith12;raccord;3;SUP;100.318;101.752;-0.671
+L51_52;Lith;Cot;Lith13;raccord;3;SUP;101.671;100.142;-0.463
+L53_59;Lith;Cot;Lith13;raccord;3;SUP;101.061;102.385;-0.614
+coupe besse;Lith;Tam;Lith14;raccord;3;SUP;;;
+J51;Lith;Tam;Lith14;raccord;3;SUP;;;
+L51_41;Lith;Cot;Lith15;raccord;3;SUP;101.868;100.878;-0.393
+L53_3;Lith;Cot;Lith15;raccord;3;SUP;101.885;102.794;-0.236
+K50_1;Lith;Cot;Lith16;raccord;3;SUP;100.073;99.245;-0.408
+K50d6;Lith;Cot;Lith16;raccord;3;SUP;;;
+K52_70;Lith;Cot;Lith17;raccord;3;SUP;100.754;101.09;-0.612
+L51_14;Lith;Cot;Lith17;raccord;3;SUP;101.412;100.157;-0.371
+K52_106;Lith;Cot;Lith18;débitage;3;SUP;100.839;101.186;-0.637
+K52_112;Lith;Cot;Lith18;débitage;3;SUP;100.514;101.521;-0.654
+L50_7;Lith;Cot;Lith18;débitage;3;SUP;101.422;99.847;-0.271
+K52_73;Lith;Cot;Lith19;débitage;3;SUP;100.721;101.322;-0.583
+L51_149;Lith;Cot;Lith19;raccord;3;SUP;101.243;100.973;-0.57
+L51_31;Lith;Cot;Lith19;débitage;3;SUP;101.538;100.317;-0.405
+L51_59;Lith;Cot;Lith19;débitage;3;SUP;101.585;100.708;-0.449
+J53_108;Lith;Cot;Lith20;débitage;3;SUP;99.394;102.972;-0.786
+J53_179;Lith;Cot;Lith20;débitage;3;SUP;99.567;102.228;-0.71
+J52_247;Lith;CotTam;Lith21;raccord;3;SUP;99.371;101.24;-0.685
+K50d6;Lith;CotTam;Lith21;raccord;3;SUP;;;
+K52_80;Lith;Cot;Lith22;débitage;3;SUP;100.6365;101.6195;-0.644
+K52_93;Lith;Cot;Lith22;débitage;3;SUP;100.634;101.346;-0.637
+K52_96;Lith;Cot;Lith22;débitage;3;SUP;100.857;101.242;-0.639
+K53_93A;Lith;Cot;Lith22;débitage;3;SUP;100.5685;102.0995;-0.624
+K49_21;Lith;Cot;Lith23;raccord;3;SUP;100.885;98.62;-0.707
+K49_5;Lith;Cot;Lith23;raccord;3;SUP;100.827;98.464;-0.377
+N50_6;Faune;Cot;Faune1;CASS SEC;3;SUP;103.863;99.221;-0.348
+N50_7;Faune;Cot;Faune1;CASS SEC;3;SUP;103.855;99.205;-0.318
+N50_1;Faune;Cot;Faune2;CASS REC?;3;SUP;103.481;99.532;-0.365
+N50_3;Faune;Cot;Faune2;CASS REC?;3;SUP;103.737;99.35;-0.309
+K50_40;Faune;Cot;Faune3;CASS INDET;3;INF;100.579;99.573;-0.993
+K50_63;Faune;Cot;Faune3;CASS INDET;3;INF;100.558;99.516;-1.049
+K52_238;Faune;Cot;Faune4;CASS INDET;3;SUP;100.36;101.4;-0.779
+K52_239;Faune;Cot;Faune4;CASS INDET;3;SUP;100.417;101.348;-0.784
+L53_23;Faune;Cot;Faune5;CASS INDET;3;SUP;101.486;102.465;-0.388
+L53_26;Faune;Cot;Faune5;CASS INDET;3;SUP;101.469;102.487;-0.379
+L51_131;Faune;Cot;Faune6;CASS INDET;3;SUP;101.433;100.231;-0.544
+L51_132;Faune;Cot;Faune6;CASS INDET;3;SUP;101.491;100.145;-0.554
+J53_161;Faune;Cot;Faune7;CONNEC ANAT;3;SUP;99.534;102.667;-0.669
+J53_92;Faune;Cot;Faune7;CONNEC ANAT;3;SUP;99.454;102.77;-0.6475
+J53_91;Faune;Cot;Faune7;CONNEC ANAT;3;SUP;99.458;102.894;-0.619
+J52_563;Faune;Cot;Faune8;CASS INDET;3;INF;99.453;101.712;-1.028
+J52_560;Faune;Cot;Faune8;CASS INDET;3;INF;99.417;101.718;-1.009
+J53_112;Faune;Cot;Faune9;CASS REC;2;SUP;99.141;102.993;-0.782
+J53_113;Faune;Cot;Faune9;CASS REC;2;SUP;99.002;102.936;-0.78
+K52_29;Faune;Cot;Faune10;CASS ancienne indet;3;SUP;100.336;101.919;-0.465
+K52_7;Faune;Cot;Faune10;CASS ancienne indet;3;SUP;100.459;101.185;-0.27
+K50_D5;Faune;CotTam;Faune12;CONNEC ANAT;3;SUP;;;
+J53_95;Faune;CotTam;Faune12;CONNEC ANAT;3;SUP;99.371;102.878;-0.684
+J51_23;Faune;Cot;Faune13;CONNEC ANAT;3;SUP;99.967;100.501;-0.58
+K50_15;Faune;Cot;Faune13;CONNEC ANAT;3;SUP;100.983;99.699;-0.503
+K51_11;Faune;Cot;Faune14;appariement;1;SUP;100.621;100.171;-0.566
+L50_8;Faune;Cot;Faune14;appariement;1;SUP;101.326;99.793;-0.42
+L51_260;Faune;Cot;Faune15;appariement;1;INF;101.906;101.139;-0.784
+J53_99;Faune;Cot;Faune15;appariement;1;SUP;99.419;102.935;-0.679
