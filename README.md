@@ -48,8 +48,12 @@ Preprint:  https://doi.org/10.5281/zenodo.7674699
 ### v1.1 to 1.3 April 2023
 Add ggplot 2D tab :"Simple 2D plot" with pdf download and numeric imput to modify the projection ratio. 
 
-Add "Figure options" conditional panel : to modify the theme of ggplot figure ("Simple 2D plot" and "Density Plot")
+Add "Figure options" sidebar conditional panel : to modify the labels axis, the size of the labels and the tick mark, the space between tick mark, and the theme of ggplot figure ("Simple 2D plot" and "Density Plot"). in process : the add of minor.grid 
 
 Correction DensityPlot and modification of point size and transparency. 
 
-Add ggplot 2D slide, activated unchecking the button "advanced plot". 
+Add a button "advanced plot" at ggplot 2D slide to activated plotly or ggplot figure. Add a ratio imput when the button is unchecked.  
+
+Add a button to directly load the dataset example of Cassenade. Button is on the overview panel. 
+
+#bug with color in process of correction
