@@ -1,5 +1,5 @@
 #############################################################################################
-##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1.2 - 13 Apr 2023
+##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1.4 - 20 Apr 2023
 #############################################################################################
 #
 
@@ -163,7 +163,7 @@ ui <- navbarPage(
       ), #end sidebarpanel
       
       mainPanel(
-        tabsetPanel(type = "tabs",
+        tabsetPanel(type = "tabs",id="mainpanel",
                     tabPanel("Overview", 
                              tags$div(
                                h2(" Welcome to the", em("SEAHORS"), "application",align="center", style = "font-family: 'Times', serif;
@@ -204,10 +204,24 @@ ui <- navbarPage(
    
    </span> 
    
-      </font size>           </div>" )
+      </font size>           
+                                               <br>
+                                               <br>
+                                               <br>
+                                               <br>
+                                               <br></div>" )
                                       ), ), #end of column
-                             ) # end div()
-                             
+                             ), # end div()
+                        column(12,  column(8,),column(2, HTML(
+                          "  <div style=height:50%;, align=rigth> 
+                          <font size=2>
+                          <p>To import an example:</p>
+                          </font size>
+                          </div>"),#end html
+                         actionButton("button_example","Click to load the Cassenade dataset",style="height:50%")),
+                          tags$br(),
+                          tags$br(),),
+
                     ), #end of tabPanel
                     tabPanel("Load data", 
                              tabsetPanel(type = "tabs",
@@ -550,7 +564,7 @@ ui <- navbarPage(
                              ),# end of fluidrow
                              hr(style = "border-top: 1px solid #000000;"), 
                              fluidRow(column(12,
-                                             column(2,numericInput("ratio.to.coord.simple.2", label = h5("Ratio figure"), value = 1),),
+                                             column(2, uiOutput("ratiotocoorsimple2"),),
                                              column(12, downloadButton("downloadData2d.slice", "Download as .HTML")),
                              ),),#end of fluidrow
 
@@ -780,43 +794,53 @@ server <- function(input, output, session) {
   Xtickmarks.size<-reactiveVal()
   Ytickmarks.size<-reactiveVal()
   Ztickmarks.size<-reactiveVal()
-  
+  ## update 1.4 - to import
+  input_file1.name<-reactiveVal()
+  input_file1.datapath<-reactiveVal()
+  getdata.launch<-reactiveVal()
   #####
   
   
   ##### Import data----
+  observeEvent(input$file1, {
+    input_file1.name(input$file1$name)
+    input_file1.datapath(input$file1$datapath)
+  })
+  observeEvent(input$getData, {
+    getdata.launch(input$getData)
+  })
   
   observe({
-    req(!is.null(input$file1))
-    extension <- tools::file_ext(input$file1$name)
+    req(!is.null(input_file1.datapath()))
+    extension <- tools::file_ext(input_file1.name())
     switch(extension,
-           csv = {updateSelectInput(session, "worksheet", choices = input$file1$name)},
-           xls =   {    selectionWorksheet <-excel_sheets(path = input$file1$datapath)
+           csv = {updateSelectInput(session, "worksheet", choices = input_file1.name())},
+           xls =   {    selectionWorksheet <-excel_sheets(path = input_file1.datapath())
            updateSelectInput(session, "worksheet", choices = selectionWorksheet)},
-           xlsx =  {      selectionWorksheet <-excel_sheets(path = input$file1$datapath)
+           xlsx =  {      selectionWorksheet <-excel_sheets(path = input_file1.datapath())
            updateSelectInput(session, "worksheet", choices = selectionWorksheet)})
   })
   
   df<-reactiveValues( #creation df 
     df=NULL) # end reactivevalues 
   
-  observeEvent(input$getData, {
-    req(!is.null(input$file1))
-    extension <- tools::file_ext(input$file1$name)
+  observeEvent(getdata.launch(), {
+    req(!is.null(input_file1.datapath()))
+    extension <- tools::file_ext(input_file1.name())
     df$df2 <- switch(extension,
                      csv =  {    
-                       sep2 <- if( ";" %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){";"
-                       } else if( "," %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){","
-                       } else if ( "\t" %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){"\t"
+                       sep2 <- if( ";" %in% strsplit(readLines(input_file1.datapath(), n=1)[1], split="")[[1]] ){";"
+                       } else if( "," %in% strsplit(readLines(input_file1.datapath(), n=1)[1], split="")[[1]] ){","
+                       } else if ( "\t" %in% strsplit(readLines(input_file1.datapath(), n=1)[1], split="")[[1]] ){"\t"
                        } else {";"}
-                       utils::read.csv(input$file1$datapath,
+                       utils::read.csv(input_file1.datapath(),
                                        header = input$header,
                                        sep = sep2, stringsAsFactors = F,  fileEncoding="latin1",
                                        dec=".")},
-                     xls = readxl::read_xls(input$file1$datapath, sheet=input$worksheet),
-                     xlsx = readxl::read_xlsx(input$file1$datapath, sheet=input$worksheet))
+                     xls = readxl::read_xls(input_file1.datapath(), sheet=input$worksheet),
+                     xlsx = readxl::read_xlsx(input_file1.datapath(), sheet=input$worksheet))
     fileisupload(1)
-  })# end observe of df$df
+  })# end observe of df$df2
   
   observeEvent(!is.null(fileisupload()), { ## add two necessary columns for the rest of manipulations, correct issues with comma and majuscule
     req(!is.null(fileisupload()))
@@ -829,7 +853,7 @@ server <- function(input, output, session) {
     if(!is.null(df$df[sapply(df$df, function(x) !is.numeric(x))])) {
       df$df[sapply(df$df, function(x) !is.numeric(x))] <- mutate_all(df$df[sapply(df$df, function(x) !is.numeric(x))], .funs=str_to_lower)}
     text<-""
-    df$df<-cbind(shapeX,text,null,df$df) 
+    df$df<-cbind(shapeX,text,null,df$df)
     nnrow.df.df(nrow(df$df))
     listinfosmarqueur(1)
   }) #end observe 
@@ -841,6 +865,9 @@ server <- function(input, output, session) {
     shinyjs::reset('file1')
     df$df <- NULL
     df$df2 <- NULL
+   # input_file1(NULL)
+    input_file1.name(NULL)
+    input_file1.datapath(NULL)
   }, priority = 1000)
   
   #### others options ----
@@ -1165,9 +1192,6 @@ server <- function(input, output, session) {
           min.size2<-minsize()
           size.scale <- size.scale()
           myvaluesx<-unlist(myvaluesx())
-          if (is.null(unlist(myvaluesx))) {
-            myvaluesx <-c("blue","red","green")
-          }
           shapeX<-df.sub.a$shapeX
           shape.level<-levels(as.factor(shapeX))
           
@@ -1237,22 +1261,21 @@ server <- function(input, output, session) {
           min.size2<-minsize()
           size.scale <- size.scale()
           myvaluesx<-unlist(myvaluesx())
-          if (is.null(unlist(myvaluesx))) {
-            myvaluesx <-c("blue","red","green")
-          }
+          # to correct the color for ggplot2
+          myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub.a$layer2)))]
           shapeX<-df.sub.a$shapeX
           shape.level<-levels(as.factor(shapeX))
-         print(xymin)
+
           p <-ggplot()
           p<-p+geom_point(data = df.sub.a,
                           aes(x = .data[[set.antivar.2d.slice]],
                               y = .data[[setZZ()]],
                                col=factor(layer2),
-                               #size=point.size2, ## ne marche pa
-                               shape=shapeX  ## ne marche pas 
+                               #size=point.size2, ## ne marche pas
+                               shape=shapeX  
                           ))+
             coord_fixed(ratio.simple())
-          p<-p+scale_color_manual(values=myvaluesx)+
+          p<-p+scale_color_manual(values=myvaluesx2)+
             scale_shape_manual(values=shape.level)+
             scale_size_manual(values=c(size.scale,min.size2))+
             xlab(paste(set.antivar.2d.name))+ylab(nameZ())+
@@ -1281,7 +1304,7 @@ server <- function(input, output, session) {
     uvalues <-levels(as.factor(levelofcolor))
     n <- length(uvalues)
     choices <- as.list(uvalues)
-    myorder  <- as.list(1:n)
+    #myorder  <- as.list(1:n)
     
     if (!is.null (loadingfile)) {
       mycolors <-unlist(loadingfile)
@@ -1340,15 +1363,15 @@ server <- function(input, output, session) {
   observeEvent(input$setz,{
     liste.z(c(input$setz))
   })
-  liste.date<-reactiveVal(c("Years","periods","SPATIAL..Year"))
+  liste.date<-reactiveVal(c("Years","periods","SPATIAL..Year","Year"))
   observeEvent(input$setdate,{
     liste.date(c(input$setdate))
   })
-  liste.nature2<-reactiveVal(c("Nature","Type","null"))
+  liste.nature2<-reactiveVal(c("Type","null","Nature","Code"))
   observeEvent(input$setnature,{
     liste.nature2(c(input$setnature))
   })
-  liste.levels<-reactiveVal(c("UAS","Levels","null","SPATIAL..USfield"))
+  liste.levels<-reactiveVal(c("UAS","Levels","null","SPATIAL..USfield","Assemblage"))
   observeEvent(input$setlevels,{
     liste.levels(c(input$setlevels))
   })
@@ -1360,7 +1383,7 @@ server <- function(input, output, session) {
   observeEvent(input$setID,{
     liste.ID(c(input$setID))
   })
-  liste.sector2<-reactiveVal(c("null","context","localisation","square","Sector","SPATIAL..Square_field"))
+  liste.sector2<-reactiveVal(c("null","context","localisation","square","Sector","SPATIAL..Square_field","Square"))
   observeEvent(input$setsector,{
     liste.sector2(c(input$setsector))
   })
@@ -1503,13 +1526,13 @@ server <- function(input, output, session) {
     extension <- tools::file_ext(input$file.extradata$name)
     df$file.extradata <- switch(extension,
                                 csv = {    
-                                  sep2 <- if( ";" %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){";"
-                                  } else if( "," %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){","
-                                  } else if ( "\t" %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){"\t"
+                                  sep2 <- if( ";" %in% strsplit(readLines(input$file.extradata$datapath, n=1)[1], split="")[[1]] ){";"
+                                  } else if( "," %in% strsplit(readLines(input$file.extradata$datapath, n=1)[1], split="")[[1]] ){","
+                                  } else if ( "\t" %in% strsplit(readLines(input$file.extradata$datapath, n=1)[1], split="")[[1]] ){"\t"
                                   } else {";"}
                                   utils::read.csv(input$file.extradata$datapath,
                                                   header = input$header,
-                                                  sep = sep2, stringsAsFactors = F, 
+                                                  sep = sep2, stringsAsFactors = F,fileEncoding="latin1", 
                                                   dec=".")},
                                 xls = readxl::read_xls(input$file.extradata$datapath),
                                 xlsx = readxl::read_xlsx(input$file.extradata$datapath))
@@ -1592,14 +1615,14 @@ server <- function(input, output, session) {
     extension <- tools::file_ext(input$file.fit$name)
     df$file.fit <- switch(extension,
                           csv = {    
-                            sep2 <- if( ";" %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){";"
-                            } else if( "," %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){","
-                            } else if ( "\t" %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){"\t"
+                            sep2 <- if( ";" %in% strsplit(readLines(input$file.fit$datapath, n=1)[1], split="")[[1]] ){";"
+                            } else if( "," %in% strsplit(readLines(input$file.fit$datapath, n=1)[1], split="")[[1]] ){","
+                            } else if ( "\t" %in% strsplit(readLines(input$file.fit$datapath, n=1)[1], split="")[[1]] ){"\t"
                             } else {";"}
                             utils::read.csv(input$file.fit$datapath,
                                             header = input$header,
                                             sep = sep2, stringsAsFactors = F, 
-                                            dec=".")},
+                                            dec=".",fileEncoding="latin1")},
                           xls = readxl::read_xls(input$file.fit$datapath),
                           xlsx = readxl::read_xlsx(input$file.fit$datapath))
     
@@ -1613,15 +1636,18 @@ server <- function(input, output, session) {
   
   output$set.REM=renderUI({ 
     selectInput("setREM", h4("Select the column recording the unique ID of refit groups"),
-                choices= names(df$file.fit)[!names(df$file.fit) %in% input$setcolumnID.for.fit],
-                #choices = names(df$file.fit),
-                selected = c("refit","null"))
+                choices= names(df$file.fit),
+                selected = c("fit","refit","Rem","null"))
   }) 
   
   observeEvent(input$Refit.data.from.XYZ.file, {
-    updateSelectInput(session,"setcolumnID.for.fit",choices=if(input$Refit.data.from.XYZ.file == FALSE){names(df$file.fit)}else{names(df$df)},selected=input$setID )
-    updateSelectInput(session,"setREM",choices=if(input$Refit.data.from.XYZ.file == FALSE){names(df$file.fit)}else{names(df$df)},selected="refit" )
-  })
+    updateSelectInput(session,"setcolumnID.for.fit",choices=if(input$Refit.data.from.XYZ.file == FALSE){names(df$file.fit)}else{names(df$df)[3:length(df$df)]},selected=input$setID )
+    updateSelectInput(session,"setREM",choices=if(input$Refit.data.from.XYZ.file == FALSE){names(df$file.fit)}else{names(df$df)[3:length(df$df)]},selected=c("fit","REM") )
+    # names(df$file.fit)[!names(df$file.fit) %in% input$setcolumnID.for.fit]
+      })
+
+
+  
   
   observeEvent(input$goButton.set.columnID.for.fit, {
     req(input$setcolumnID.for.fit) 
@@ -1923,7 +1949,8 @@ server <- function(input, output, session) {
   )
   
   observeEvent(input$do.shape1, {
-    df$df$shapeX<-input$shape
+    #df$df$shapeX<-input$shape
+    df$df$shapeX<-factor(input$shape)
   })
   
   observeEvent(input$do.shape2, {
@@ -1934,6 +1961,11 @@ server <- function(input, output, session) {
     legendplotlyfig(input$optioninfosfigplotly)
   })
   
+output$ratiotocoorsimple2=renderUI({ 
+  
+  req(input$advanced.slice==FALSE)
+  numericInput("ratio.to.coord.simple.2", label = h5("Ratio figure"), value = 1)
+})
   
   ####liste infos  ----
   observeEvent(req(!is.null(listinfosmarqueur())),{
@@ -1991,9 +2023,9 @@ server <- function(input, output, session) {
     extension <- tools::file_ext(input$file.color$name)
     df$file.color <- switch(extension,
                             csv = {    
-                              sep2 <- if( ";" %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){";"
-                              } else if( "," %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){","
-                              } else if ( "\t" %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){"\t"
+                              sep2 <- if( ";" %in% strsplit(readLines(input$file.color$datapath, n=1)[1], split="")[[1]] ){";"
+                              } else if( "," %in% strsplit(readLines(input$file.color$datapath, n=1)[1], split="")[[1]] ){","
+                              } else if ( "\t" %in% strsplit(readLines(input$file.color$datapath, n=1)[1], split="")[[1]] ){"\t"
                               } else {";"}
                               utils::read.csv(input$file.color$datapath,
                                               header = input$header,
@@ -2003,19 +2035,22 @@ server <- function(input, output, session) {
                             xlsx = readxl::read_xlsx(input$file.color$datapath))
     
   })
-  
+
   myvaluesx<-reactive({
     req(!is.null(fileisupload()))
     myvaluesx <-NULL
     n <- length(unique(df$df[,inputcolor()]))
     val <- list()
+     if (!is.null(input[[paste0("colorvar",1)]])) {
     myvaluesx <- lapply(1:n, function(i) {
       if (i==1) val <- list(input[[paste0("colorvar",i)]])
       else val <- list(val,input[[paste0("colorvar",i)]])
-      
-    })
+    })}else{
+      myvaluesx <-list(c("blue"),c("red"),c("green"))
+    }
+
   }) # end of myvaluexS
-  
+
   output$colors2 <- renderUI({
     basiccolor()
   })
@@ -2083,9 +2118,9 @@ server <- function(input, output, session) {
     extension <- tools::file_ext(input$file.color.fit$name)
     df$file.color.fit <- switch(extension,
                                 csv = {    
-                                  sep2 <- if( ";" %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){";"
-                                  } else if( "," %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){","
-                                  } else if ( "\t" %in% strsplit(readLines(input$file1$datapath, n=1)[1], split="")[[1]] ){"\t"
+                                  sep2 <- if( ";" %in% strsplit(readLines(input$file.color.fit$datapath, n=1)[1], split="")[[1]] ){";"
+                                  } else if( "," %in% strsplit(readLines(input$file.color.fit$datapath, n=1)[1], split="")[[1]] ){","
+                                  } else if ( "\t" %in% strsplit(readLines(input$file.color.fit$datapath, n=1)[1], split="")[[1]] ){"\t"
                                   } else {";"}
                                   utils::read.csv(input$file.color.fit$datapath,
                                                   header = input$header,
@@ -2400,11 +2435,7 @@ server <- function(input, output, session) {
     df.sub3 <-df.sub.minpoint()
     min.size2<-minsize()
     myvaluesx<-unlist(myvaluesx())
-    
-    if (is.null(unlist(myvaluesx))) {
-      myvaluesx <-c("blue","red","green")
-    }
-    
+
     size.scale <- size.scale()
     if (nrow(df.sub3)>0){
       df.sub$point.size[!((df.sub[,input$setx] %in% df.sub3[,input$setx]) & (df.sub[,input$sety] %in% df.sub3[,input$sety]) & (df.sub[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
@@ -2431,15 +2462,14 @@ server <- function(input, output, session) {
     if (!is.null(data.fit.3D()) && input$var.fit.3D == "yes"){
       colorvalues<-unlist(colorvalues())
       data.fit.3D<-data.fit.3D()
-      data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub[,input$setID]))
       data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
+      data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub[,input$setID]))
       data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
       
       p<-add_trace(p,x = ~data.fit.3D[,setXX()], y = ~data.fit.3D[,setYY()], z = ~data.fit.3D[,setZZ()], split = ~data.fit.3D[,input$setREM],
                    line = list(color=~data.fit.3D$color.fit),
                    type = "scatter3d", mode = "lines", showlegend = legendplotlyfig(), inherit = F)
     }
-    
     p <- p %>% layout(
       showlegend = legendplotlyfig(),
       scene = list(
@@ -2501,15 +2531,12 @@ server <- function(input, output, session) {
     
     height.size2<-height.size()
     width.size2 <- width.size()
+
     isolate ({
       df.sub2<-df.sub() 
       df.sub3<-df.sub.minpoint()
       myvaluesx<-unlist(myvaluesx())
-      if (is.null(unlist(myvaluesx))) {
-        myvaluesx <-c("blue","red","green")
-      }
       size.scale <- size.scale()
-      
       if (nrow(df.sub3)>0){
         df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
         
@@ -2545,7 +2572,7 @@ server <- function(input, output, session) {
       
       shapeX<-df.sub2$shapeX
       shape.level<-levels(as.factor(shapeX))
-      
+
       if (is.null(orthofile)){
         p<- plot_ly(height = height.size(),
                     width = width.size())
@@ -2566,9 +2593,11 @@ server <- function(input, output, session) {
         
         if (input$var.fit.table == "yes" & !is.null(data.fit.3D())){
           colorvalues<-unlist(colorvalues())
+          data.fit.3D<-data.fit.3D() 
           
-          data.fit.3D<-data.fit.3D() %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
           data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
+
+        data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
           
           if (length(levels(as.factor(data.fit.3D$color.fit)))>1){
             for (i in 1:length (levels(as.factor(data.fit.3D[,input$setREM])))) {
@@ -2576,10 +2605,9 @@ server <- function(input, output, session) {
               if (length(levels(as.factor(data.fit.3D.2[["color.fit"]])))>1){
                 data.fit.3D$color.fit[((data.fit.3D[,input$setx] %in% data.fit.3D.2[,input$setx]) & (data.fit.3D[,input$sety] %in% data.fit.3D.2[,input$sety]) & (data.fit.3D[,input$setz] %in% data.fit.3D.2[,input$setz]))]<-c("#000000") # Black color for refit variable mixing 
               }}} #end of if
-          
+
           data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
-          
-          
+
           p<-add_trace(p,x = ~data.fit.3D[[var]], y = ~data.fit.3D[[var2]], split = ~data.fit.3D[,input$setREM],   
                        line = list(color=~data.fit.3D$color.fit,width=input$w2),
                        type = "scatter", mode = "lines", showlegend = legendplotlyfig(), inherit = F)
@@ -2605,6 +2633,9 @@ server <- function(input, output, session) {
           event_register("plotly_selecting")
         
       } else {
+        # to correct the color for ggplot2
+        myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub2$layer2)))]
+        
         p <-ggplot()+
           ggRGB(img = orthofile,
                 r = 1,
@@ -2623,11 +2654,12 @@ server <- function(input, output, session) {
         
         if (input$var.fit.table == "yes" & !is.null(data.fit.3D())){
           colorvalues<-unlist(colorvalues())
-          data.fit.3D<-data.fit3() %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
+          data.fit.3D<-data.fit3() 
           data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
           if (is.null(colorvalues)) {
             data.fit.3D$color.fit <-c("black")
           }
+          data.fit.3D<-data.fit3() %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
           data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
           
           switch(input$var1,
@@ -2652,11 +2684,10 @@ server <- function(input, output, session) {
                                                   yend=.data[[var2end]]), color=data.fit.3D$color.fit,linewidth=input$w2, inherit.aes = F)
         }
         
-        p<-p+scale_fill_manual(values=unlist(myvaluesx))+
+        p<-p+scale_fill_manual(values=myvaluesx2)+
           scale_shape_manual(values=shape.level)+
           scale_size_manual(values=c(size.scale,min.size2))+
           xlab(paste(axis.var.name))+ylab(paste(axis.var2.name))+
-         # theme(legend.title = element_blank())+
           match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+ theme(legend.position='none')+
           theme(axis.title.x = element_text(size=font_size()),
                 axis.title.y = element_text(size=font_size()),
@@ -2688,8 +2719,6 @@ server <- function(input, output, session) {
     session_store$plt2D.simple<- plot2D.simple.react()
   })
   plot2D.simple.react<-reactive({ 
-    #input$run_button2
-    
     min.size2<-minsize()
     orthofile<-NULL
     if (input$var.ortho.simple == "yes" ){
@@ -2700,15 +2729,16 @@ server <- function(input, output, session) {
                           yz = if(!is.null(input$file4)) {stack(input$file4$datapath)})
     }
     
-    #isolate ({
+
     df.sub2<-df.sub() 
     df.sub3<-df.sub.minpoint()
     myvaluesx<-unlist(myvaluesx())
-    if (is.null(unlist(myvaluesx))) {
-      myvaluesx <-c("blue","red","green")
-    }
     size.scale <- size.scale()
-    
+    # to correct the color for ggplot2
+    myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub2$layer2)))]
+
+  ####
+   
     if (nrow(df.sub3)>0){
       df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
       
@@ -2768,12 +2798,14 @@ server <- function(input, output, session) {
     
     if (input$var.fit.table.simple == "yes" & !is.null(data.fit.3D())){
       colorvalues<-unlist(colorvalues())
-      data.fit.3D<-data.fit3() %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
+      data.fit.3D<-data.fit3() 
       data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
       if (is.null(colorvalues)) {
         data.fit.3D$color.fit <-c("black")
       }
+      data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
       data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
+
       
       switch(input$var1.simple,
              xy={
@@ -2796,7 +2828,7 @@ server <- function(input, output, session) {
       p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
                                               yend=.data[[var2end]]), color=data.fit.3D$color.fit,linewidth=input$w2, inherit.aes = F)
     }
-    p<-p+scale_color_manual(values=myvaluesx)+
+    p<-p+scale_color_manual(values=myvaluesx2)+
       scale_shape_manual(values=shape.level)+
       scale_size_manual(values=c(size.scale,min.size2))+
       xlab(paste(axis.var.name))+ylab(paste(axis.var2.name))+
@@ -2811,8 +2843,7 @@ server <- function(input, output, session) {
     p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xtickmarks.size))+
       scale_y_continuous(breaks=seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Ytickmarks.size))
     p   
-    #  }) #end isolate
-    
+
   }) #end plot2D.react 
   
   
@@ -2908,11 +2939,8 @@ server <- function(input, output, session) {
       df.sub4$point.size2[!((df.sub4[,input$setx] %in% df.sub3[,input$setx]) & (df.sub4[,input$sety] %in% df.sub3[,input$sety]) & (df.sub4[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
       
     }
-    
     myvaluesx<-unlist(myvaluesx())
-    if (is.null(unlist(myvaluesx))) {
-      myvaluesx <-c("red","blue","green")
-    }
+    
     orthofile<-NULL
     if (input$var.ortho2 == "yes" ){
       orthofile <- switch(input$var3,
@@ -2952,19 +2980,19 @@ server <- function(input, output, session) {
     
     df.sub4$density <- get_density(df.sub4$var, df.sub4$var2, n = 100)
     
-    
-    
+    # to correct the color for ggplot2
+     myvaluesx2<-myvaluesx[levels(as.factor(df$df[[inputcolor()]])) %in% levels(as.factor(df.sub4[[inputcolor()]]))]
     # Density curve of x left panel 
     ydensity <- ggplot(df.sub4, aes(var, fill=factor(.data[[inputcolor()]]))) + 
       geom_density(alpha=.5) + 
-      scale_fill_manual( values = myvaluesx)+
+      scale_fill_manual( values = myvaluesx2)+
       match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
       theme(legend.position = "none")
     
     # Density curve of y right panel 
     zdensity <- ggplot(df.sub4, aes(var2, fill=factor(.data[[inputcolor()]]))) + 
       geom_density(alpha=.5) + 
-      scale_fill_manual( values = myvaluesx)+match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
+      scale_fill_manual( values = myvaluesx2)+match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
       theme(legend.position = "none")+coord_flip()
     blankPlot <- ggplot()+geom_blank(aes(1,1))+
       theme(plot.background = element_blank(), 
@@ -3063,16 +3091,13 @@ server <- function(input, output, session) {
     req(input$pi2)
     req(input$ssectionXy3)
     myvaluesx<-unlist(myvaluesx())
-    if (is.null(unlist(myvaluesx))) {
-      myvaluesx <-c("blue","red","green")
-    }
     size.scale <- size.scale()
     min.size2<-minsize()
     df.sub5<-rotated.table()
     df.sub5<-as.data.frame(df.sub5)%>%
       filter(.data[["x2"]]>= min(input$ssectionXx3), .data[["x2"]]<= max(input$ssectionXx3)) %>%
       filter(.data[["y2"]]>= min(input$ssectionXy3), .data[["y2"]]<= max(input$ssectionXy3))
-    # 
+   
     shapeX<-df.sub5$shapeX
     shape.level<-levels(as.factor(shapeX))
     df.sub5$point.size2<-size.scale()
@@ -3126,9 +3151,7 @@ server <- function(input, output, session) {
     req(input$pi2)
     req(input$ssectionXy3)
     myvaluesx<-unlist(myvaluesx())
-    if (is.null(unlist(myvaluesx))) {
-      myvaluesx <-c("blue","red","green")
-    }
+
     size.scale <- size.scale()
     min.size2<-minsize()
     df.sub5<-rotated.table()
@@ -3317,6 +3340,26 @@ server <- function(input, output, session) {
           "}")
       ))  
   )#end renderDataTable
+  
+  
+  ####button example of Cassenade ----
+  observeEvent(input$button_example, {
+  updateTabsetPanel(session, "mainpanel",
+                      selected = "Load data")
+    url_file="https://raw.githubusercontent.com/AurelienRoyer/SEAHORS/71daba138cf0666e996d7d180130afedddd83a5f/Example%20dataset/Discamps%20et%20al%202019%20S2.csv"
+    input_file1.name("Discamps%20et%20al%202019%20S2.csv")
+    input_file1.datapath(url_file)
+    url_file2="https://raw.githubusercontent.com/AurelienRoyer/SEAHORS/main/Example%20dataset/REMONTAGES.csv"
+    df$file.fit<-read.csv(url_file2, sep=";",header = T)
+    getdata.launch(1)
+    
+    
+    
+    
+    
+  })
+  
+  
   
   #### rmarkdown report template ----
   
