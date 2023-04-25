@@ -194,7 +194,7 @@ ui <- navbarPage(
    
    <i>SEAHORS</i> is dedicated to the intra-site spatial analysis of archaeological piece-plotted</p>
    
-   <p> v1.2</p>
+   <p> v1.5</p>
    <p>This shiny R script makes possible to explore the spatial organisation of coordinate points taken on archaeological fields 
   and to visualise their distributions using interactive 3D and 2D plots </p>
    <br>
