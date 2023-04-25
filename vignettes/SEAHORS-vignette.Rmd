@@ -1,9 +1,10 @@
 ---
-title: SEAHORS
-output:
-  html_document:
-    theme: yeti
-    highlight: zenburn	
+title: "SEAHORS Vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SEAHORS Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 
@@ -72,8 +73,7 @@ A web application of SEAHORS v1 is deployed on the Shinyapps.io server:
 
 Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (submitted).
 SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny.
-Submitted to [PCI
-Archaeology](https://archaeo.peercommunityin.org/PCIArchaeology), 2023
+Submitted to [PCI Archaeology](https://archaeo.peercommunityin.org/PCIArchaeology), 2023
 
 Preprint: <https://doi.org/10.5281/zenodo.7674699>
 
