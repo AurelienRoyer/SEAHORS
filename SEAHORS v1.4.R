@@ -1,7 +1,7 @@
 #############################################################################################
-##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1.4 - 20 Apr 2023
+##### SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny - V1.5 - 25 Apr 2023
 #############################################################################################
-#
+
 
 ##### package needed
 if (!require('shiny')) install.packages('shiny'); library('shiny') #shiny
@@ -156,6 +156,12 @@ ui <- navbarPage(
                                            column(4,numericInput("Xtickmarks", "Position of X tick marks",1, min = 0, max=40),),
                                                   column(4,numericInput("Ytickmarks", "Position of Y tick marks",1, min = 0, max=40),),
                                     column(4,numericInput("Ztickmarks", "Position of Z tick marks",1, min = 0, max=40),),),
+                                    column(10,
+                                    column(4,numericInput("Xminor.breaks", "Position of X minor breaks",1, min = 0, max=40),),
+                                    column(4,numericInput("Yminor.breaks", "Position of Y minor breaks",1, min = 0, max=40),),
+                                    column(4,numericInput("Zminor.breaks", "Position of Z minor breakss",1, min = 0, max=40),),),
+                   
+                                    
                                     column(12,br(),
                                     hr(),),
                                     uiOutput("themeforfigure"),
@@ -509,7 +515,6 @@ ui <- navbarPage(
                                                     tags$br(),
                                                     tags$br(),
                                                     hr(style = "border-top: 1px solid #000000;"), 
-                                                    ### a finir dessous 
                                                     column(12,
                                                            column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
                                                            column(2),
@@ -752,7 +757,7 @@ ui <- navbarPage(
 
 server <- function(input, output, session) {
   
-  ##### necessary settings----
+##### necessary settings----
   options(shiny.maxRequestSize=150*1024^2) ## limits 150 MO to import
   font.size <- "8pt"
   vv<-NULL ## for plotly_selected
@@ -794,23 +799,32 @@ server <- function(input, output, session) {
   Xtickmarks.size<-reactiveVal()
   Ytickmarks.size<-reactiveVal()
   Ztickmarks.size<-reactiveVal()
-  ## update 1.4 - to import
+  Xminorbreaks<-reactiveVal(1)
+  Yminorbreaks<-reactiveVal(1)
+  Zminorbreaks<-reactiveVal(1)
+  ID.no.suppl.data.txt<-reactiveVal("no data")
+  notunique.txt<-reactiveVal("no data")
+  notunique2.txt<-reactiveVal("no data")
+  suppl.no.include.txt<-reactiveVal("no data")
+## update 1.4 - to import
   input_file1.name<-reactiveVal()
   input_file1.datapath<-reactiveVal()
   getdata.launch<-reactiveVal()
-  #####
   
   
-  ##### Import data----
-  observeEvent(input$file1, {
+##### import data----
+df<-reactiveValues( #creation df 
+    df=NULL) # end reactivevalues
+  
+observeEvent(input$file1, {
     input_file1.name(input$file1$name)
     input_file1.datapath(input$file1$datapath)
   })
-  observeEvent(input$getData, {
+observeEvent(input$getData, {
     getdata.launch(input$getData)
   })
   
-  observe({
+observe({
     req(!is.null(input_file1.datapath()))
     extension <- tools::file_ext(input_file1.name())
     switch(extension,
@@ -820,11 +834,8 @@ server <- function(input, output, session) {
            xlsx =  {      selectionWorksheet <-excel_sheets(path = input_file1.datapath())
            updateSelectInput(session, "worksheet", choices = selectionWorksheet)})
   })
-  
-  df<-reactiveValues( #creation df 
-    df=NULL) # end reactivevalues 
-  
-  observeEvent(getdata.launch(), {
+
+observeEvent(getdata.launch(), {
     req(!is.null(input_file1.datapath()))
     extension <- tools::file_ext(input_file1.name())
     df$df2 <- switch(extension,
@@ -842,7 +853,7 @@ server <- function(input, output, session) {
     fileisupload(1)
   })# end observe of df$df2
   
-  observeEvent(!is.null(fileisupload()), { ## add two necessary columns for the rest of manipulations, correct issues with comma and majuscule
+observeEvent(!is.null(fileisupload()), { ## add two necessary columns for the rest of manipulations, correct issues with comma and majuscule
     req(!is.null(fileisupload()))
     null<-"0"
     shapeX<-shape_all()
@@ -858,8 +869,8 @@ server <- function(input, output, session) {
     listinfosmarqueur(1)
   }) #end observe 
   
-  # reset data
-  observeEvent(input$reset.BDD, { 
+##### reset data ----
+observeEvent(input$reset.BDD, { 
     fileisupload(NULL)
     shinyjs::refresh()
     shinyjs::reset('file1')
@@ -870,7 +881,7 @@ server <- function(input, output, session) {
     input_file1.datapath(NULL)
   }, priority = 1000)
   
-  #### others options ----
+#### others options ----
   observeEvent(input$Colors,{
     inputcolor(input$Colors)
   })
@@ -885,9 +896,9 @@ server <- function(input, output, session) {
     size.scale(input$point.size)
   })
   
-  icon_svg_path = "M10,6.536c-2.263,0-4.099,1.836-4.099,4.098S7.737,14.732,10,14.732s4.099-1.836,4.099-4.098S12.263,6.536,10,6.536M10,13.871c-1.784,0-3.235-1.453-3.235-3.237S8.216,7.399,10,7.399c1.784,0,3.235,1.452,3.235,3.235S11.784,13.871,10,13.871M17.118,5.672l-3.237,0.014L12.52,3.697c-0.082-0.105-0.209-0.168-0.343-0.168H7.824c-0.134,0-0.261,0.062-0.343,0.168L6.12,5.686H2.882c-0.951,0-1.726,0.748-1.726,1.699v7.362c0,0.951,0.774,1.725,1.726,1.725h14.236c0.951,0,1.726-0.773,1.726-1.725V7.195C18.844,6.244,18.069,5.672,17.118,5.672 M17.98,14.746c0,0.477-0.386,0.861-0.862,0.861H2.882c-0.477,0-0.863-0.385-0.863-0.861V7.384c0-0.477,0.386-0.85,0.863-0.85l3.451,0.014c0.134,0,0.261-0.062,0.343-0.168l1.361-1.989h3.926l1.361,1.989c0.082,0.105,0.209,0.168,0.343,0.168l3.451-0.014c0.477,0,0.862,0.184,0.862,0.661V14.746z"
+icon_svg_path = "M10,6.536c-2.263,0-4.099,1.836-4.099,4.098S7.737,14.732,10,14.732s4.099-1.836,4.099-4.098S12.263,6.536,10,6.536M10,13.871c-1.784,0-3.235-1.453-3.235-3.237S8.216,7.399,10,7.399c1.784,0,3.235,1.452,3.235,3.235S11.784,13.871,10,13.871M17.118,5.672l-3.237,0.014L12.52,3.697c-0.082-0.105-0.209-0.168-0.343-0.168H7.824c-0.134,0-0.261,0.062-0.343,0.168L6.12,5.686H2.882c-0.951,0-1.726,0.748-1.726,1.699v7.362c0,0.951,0.774,1.725,1.726,1.725h14.236c0.951,0,1.726-0.773,1.726-1.725V7.195C18.844,6.244,18.069,5.672,17.118,5.672 M17.98,14.746c0,0.477-0.386,0.861-0.862,0.861H2.882c-0.477,0-0.863-0.385-0.863-0.861V7.384c0-0.477,0.386-0.85,0.863-0.85l3.451,0.014c0.134,0,0.261-0.062,0.343-0.168l1.361-1.989h3.926l1.361,1.989c0.082,0.105,0.209,0.168,0.343,0.168l3.451-0.014c0.477,0,0.862,0.184,0.862,0.661V14.746z"
   
-  ### button for png dl
+### button for png dl
   dl_button <- list(
     name = "Download as .png",
     icon = list(
@@ -898,7 +909,7 @@ server <- function(input, output, session) {
                           ) }') )
 
   
-  #### other option figures
+##### option figures ----
   observeEvent(input$fontsizeaxis, {
     font_size(input$fontsizeaxis)
   }) 
@@ -915,9 +926,36 @@ server <- function(input, output, session) {
   observeEvent(input$Ztickmarks, {
     Ztickmarks.size(input$Ztickmarks)
   }) 
-
   
-  ##### option size of figure ----
+  observeEvent(input$Xminor.breaks, {
+    Xminorbreaks(input$Xminor.breaks)
+  }) 
+  observeEvent(input$Yminor.breaks, {
+    Yminorbreaks(input$Yminor.breaks)
+  }) 
+  observeEvent(input$Zminor.breaks, {
+    Zminorbreaks(input$Zminor.breaks)
+  })   
+  
+output$themeforfigure=renderUI({
+    req(!is.null(fileisupload()))
+    themes <- ls("package:ggplot2", pattern = "^theme_")
+    themes <- themes[themes != "theme_get" &
+                       themes != "theme_set" &
+                       themes != "theme_replace" &
+                       themes != "theme_test" &
+                       themes != "theme_update"]
+    themes <- paste0(themes, "()")
+    selectInput("themeforfigure.list", h4("Theme for 'Simple 2Dplot'"),
+                choices = themes,
+                selected = themes[5])
+  })
+themeforfigure.choice<-reactiveVal(c("theme_classic()"))
+  observeEvent(input$themeforfigure.list,{
+    themeforfigure.choice(c(input$themeforfigure.list))
+    
+  })
+##### option size of figure ----
   
   observeEvent(input$height.size.a, {
     height.size(input$height.size.a)
@@ -973,29 +1011,9 @@ server <- function(input, output, session) {
   observeEvent(input$ratio.to.coord.simple.2, {
     ratio.simple(input$ratio.to.coord.simple.2)
   })    
-  output$themeforfigure=renderUI({
-    req(!is.null(fileisupload()))
-    themes <- ls("package:ggplot2", pattern = "^theme_")
-    themes <- themes[themes != "theme_get" &
-                       themes != "theme_set" &
-                       themes != "theme_replace" &
-                       themes != "theme_test" &
-                       themes != "theme_update"]
-    themes <- paste0(themes, "()")
-    selectInput("themeforfigure.list", h4("Theme for 'Simple 2Dplot'"),
-                choices = themes,
-                selected = themes[5])
-  })
-  
-  
-  themeforfigure.choice<-reactiveVal(c("theme_classic()"))
-  observeEvent(input$themeforfigure.list,{
-    themeforfigure.choice(c(input$themeforfigure.list))
-    
-  })
-  
-  ##### function used in the script ----
-  #function for density
+
+##### function used in the script ----
+#function for density
   get_density <- function(x, y, ...) {
     dens <- MASS::kde2d(x, y, ...)
     ix <- findInterval(x, dens$x)
@@ -1003,7 +1021,7 @@ server <- function(input, output, session) {
     ii <- cbind(ix, iy)
     return(dens$z[ii])
   }
-  #function for newgroup
+#function for newgroup
   dataModal <- function() {
     if (!is.null(vv) && !is.null(values$newgroup)) { 
       modalDialog(
@@ -1019,7 +1037,7 @@ server <- function(input, output, session) {
     }
   }
   
-  #function for refit
+#function for refit
   seq2 <- function(from, to, by=1){
     if (to>=from){
       return(seq(from, to, by))
@@ -1028,7 +1046,7 @@ server <- function(input, output, session) {
     }
   }
   
-  #function for orthopho import from Rstoolbox
+#function for orthopho import from Rstoolbox
   .toRaster <- function(x) {
     if (inherits(x, "SpatRaster")) {
       return(stack(x))
@@ -1155,8 +1173,8 @@ server <- function(input, output, session) {
       return(df_raster)
     }
   }
-  ##function for 2D slice
-  plotUI <- function(id) {
+# functions for 2D slice
+plotUI <- function(id) {
     ns <- NS(id)
     if (input$advanced.slice==TRUE){
     plotlyOutput(ns("plot"), height = height.size()) } else {
@@ -1166,7 +1184,7 @@ server <- function(input, output, session) {
     
   }
 
-  plotServer <- function(id,df.sub.a, Xvar, Yvar,liste.valeur.slice) {
+plotServer <- function(id,df.sub.a, Xvar, Yvar,liste.valeur.slice) {
     
     moduleServer(
       id,
@@ -1211,18 +1229,32 @@ server <- function(input, output, session) {
                                             '<b>%{text}</b>'),
                       height = height.size(),
                       width = width.size())
+          
+          Xtval<-seq(floor(min(df.sub.a[[Xvar]])),max(df.sub.a[[Xvar]]),Xminorbreaks())
+          Xttxt <- rep("",length(Xtval)) 
+          Xttxt[seq(1,length(Xtval),Xtickmarks.size())]<-as.character(Xtval)[seq(1,length(Xtval),Xtickmarks.size())]
+          
+          Ytval<-seq(floor(min(df.sub.a[[Yvar]])),max(df.sub.a[[Yvar]]), Zminorbreaks())
+          Yttxt <- rep("",length(Ytval)) 
+          Yttxt[seq(1,length(Ytval),Ztickmarks.size())]<-as.character(Ytval)[seq(1,length(Ytval),Ztickmarks.size())]
+          
+
           p<-p %>% layout(showlegend = legendplotlyfig(),
                           title = list(text=liste.valeur.slice,font=t2,x =0.1),
                           scene = list(aspectratio=list(x=1,y=1,z=1)),
                           xaxis = list(title=paste(set.antivar.2d.name), range=c(xymin,xymax),
                                        dtick = Xtickmarks.size, 
                                        tick0 = floor(min(df.sub.a[,Xvar])), 
-                                       tickmode = "linear",
+                                       tickvals=Xtval,
+                                       ticktext=Xttxt,
+                                       #tickmode = "linear",
                                        titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
                           yaxis=list(title=paste(nameZ()), range=c(yymin,yymax),
                                      dtick = Ztickmarks.size(), 
                                      tick0 = floor(min(df.sub.a[,Yvar])), 
-                                     tickmode = "linear",
+                                     tickvals=Ytval,
+                                     ticktext=Yttxt,
+                                     #tickmode = "linear",
                                      titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
                           dragmode = "select")%>%
             event_register("plotly_selecting")
@@ -1265,19 +1297,19 @@ server <- function(input, output, session) {
           myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub.a$layer2)))]
           shapeX<-df.sub.a$shapeX
           shape.level<-levels(as.factor(shapeX))
-
+          ppsz<-df.sub.a$point.size2
           p <-ggplot()
           p<-p+geom_point(data = df.sub.a,
                           aes(x = .data[[set.antivar.2d.slice]],
                               y = .data[[setZZ()]],
                                col=factor(layer2),
-                               #size=point.size2, ## ne marche pas
+                               size=factor(ppsz), 
                                shape=shapeX  
                           ))+
             coord_fixed(ratio.simple())
           p<-p+scale_color_manual(values=myvaluesx2)+
             scale_shape_manual(values=shape.level)+
-            scale_size_manual(values=c(size.scale,min.size2))+
+            scale_size_manual(values=c(min.size2,size.scale))+
             xlab(paste(set.antivar.2d.name))+ylab(nameZ())+
             match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
             theme(axis.title.x = element_text(size=font_size()),
@@ -1287,8 +1319,8 @@ server <- function(input, output, session) {
                   legend.title = element_blank())+
             theme(legend.position='none')
           
-          p<-p+scale_x_continuous(limits= c(xymin,xymax), breaks=seq(floor(min(xymin)),max(xymax),Xtickmarks.size))+
-          scale_y_continuous(limits= c(yymin,yymax),breaks=seq(floor(min(yymin)),max(yymax),Ztickmarks.size()))
+          p<-p+scale_x_continuous(limits= c(xymin,xymax), breaks=seq(floor(min(xymin)),max(xymax),Xtickmarks.size), minor_breaks =seq(floor(min(xymin)),max(xymax),Xminorbreaks()))+
+          scale_y_continuous(limits= c(yymin,yymax),breaks=seq(floor(min(yymin)),max(yymax),Ztickmarks.size()), minor_breaks = seq(floor(min(yymin)),max(yymax),Zminorbreaks()))
           p 
           
 
@@ -1299,7 +1331,7 @@ server <- function(input, output, session) {
   }
   
   
-  #function for color
+#function for color
   color.function<-function (levelofcolor,name,selected_rainbow,loadingfile){  
     uvalues <-levels(as.factor(levelofcolor))
     n <- length(uvalues)
@@ -1348,8 +1380,108 @@ server <- function(input, output, session) {
     )
   } # end of color.function
   
+# function for switching axis
+var.function<-function(var.xyz){
+  var<-setXX()
+  var2<-setYY() 
+  axis.var.name<-nameX()
+  axis.var2.name<-nameY()
+  Xtickmarks.size<-Xtickmarks.size()
+  Ytickmarks.size<-Ytickmarks.size()
+  Xminorbreaks<-Xminorbreaks()
+  Yminorbreaks<-Yminorbreaks()
+  if (var.xyz != "xy"){
+  switch(var.xyz,
+           # xy={
+           #   var<-setXX()
+           #   var2<-setYY() 
+           #   axis.var.name<-nameX()
+           #   axis.var2.name<-nameY()
+           #   Xtickmarks.size<-Xtickmarks.size()
+           #   Ytickmarks.size<-Ytickmarks.size()
+           #   Xminorbreaks<-Xminorbreaks()
+           #   Yminorbreaks<-Yminorbreaks()
+           # },
+           yz={ var<-setYY()
+           var2<-setZZ()
+           axis.var.name<-nameY()
+           axis.var2.name<-nameZ()
+           Xtickmarks.size<-Ytickmarks.size()
+           Ytickmarks.size<-Ztickmarks.size()
+           Xminorbreaks<-Yminorbreaks()
+           Yminorbreaks<-Zminorbreaks()
+           },
+           xz={   var<-setXX()
+           var2<-setZZ()
+           axis.var.name<-nameX()
+           axis.var2.name<-nameZ()
+           Xtickmarks.size<-Xtickmarks.size()
+           Ytickmarks.size<-Ztickmarks.size()
+           Xminorbreaks<-Xminorbreaks()
+           Yminorbreaks<-Zminorbreaks()
+           },
+           yx={ var<-setYY()
+           var2<-setXX()
+           axis.var.name<-nameY()
+           axis.var2.name<-nameX()
+           Xtickmarks.size<-Ytickmarks.size()
+           Ytickmarks.size<-Xtickmarks.size()
+           Xminorbreaks<-Yminorbreaks()
+           Yminorbreaks<-Xminorbreaks()
+           }
+  ) } else {} # enf of if
+    
+    new.list.parameter<-list(var,var2,axis.var.name,axis.var2.name,Xtickmarks.size,Ytickmarks.size,Xminorbreaks,Yminorbreaks)
+    return(new.list.parameter)
+}
+# # function for minor grid
+# minor.grid.info.function<-function(var.xyz,var,var2,Xminorbreaks,Xtickmarks.size,Yminorbreaks,Ytickmarks.size){
+#   Xtval<-seq(floor(min(var.xyz[[var]])),max(var.xyz[[var]]), Xminorbreaks)
+#   Xttxt <- rep("",length(Xtval)) 
+#   Xttxt[seq(1,length(Xtval),Xtickmarks.size)]<-as.character(Xtval)[seq(1,length(Xtval),Xtickmarks.size)]
+#   
+#   Ytval<-seq(floor(min(var.xyz[[var2]])),max(var.xyz[[var2]]), Yminorbreaks)
+#   Yttxt <- rep("",length(Ytval)) 
+#   Yttxt[seq(1,length(Ytval),Ytickmarks.size)]<-as.character(Ytval)[seq(1,length(Ytval),Ytickmarks.size)]
+#   
+#   Ztval<-seq(floor(min(var.xyz[[setZZ()]])),max(var.xyz[[setZZ()]]), Zminorbreaks())
+#   Zttxt <- rep("",length(Ztval)) 
+#   Zttxt[seq(1,length(Ztval),Ztickmarks.size())]<-as.character(Ztval)[seq(1,length(Ztval),Ztickmarks.size())]
+# 
+# minor.grid.info<-list(Xtval,Xttxt,Ytval,Yttxt,Ztval,Zttxt)
+# return(minor.grid.info)
+# }
+
+# function for rotated 2DPlot ----
+rotated.table<-reactive({
+  isTruthy(df.sub())
+  points_start<-df.sub()
+  M <- cbind.data.frame(points_start[,input$setx],points_start[,input$sety])
+  alpha <- input$pi2 # in degree
+  M <- as.matrix(M)
+  # centrage
+  centroid <- colMeans(M)
+  Mc <- M - matrix(centroid, nrow=nrow(M), ncol=2, byrow = TRUE)
+  # matrix of rotation
+  alpha <- alpha/180*pi
+  R <- matrix(c(cos(alpha), sin(alpha), -sin(alpha), cos(alpha)), 2, 2)
+  # rotation
+  Mr <- Mc%*%R
+  # translation to come back at the center
+  Mr <- Mr + matrix(centroid, nrow=nrow(M), ncol=2, byrow = TRUE)
   
-  ##### output loading slide ----
+  # normalisation of data
+  inidataxmax<- points_start[,input$setx]%>%as.numeric()%>%ceiling()%>% max()
+  inidataxmin<- points_start[,input$setx]%>%as.numeric()%>%floor()%>% min()
+  inidataymax<- points_start[,input$sety]%>%as.numeric()%>%ceiling()%>% max()
+  inidataymin<- points_start[,input$sety]%>%as.numeric()%>%floor()%>% min()
+  points_start$x2<-((Mr[,1]-min(Mr[,1]))/(max(Mr[,1])-min(Mr[,1])))*(abs(inidataxmax-inidataxmin))
+  points_start$y2<-((Mr[,2]-min(Mr[,2]))/(max(Mr[,2])-min(Mr[,2])))*(abs(inidataymax-inidataymin))
+  rotated.table<-points_start
+  
+}) 
+
+##### output loading slide ----
   
   liste.x<-reactiveVal(c("X.rotated","x","X","null","SPATIAL..X"))
   observeEvent(input$setx,{
@@ -1453,8 +1585,7 @@ server <- function(input, output, session) {
                 choices = names(df$df)[c(3:ncol(df$df))],
                 selected = liste.passe2())
   }) 
-  
-  
+ 
   output$set.ID=renderUI({
     req(!is.null(fileisupload()))
     selectInput("setID", h4("Unique object ID (Default name: ID)"),
@@ -1496,7 +1627,7 @@ server <- function(input, output, session) {
     nameZ(input$Name.Z)
   })
   
-  #### verification
+##### verification ----
   observeEvent(ignoreInit = TRUE, c(setXX(),setYY(),setZZ(),input$setID), {
     if( sum(is.na(as.numeric(df$df[,input$setx])))>0 || sum(is.na(as.numeric(df$df[,input$sety])))>0 || sum(is.na(as.numeric(df$df[,input$setz])))>0 || (dim(df$df[duplicated(df$df[,input$setID]),])[1]>0 & input$setID != "null")) {
       
@@ -1515,13 +1646,8 @@ server <- function(input, output, session) {
     } 
   })
   
-  ##### import extradata ----
-  ID.no.suppl.data.txt<-reactiveVal("no data")
-  notunique.txt<-reactiveVal("no data")
-  notunique2.txt<-reactiveVal("no data")
-  suppl.no.include.txt<-reactiveVal("no data")
-  
-  observe({
+##### import extradata ----
+observe({
     req(input$file.extradata)
     extension <- tools::file_ext(input$file.extradata$name)
     df$file.extradata <- switch(extension,
@@ -1537,14 +1663,15 @@ server <- function(input, output, session) {
                                 xls = readxl::read_xls(input$file.extradata$datapath),
                                 xlsx = readxl::read_xlsx(input$file.extradata$datapath))
   }) #end observe 
-  output$set.columnID=renderUI({
+  
+output$set.columnID=renderUI({
     req(input$file.extradata)
     req(input$setID)
     selectInput("setcolumnID", h4("Select the unique objects ID)"),
                 choices = names(df$file.extradata),
                 selected = c(paste(input$setID)))
   }) 
-  observeEvent(input$setcolumnID, { ## add two necessary columns for the rest of manipulations
+observeEvent(input$setcolumnID, { ## add two necessary columns for the rest of manipulations
     df$file.extradata2<-df$file.extradata[,!sapply(df$file.extradata, function(x) is.logical(x))] ##remove column whitout data
     df$file.extradata2[sapply(df$file.extradata2, function(x) !is.numeric(x))] <- mutate_all(df$file.extradata2[sapply(df$file.extradata2, function(x) !is.numeric(x))], .funs=str_to_lower)
     temp.data<-df$df[duplicated(df$df[,input$setID]) | duplicated(df$df[,input$setID], fromLast = T),]
@@ -1555,7 +1682,7 @@ server <- function(input, output, session) {
     } else {notunique2.txt("All IDs are unique")}
   }) #end observe 
   
-  observeEvent(input$goButton.set.columnID, {
+observeEvent(input$goButton.set.columnID, {
     req(input$setcolumnID)
     if(input$setID == "null"){ 
       showModal(modalDialog(
@@ -1571,7 +1698,6 @@ server <- function(input, output, session) {
         HTML(paste("Object IDs from the XYZ dataset are not unique. <br>
                  Import refit data required absolutely a unique ID per object"))
       ))
-      
       return()
     }
     names(df$file.extradata2)[match(paste(input$setcolumnID),names(df$file.extradata2))]<-paste(input$setID)
@@ -1581,10 +1707,8 @@ server <- function(input, output, session) {
         HTML(paste("Object IDs from the imported dataset are not unique. <br>
                  Import refit data required absolutely a unique ID per object"))
       ))
-      
       return()
     }
-    
     same.column.to.remove<-intersect(colnames(df$df),colnames(df$file.extradata2)) # remove column with same name
     same.column.to.remove<-same.column.to.remove[same.column.to.remove!=input$setID]
     df$file.extradata3<-df$file.extradata2[!names(df$file.extradata2)%in% c(same.column.to.remove)]
@@ -1603,14 +1727,14 @@ server <- function(input, output, session) {
       relocate(c("shapeX","text","null"))
   })
   
-  ## table to show import extradata ----
+## table to show import extradata ----
   output$notunique<- renderPrint({notunique.txt()})
   output$notunique2<- renderPrint({notunique2.txt()})
   output$suppl.no.include<- renderPrint({suppl.no.include.txt()})
   output$ID.no.suppl.data<- renderPrint({ID.no.suppl.data.txt()})
   
-  ##### import refit data ----
-  observe({
+##### import refit data ----
+observe({
     req(input$file.fit)
     extension <- tools::file_ext(input$file.fit$name)
     df$file.fit <- switch(extension,
@@ -1627,29 +1751,25 @@ server <- function(input, output, session) {
                           xlsx = readxl::read_xlsx(input$file.fit$datapath))
     
   }) #end observe 
-  output$set.columnID.for.fit=renderUI({
+output$set.columnID.for.fit=renderUI({
     req(input$setID)
     selectInput("setcolumnID.for.fit", h4("Select the column recording the unique object ID)"),
                 choices = names(df$file.fit),
                 selected = c(paste(input$setID)))
   }) 
   
-  output$set.REM=renderUI({ 
+output$set.REM=renderUI({ 
     selectInput("setREM", h4("Select the column recording the unique ID of refit groups"),
                 choices= names(df$file.fit),
                 selected = c("fit","refit","Rem","null"))
   }) 
   
-  observeEvent(input$Refit.data.from.XYZ.file, {
+observeEvent(input$Refit.data.from.XYZ.file, {
     updateSelectInput(session,"setcolumnID.for.fit",choices=if(input$Refit.data.from.XYZ.file == FALSE){names(df$file.fit)}else{names(df$df)[3:length(df$df)]},selected=input$setID )
     updateSelectInput(session,"setREM",choices=if(input$Refit.data.from.XYZ.file == FALSE){names(df$file.fit)}else{names(df$df)[3:length(df$df)]},selected=c("fit","REM") )
-    # names(df$file.fit)[!names(df$file.fit) %in% input$setcolumnID.for.fit]
       })
 
-
-  
-  
-  observeEvent(input$goButton.set.columnID.for.fit, {
+observeEvent(input$goButton.set.columnID.for.fit, {
     req(input$setcolumnID.for.fit) 
     req((input$setREM)!="")
     if(input$setID == "null"){ 
@@ -1686,7 +1806,7 @@ server <- function(input, output, session) {
     
   }) 
   
-  observeEvent(data.fit(), {
+observeEvent(data.fit(), {
     req(input$setREM)
     data.REM<-left_join(data.fit(),df$df)
     if(is.na(data.REM$shapeX)[1]==TRUE){ ##test to go next step
@@ -1733,23 +1853,28 @@ server <- function(input, output, session) {
       HTML(paste("Refit data have been merged."))
     ))
   })
-  
-  #### merge two columns ----
-  
-  output$set.col1=renderUI({
+
+## table to show refit ----
+output$Fit.table.output<- renderPrint({
+  if (is.null(data.fit3())) { "no refit"} else {
+    data.fit3()[,4:ncol(data.fit3())]}
+})
+
+#### merge two columns ----
+output$set.col1=renderUI({
     req(!is.null(fileisupload()))
     selectInput("setcol1", h4("Choose a first column"),
                 choices = names(df$df)[c(3:ncol(df$df))],
                 selected = "")
   })   
-  output$set.col2=renderUI({
+output$set.col2=renderUI({
     req(!is.null(fileisupload()))
     selectInput("setcol2", h4("Choose a second column"),
                 choices = names(df$df)[c(3:ncol(df$df))],
                 selected = "")
   })  
   
-  observeEvent(input$Merge2, {
+observeEvent(input$Merge2, {
     new.group<-paste0(df$df[,input$setcol1],input$separatormerge,df$df[,input$setcol2])
     df$df<-cbind(df$df,new.group)
     colnames(df$df)[ncol(df$df)]<-c(input$Merge.groupe)
@@ -1758,15 +1883,8 @@ server <- function(input, output, session) {
                The first value obtained is",df$df[,input$Merge.groupe][1] ))
     ))
   })
-  
-  ## table to show refit ----
-  output$Fit.table.output<- renderPrint({
-    if (is.null(data.fit3())) { "no refit"} else {
-      data.fit3()[,4:ncol(data.fit3())]}
-  })
-  
-  
-  ##### ortho slide import ----
+
+##### ortho slide import ----
   observe({                                  ### ortho xy
     req(input$file2)
     df$ortho.2<-stack(input$file2$datapath) 
@@ -1800,7 +1918,7 @@ server <- function(input, output, session) {
     })
   })
   
-  ##### output sidebar ----
+##### output sidebar ----
   output$liste.Colors=renderUI({
     req(!is.null(fileisupload()))
     selectInput("Colors", h4("Variable to be colored"),
@@ -1894,8 +2012,8 @@ server <- function(input, output, session) {
     } else {}
   })
   
-  
-  ##### output additional Setting slide ----
+ 
+##### output additional Setting slide ----
   
   observeEvent(input$stepXsize, {
     stepX(input$stepXsize)
@@ -1949,7 +2067,6 @@ server <- function(input, output, session) {
   )
   
   observeEvent(input$do.shape1, {
-    #df$df$shapeX<-input$shape
     df$df$shapeX<-factor(input$shape)
   })
   
@@ -1962,16 +2079,14 @@ server <- function(input, output, session) {
   })
   
 output$ratiotocoorsimple2=renderUI({ 
-  
   req(input$advanced.slice==FALSE)
   numericInput("ratio.to.coord.simple.2", label = h5("Ratio figure"), value = 1)
 })
   
-  ####liste infos  ----
+#### liste infos  ----
   observeEvent(req(!is.null(listinfosmarqueur())),{
     df$df$text<-""}
   )
-  
   observeEvent(input$listeinfos.go, {
     req(input$setz)
     req(input$setID)
@@ -1992,23 +2107,22 @@ output$ratiotocoorsimple2=renderUI({
     }
     updateCheckboxGroupInput(session, "listeinfos", selected = selected)
     listinfosmarqueur(NULL)
-  })
+  }) #end of observeevent
   
-  ##### colors ----
-  save.col.react<-reactiveVal()
-  mypaletteofcolors<-reactiveVal()
-  
+##### colors ----
+save.col.react<-reactiveVal()
+mypaletteofcolors<-reactiveVal()
   observeEvent(df$file.color,{ 
     mypaletteofcolors(df$file.color[2])
   })
   
-  basiccolor= reactive({
+basiccolor= reactive({
     req(!is.null(fileisupload()))
     name<-"colorvar"
     color.function(df$df[[inputcolor()]],name,1,mypaletteofcolors())
   }) 
   
-  save.col2<-observeEvent(myvaluesx(),{ 
+save.col2<-observeEvent(myvaluesx(),{ 
     if (length(unlist(myvaluesx()))>1) {
       color<-levels(as.factor(df$df[,inputcolor()]))
       names_of_the_variable<-unlist(myvaluesx())
@@ -2017,8 +2131,7 @@ output$ratiotocoorsimple2=renderUI({
       save.col.react(cbind.data.frame(color,names_of_the_variable))
     }
   })
-  
-  observe({
+observe({
     req(input$file.color)
     extension <- tools::file_ext(input$file.color$name)
     df$file.color <- switch(extension,
@@ -2033,10 +2146,9 @@ output$ratiotocoorsimple2=renderUI({
                                               dec=".")},
                             xls = readxl::read_xls(input$file.color$datapath),
                             xlsx = readxl::read_xlsx(input$file.color$datapath))
-    
   })
 
-  myvaluesx<-reactive({
+myvaluesx<-reactive({
     req(!is.null(fileisupload()))
     myvaluesx <-NULL
     n <- length(unique(df$df[,inputcolor()]))
@@ -2054,11 +2166,10 @@ output$ratiotocoorsimple2=renderUI({
   output$colors2 <- renderUI({
     basiccolor()
   })
-  
-  
-  #color for refits ----
-  data.refit.choose<-reactiveVal(NULL)
-  inputcolor.refit<-reactiveVal("null")
+
+##### color for refits ----
+data.refit.choose<-reactiveVal(NULL)
+inputcolor.refit<-reactiveVal("null")
   
   output$liste.Colors.refit=renderUI({
     req(!is.null(fileisupload()))
@@ -2078,7 +2189,7 @@ output$ratiotocoorsimple2=renderUI({
     
   })
   
-  basiccolorforfit=reactive({
+ basiccolorforfit=reactive({
     if (is.null(inputcolor.refit())) return(NULL)
     data.fit.3D<-data.fit.3D()
     name<-"colorvar.refit"
@@ -2090,7 +2201,7 @@ output$ratiotocoorsimple2=renderUI({
     basiccolorforfit()
   })
   
-  colorvalues<-reactive({
+colorvalues<-reactive({
     req(!is.null(data.fit()))
     colorvalues<-NULL
     n <- length(unique(data.fit.3D()[,input$setID]))
@@ -2102,7 +2213,7 @@ output$ratiotocoorsimple2=renderUI({
     })
   }) # end of Colorvalues
   
-  observeEvent(colorvalues(),{ 
+observeEvent(colorvalues(),{ 
     if (length(unlist(colorvalues()))>1) {
       color<-levels(as.factor(data.fit.3D()[[inputcolor.refit()]]))
       names_of_the_variable<-unlist(colorvalues())
@@ -2110,10 +2221,9 @@ output$ratiotocoorsimple2=renderUI({
       length(names_of_the_variable)<-max(c(length(color),length(names_of_the_variable)))
       save.col.react.fit(cbind.data.frame(color,names_of_the_variable))
     }
-    
   })
   
-  observe({
+observe({
     req(input$file.color.fit)
     extension <- tools::file_ext(input$file.color.fit$name)
     df$file.color.fit <- switch(extension,
@@ -2130,7 +2240,7 @@ output$ratiotocoorsimple2=renderUI({
                                 xlsx = readxl::read_xlsx(input$file.color.fit$datapath))
   })
   
-  ### variable subset refits ----
+##### variable subset refits ----
   react.var.rerefit<-reactiveVal("null")
   react.listevarrefit<-reactiveVal("0")
   
@@ -2157,7 +2267,7 @@ output$ratiotocoorsimple2=renderUI({
   })
   
   
-  ##### ouput 2D and 3D slide ----
+##### ouput 2D and 3D slide ----
   output$sectionXy2=renderUI({
     req(!is.null(fileisupload()))
     req(input$yslider)
@@ -2213,12 +2323,11 @@ output$ratiotocoorsimple2=renderUI({
                              yes = "yes"),
                  selected = "no", inline=TRUE)
   })
-  
-  var.sub2<-reactiveVal()
-  min.point.sliderx<-reactiveVal()
-  min.point.slidery<-reactiveVal()
-  min.point.sliderz<-reactiveVal()
-  set.var.gris<-reactiveVal()
+var.sub2<-reactiveVal()
+min.point.sliderx<-reactiveVal()
+min.point.slidery<-reactiveVal()
+min.point.sliderz<-reactiveVal()
+set.var.gris<-reactiveVal()
   
   observeEvent(input$set.var.gris.2D.1, {
     var.sub2(input$set.var.gris.2D.1)
@@ -2233,21 +2342,20 @@ output$ratiotocoorsimple2=renderUI({
   observeEvent(input$ssectionXz2,{
     min.point.sliderz(input$ssectionXz2)
   })
-  
   observeEvent(input$set.var.gris.2D, {
     set.var.gris(input$set.var.gris.2D)
   }) 
   
   
-  ##### new group slide ----
-  output$liste.newgroup=renderUI({
+##### new group slide ----
+output$liste.newgroup=renderUI({
     req(!is.null(fileisupload()))
     selectInput("listenewgroup", h4("Copy data from another variable (select NULL for a default value of zero)"),
                 choices = names(df$df)[c(3:ncol(df$df))],
                 selected = c("null"))
   })
-  values <- reactiveValues(newgroup = NULL)
-  create.newgroup <- observeEvent(input$go.ng, {
+values <- reactiveValues(newgroup = NULL)
+create.newgroup <- observeEvent(input$go.ng, {
     new.group<-df$df[,input$listenewgroup]
     req(!isTruthy(input$text.new.group == values$newgroup)) ## block if two same names exist because problems later
     values$newgroup <- c(values$newgroup, input$text.new.group)
@@ -2256,7 +2364,7 @@ output$ratiotocoorsimple2=renderUI({
     
   })
   
-  output$brushed<- renderPrint({
+output$brushed<- renderPrint({
     g1 <- df$df
     d <- event_data('plotly_selected')
     if (is.null(d)) return()
@@ -2265,15 +2373,19 @@ output$ratiotocoorsimple2=renderUI({
       return()
     }
     dd <- cbind(d[[3]],d[[4]])
-    switch(input$var1,
-           xy={var<-setXX()
-           var2<-setYY()       },
-           yz={   var<-setYY() 
-           var2<-setZZ()     },
-           xz={   var<-setXX()
-           var2<-setZZ()    },
-           yx={   var<-setYY() 
-           var2<-setXX() })
+  
+    list.parameter.info<-var.function(input$var1)
+    var2<-list.parameter.info[[2]]      
+    
+    # switch(input$var1,
+    #        xy={var<-setXX()
+    #        var2<-setYY()       },
+    #        yz={   var<-setYY() 
+    #        var2<-setZZ()     },
+    #        xz={   var<-setXX()
+    #        var2<-setZZ()    },
+    #        yx={   var<-setYY() 
+    #        var2<-setXX() })
     
     WW<-which(g1[[var]] %in% dd[,1] & g1[[var2]] %in% dd[,2]) 
     vv<-df$df[WW,3:ncol(df$df)]
@@ -2291,7 +2403,7 @@ output$ratiotocoorsimple2=renderUI({
     removeModal()
   }) # end of Observe Event
   
-  #rename
+#rename
   output$liste.newgroup2=renderUI({
     req(!is.null(fileisupload()))
     selectInput("liste.newgroup.rename", label = h5("Select the new group"), 
@@ -2311,7 +2423,7 @@ output$ratiotocoorsimple2=renderUI({
   })
   
   
-  ##### simplification to checkboxgroupinput----
+##### simplification to checkboxgroupinput ----
   observeEvent(input$all_artifact_entry, {
     req(input$setnature)
     updateCheckboxGroupInput(session, "Nature", 
@@ -2327,8 +2439,8 @@ output$ratiotocoorsimple2=renderUI({
     updateCheckboxGroupInput(session, "UAS", 
                              selected = FALSE)})
   
-  ##### creation df.sub----
-  df.sub <- reactive({ # that would be used to create plot
+##### creation df.sub that would be used to create plot ----
+df.sub <- reactive({ 
     req(!is.null(fileisupload()))  
     req(!is.null(input$xslider))
     req(inputcolor())
@@ -2359,10 +2471,10 @@ output$ratiotocoorsimple2=renderUI({
       filter(.data[[input$sety]] >= input$yslider[1], .data[[input$sety]] <= input$yslider[2]) %>% 
       filter(.data[[input$setz]] >= input$zslider[1], .data[[input$setz]] <= input$zslider[2])
     df.sub
-  })    # end of df.sub reactive
+  })  # end of df.sub reactive
   
   
-  ##### creation df.sub.minpoint----
+##### creation df.sub.minpoint ----
   df.sub.minpoint <- reactive({ 
     df.sub.minpoint<-df.sub()
     if(!is.null(set.var.gris())) {
@@ -2381,37 +2493,9 @@ output$ratiotocoorsimple2=renderUI({
     
   }) # end of df.sub reactive 
   
-  ### function for rotated 2DPlot ----
-  rotated.table<-reactive({
-    isTruthy(df.sub())
-    points_start<-df.sub()
-    M <- cbind.data.frame(points_start[,input$setx],points_start[,input$sety])
-    alpha <- input$pi2 # in degree
-    M <- as.matrix(M)
-    # centrage
-    centroid <- colMeans(M)
-    Mc <- M - matrix(centroid, nrow=nrow(M), ncol=2, byrow = TRUE)
-    # matrix of rotation
-    alpha <- alpha/180*pi
-    R <- matrix(c(cos(alpha), sin(alpha), -sin(alpha), cos(alpha)), 2, 2)
-    # rotation
-    Mr <- Mc%*%R
-    # translation to come back at the center
-    Mr <- Mr + matrix(centroid, nrow=nrow(M), ncol=2, byrow = TRUE)
-    
-    # normalisation of data
-    inidataxmax<- points_start[,input$setx]%>%as.numeric()%>%ceiling()%>% max()
-    inidataxmin<- points_start[,input$setx]%>%as.numeric()%>%floor()%>% min()
-    inidataymax<- points_start[,input$sety]%>%as.numeric()%>%ceiling()%>% max()
-    inidataymin<- points_start[,input$sety]%>%as.numeric()%>%floor()%>% min()
-    points_start$x2<-((Mr[,1]-min(Mr[,1]))/(max(Mr[,1])-min(Mr[,1])))*(abs(inidataxmax-inidataxmin))
-    points_start$y2<-((Mr[,2]-min(Mr[,2]))/(max(Mr[,2])-min(Mr[,2])))*(abs(inidataymax-inidataymin))
-    rotated.table<-points_start
-    
-  }) 
-  
-  ##### output.contents ----  
-  output$contents <- renderTable({
+ 
+##### output.contents ----  
+output$contents <- renderTable({
     req(!is.null(fileisupload()))
     isTruthy(df.sub())
     df.5<-df.sub()[1:10,]
@@ -2425,7 +2509,7 @@ output$ratiotocoorsimple2=renderUI({
   })
   
   
-  #### 3D plot ----
+##### 3D plot ----
   output$plot3Dbox <- renderUI({
     plotlyOutput("plot3d", height = height.size())
   })
@@ -2470,24 +2554,42 @@ output$ratiotocoorsimple2=renderUI({
                    line = list(color=~data.fit.3D$color.fit),
                    type = "scatter3d", mode = "lines", showlegend = legendplotlyfig(), inherit = F)
     }
+
+    Xtval<-seq(floor(min(df.sub[[setXX()]])),max(df.sub[[setXX()]]),Xminorbreaks())
+    Xttxt <- rep("",length(Xtval)) 
+    Xttxt[seq(1,length(Xtval),Xtickmarks.size())]<-as.character(Xtval)[seq(1,length(Xtval),Xtickmarks.size())]
+    
+    Ytval<-seq(floor(min(df.sub[[setYY()]])),max(df.sub[[setYY()]]), Yminorbreaks())
+    Yttxt <- rep("",length(Ytval)) 
+    Yttxt[seq(1,length(Ytval),Ytickmarks.size())]<-as.character(Ytval)[seq(1,length(Ytval),Ytickmarks.size())]
+    
+    Ztval<-seq(floor(min(df.sub[[setZZ()]])),max(df.sub[[setZZ()]]), Zminorbreaks())
+    Zttxt <- rep("",length(Ztval)) 
+    Zttxt[seq(1,length(Ztval),Ztickmarks.size())]<-as.character(Ztval)[seq(1,length(Ztval),Ztickmarks.size())]
+    
     p <- p %>% layout(
       showlegend = legendplotlyfig(),
       scene = list(
         xaxis = list(title = nameX(),
                      dtick = Xtickmarks.size(), 
-                     tick0 = floor(min(df.sub[,input$setx])), 
-                     tickmode = "linear",
+                     #tick0 = floor(min(df.sub[,setXX()])), 
+                     #tickmode = "linear",
+                     tickvals=Xtval,
+                     ticktext=Xttxt,
                      titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
-        
         yaxis = list(title = nameY(),
                      dtick = Ytickmarks.size(), 
-                     tick0 = floor(min(df.sub[,input$sety])), 
-                     tickmode = "linear",
+                     #tick0 = floor(min(df.sub[,setYY()])), 
+                     #tickmode = "linear",
+                     tickvals=Ytval,
+                     ticktext=Yttxt,
                      titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
         zaxis = list(title = nameZ(),
                      dtick = Ztickmarks.size(), 
-                     tick0 = floor(min(df.sub[,input$setz])), 
-                     tickmode = "linear",
+                     #tick0 = floor(min(df.sub[,setZZ()])), 
+                     #tickmode = "linear",
+                     tickvals=Ztval,
+                     ticktext=Zttxt,
                      titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
 
         camera = list(projection = list(type = 'orthographic')),
@@ -2506,9 +2608,9 @@ output$ratiotocoorsimple2=renderUI({
     p
   })
   
-  
-  #### 2D plot ---- 
-  ##advanced plot
+ 
+##### 2D plot ---- 
+##advanced plot ----
   output$plot2Dbox <- renderUI({
     plotlyOutput("sectionYplot", height = height.size())
   })
@@ -2522,7 +2624,7 @@ output$ratiotocoorsimple2=renderUI({
     min.size2<-minsize()
     orthofile<-NULL
     if (input$var.ortho == "yes" ){
-      orthofile <- switch(input$var1,
+    orthofile <- switch(input$var1,
                           xy = if(!is.null(input$file2)) {stack(input$file2$datapath)},
                           yx = if(!is.null(input$file5)) {stack(input$file5$datapath)},
                           xz = if(!is.null(input$file3)) {stack(input$file3$datapath)},
@@ -2531,45 +2633,30 @@ output$ratiotocoorsimple2=renderUI({
     
     height.size2<-height.size()
     width.size2 <- width.size()
-
-    isolate ({
-      df.sub2<-df.sub() 
+    
+    
+    
+    list.parameter.info<-var.function(input$var1)
+    var<-list.parameter.info[[1]]
+    var2<-list.parameter.info[[2]]      
+    axis.var.name<-list.parameter.info[[3]]
+    axis.var2.name<-list.parameter.info[[4]]
+    Xtickmarks.size<-list.parameter.info[[5]]
+    Ytickmarks.size<-list.parameter.info[[6]]
+    Xminorbreaks<-list.parameter.info[[7]]
+    Yminorbreaks<-list.parameter.info[[8]]
+    
+    
+  isolate ({
+    df.sub2<-df.sub() 
+   # minor.grid.info<-minor.grid.info.function(df.sub2,var,var2,Xminorbreaks,Xtickmarks.size,Yminorbreaks,Ytickmarks.size)
+    
       df.sub3<-df.sub.minpoint()
       myvaluesx<-unlist(myvaluesx())
       size.scale <- size.scale()
       if (nrow(df.sub3)>0){
         df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-        
       }
-      switch(input$var1,
-             xy={var<-setXX()
-             var2<-setYY()       
-             axis.var.name<-nameX()
-             axis.var2.name<-nameY()
-             Xtickmarks.size<-Xtickmarks.size()
-             Ytickmarks.size<-Ytickmarks.size()
-             },
-             yz={   var<-setYY() 
-             var2<-setZZ()     
-             axis.var.name<-nameY()
-             axis.var2.name<-nameZ()
-             Xtickmarks.size<-Ytickmarks.size()
-             Ytickmarks.size<-Ztickmarks.size()},
-             xz={   var<-setXX()
-             var2<-setZZ()   
-             axis.var.name<-nameX()
-             axis.var2.name<-nameZ()
-             Xtickmarks.size<-Xtickmarks.size()
-             Ytickmarks.size<-Ztickmarks.size()
-             },
-             yx={   var<-setYY() 
-             var2<-setXX() 
-             axis.var.name<-nameY()
-             axis.var2.name<-nameX()
-             Xtickmarks.size<-Ytickmarks.size()
-             Ytickmarks.size<-Xtickmarks.size()}
-      )
-      
       shapeX<-df.sub2$shapeX
       shape.level<-levels(as.factor(shapeX))
 
@@ -2614,21 +2701,34 @@ output$ratiotocoorsimple2=renderUI({
           
         } # end of refit 
         
-        p <-  p %>% layout(showlegend = legendplotlyfig(),
-                           scene = list( aspectmode = "manual",
-                                          aspectratio=list(x=ratiox(),y=ratioy()),
-                                           autosize=FALSE),
-                           xaxis = list(title = paste(axis.var.name),
-                                        dtick = Xtickmarks.size, 
-                                        tick0 = floor(min(df.sub2[[var]])), 
-                                        tickmode = "linear",titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
-                           
-                           yaxis = list(title = paste(axis.var2.name),
-                                        dtick = Ytickmarks.size, 
-                                        tick0 = floor(min(df.sub2[[var2]])), 
-                                        tickmode = "linear",
+        Xtval<-seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xminorbreaks)
+        Xttxt <- rep("",length(Xtval)) 
+        Xttxt[seq(1,length(Xtval),Xtickmarks.size)]<-as.character(Xtval)[seq(1,length(Xtval),Xtickmarks.size)]
+        
+        Ytval<-seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]), Yminorbreaks)
+        Yttxt <- rep("",length(Ytval)) 
+        Yttxt[seq(1,length(Ytval),Ytickmarks.size)]<-as.character(Ytval)[seq(1,length(Ytval),Ytickmarks.size)]
+        
+        
+         p <-  p %>% layout(showlegend = legendplotlyfig(),
+                          scene = list( aspectmode = "manual",
+                                           aspectratio=list(x=ratiox(),y=ratioy()),
+                                            autosize=FALSE),
+                          xaxis = list(title = paste(axis.var.name),
+                                         dtick = Xtickmarks.size, 
+                                         tick0 = floor(min(df.sub2[[var]])), 
+                                         #tickmode = "linear",
+                                          tickvals=Xtval,
+                                          ticktext=Xttxt,
+                                          titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+                          yaxis = list(title = paste(axis.var2.name),
+                                        dtick = Ytickmarks.size,
+                                        tick0 = floor(min(df.sub2[[var2]])),
+                                        #tickmode = "linear",
+                                          tickvals=Ytval,
+                                          ticktext=Yttxt,
                                         titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
-
+    
                            dragmode = "select")%>%
           event_register("plotly_selecting")
         
@@ -2659,29 +2759,23 @@ output$ratiotocoorsimple2=renderUI({
           if (is.null(colorvalues)) {
             data.fit.3D$color.fit <-c("black")
           }
-          data.fit.3D<-data.fit3() %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
+          data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
+          
+
+          # to have black color for refit several origins
+          if (length(levels(as.factor(data.fit.3D$color.fit)))>1){
+            for (i in 1:length(levels(as.factor(data.fit.3D[,input$setREM])))) {
+              data.fit.3D.2<-data.fit.3D[data.fit.3D[,input$setREM]==levels(as.factor(data.fit.3D[,input$setREM]))[i],]
+              if (is.na(data.fit.3D.2[[inputcolor.refit()]] != data.fit.3D.2[[paste0(inputcolor.refit(),".2")]]) || data.fit.3D.2[[inputcolor.refit()]] != data.fit.3D.2[[paste0(inputcolor.refit(),".2")]]){
+                data.fit.3D$color.fit[((data.fit.3D[,setXX()] %in% data.fit.3D.2[,setXX()]) & (data.fit.3D[,setYY()] %in% data.fit.3D.2[,setYY()]) & (data.fit.3D[,setZZ()] %in% data.fit.3D.2[,setZZ()]))]<-c("#000000") # Black color for refit variable mixing 
+              }}} #end of if
+          
+        
           data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
-          
-          switch(input$var1,
-                 xy={
-                   varend<-"xend"
-                   var2end<- "yend"
-                 },
-                 yz={
-                   varend<-"yend"
-                   var2end<- "zend"
-                 },
-                 xz={
-                   varend<-"xend"
-                   var2end<- "zend"
-                 },
-                 yx={
-                   varend<-"yend"
-                   var2end<- "xend"
-                 })
-          
+          varend<-str_to_lower(paste0(var,"end"))
+          var2end<-str_to_lower(paste0(var2,"end"))
           p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
-                                                  yend=.data[[var2end]]), color=data.fit.3D$color.fit,linewidth=input$w2, inherit.aes = F)
+                                                  yend=.data[[var2end]]), color=data.fit.3D$color.fit, size=input$w2, inherit.aes = F)
         }
         
         p<-p+scale_fill_manual(values=myvaluesx2)+
@@ -2695,8 +2789,8 @@ output$ratiotocoorsimple2=renderUI({
                 axis.text.y = element_text(size=font_tick()),
                 legend.title = element_blank())+
           theme(legend.position='none')
-        p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xtickmarks.size))+
-          scale_y_continuous(breaks=seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Ytickmarks.size))
+        p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xtickmarks.size), minor_breaks = seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xminorbreaks))+
+          scale_y_continuous(breaks=seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Ytickmarks.size), minor_breaks = seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Yminorbreaks))
       }
       p <-p %>%
         config(displaylogo = FALSE,
@@ -2709,7 +2803,7 @@ output$ratiotocoorsimple2=renderUI({
     
   }) #plot2D.react
   
-  ## simple 2D plot
+## simple 2D plot ----
   output$plot2Dbox.simple <- renderUI({
     plotOutput("sectionYplot.simple", height = height.size(), width = width.size())
   })
@@ -2737,42 +2831,22 @@ output$ratiotocoorsimple2=renderUI({
     # to correct the color for ggplot2
     myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub2$layer2)))]
 
-  ####
-   
     if (nrow(df.sub3)>0){
       df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-      
     }
-    switch(input$var1.simple,
-           xy={var<-setXX()
-           var2<-setYY()       
-           axis.var.name<-nameX()
-           axis.var2.name<-nameY()
-           Xtickmarks.size<-Xtickmarks.size()
-           Ytickmarks.size<-Ytickmarks.size()
-           },
-           yz={   var<-setYY() 
-           var2<-setZZ()     
-           axis.var.name<-nameY()
-           axis.var2.name<-nameZ()
-           Xtickmarks.size<-Ytickmarks.size()
-           Ytickmarks.size<-Ztickmarks.size()},
-           xz={   var<-setXX()
-           var2<-setZZ()   
-           axis.var.name<-nameX()
-           axis.var2.name<-nameZ()
-           Xtickmarks.size<-Xtickmarks.size()
-           Ytickmarks.size<-Ztickmarks.size()
-           },
-           yx={   var<-setYY() 
-           var2<-setXX() 
-           axis.var.name<-nameY()
-           axis.var2.name<-nameX()
-           Xtickmarks.size<-Ytickmarks.size()
-           Ytickmarks.size<-Xtickmarks.size()}
-    )
     
-    shapeX<-df.sub2$shapeX
+    list.parameter.info<-var.function(input$var1.simple)
+    var<-list.parameter.info[[1]]
+    var2<-list.parameter.info[[2]]      
+    axis.var.name<-list.parameter.info[[3]]
+    axis.var2.name<-list.parameter.info[[4]]
+    Xtickmarks.size<-list.parameter.info[[5]]
+    Ytickmarks.size<-list.parameter.info[[6]]
+    Xminor.breaks<-list.parameter.info[[7]]
+    Yminor.breaks<-list.parameter.info[[8]]
+    
+    
+        shapeX<-df.sub2$shapeX
     shape.level<-levels(as.factor(shapeX))
     point.size3<-as.factor(df.sub2$point.size2)
     
@@ -2804,29 +2878,22 @@ output$ratiotocoorsimple2=renderUI({
         data.fit.3D$color.fit <-c("black")
       }
       data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
+      
+      
+      # to have black color for refit several origins
+      if (length(levels(as.factor(data.fit.3D$color.fit)))>1){
+        for (i in 1:length(levels(as.factor(data.fit.3D[,input$setREM])))) {
+          data.fit.3D.2<-data.fit.3D[data.fit.3D[,input$setREM]==levels(as.factor(data.fit.3D[,input$setREM]))[i],]
+          if (is.na(data.fit.3D.2[[inputcolor.refit()]] != data.fit.3D.2[[paste0(inputcolor.refit(),".2")]]) || data.fit.3D.2[[inputcolor.refit()]] != data.fit.3D.2[[paste0(inputcolor.refit(),".2")]]){
+            data.fit.3D$color.fit[((data.fit.3D[,setXX()] %in% data.fit.3D.2[,setXX()]) & (data.fit.3D[,setYY()] %in% data.fit.3D.2[,setYY()]) & (data.fit.3D[,setZZ()] %in% data.fit.3D.2[,setZZ()]))]<-c("#000000") # Black color for refit variable mixing 
+              }}} #end of if
+      
       data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
-
-      
-      switch(input$var1.simple,
-             xy={
-               varend<-"xend"
-               var2end<- "yend"
-             },
-             yz={
-               varend<-"yend"
-               var2end<- "zend"
-             },
-             xz={
-               varend<-"xend"
-               var2end<- "zend"
-             },
-             yx={
-               varend<-"yend"
-               var2end<- "xend"
-             })
-      
+       varend<-str_to_lower(paste0(var,"end"))
+       var2end<-str_to_lower(paste0(var2,"end"))
+ 
       p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
-                                              yend=.data[[var2end]]), color=data.fit.3D$color.fit,linewidth=input$w2, inherit.aes = F)
+                                              yend=.data[[var2end]]), color=data.fit.3D$color.fit, size=input$w2, inherit.aes = F)
     }
     p<-p+scale_color_manual(values=myvaluesx2)+
       scale_shape_manual(values=shape.level)+
@@ -2840,14 +2907,15 @@ output$ratiotocoorsimple2=renderUI({
             legend.title = element_blank())+
       theme(legend.position='none')
 
-    p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xtickmarks.size))+
-      scale_y_continuous(breaks=seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Ytickmarks.size))
+
+    p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xtickmarks.size), minor_breaks = seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xminor.breaks))+
+      scale_y_continuous(breaks=seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Ytickmarks.size), minor_breaks = seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Yminor.breaks))
     p   
 
   }) #end plot2D.react 
   
   
-  ##### 2D slice ---- 
+##### 2D slice ---- 
   set.var.2d.slice<-reactiveVal()
   output$range.2d.slice=renderUI({
     req(!is.null(fileisupload()))
@@ -2909,10 +2977,8 @@ output$ratiotocoorsimple2=renderUI({
       }
     
   })
-  
-  
-  output$plot.2dslide <- renderUI({
-    
+
+output$plot.2dslide <- renderUI({
     ns <- session$ns
     tagList(
       lapply(1:ratio.slice(),
@@ -2923,8 +2989,8 @@ output$ratiotocoorsimple2=renderUI({
     )
   })
   
-  ##### output sectiondensityplot slide ----  
-  output$plotdens <- renderUI({
+##### output sectiondensityplot slide ----  
+output$plotdens <- renderUI({
     plotOutput("sectiondensityplot", height = height.size(), width = width.size())
   })
   
@@ -2949,48 +3015,28 @@ output$ratiotocoorsimple2=renderUI({
                           xz = if(!is.null(input$file3)) {stack(input$file3$datapath)},
                           yz = if(!is.null(input$file4)) {stack(input$file4$datapath)}) }
     
-    switch(input$var3,
-           xy={
-             df.sub4$var<-df.sub4[,input$setx]
-             df.sub4$var2<- df.sub4[,input$sety]
-             nameaxis<-c(nameX(),nameY()) 
-             Xtickmarks.size<-Xtickmarks.size()
-             Ytickmarks.size<-Ytickmarks.size()
-             },
-           yz={
-             df.sub4$var<-df.sub4[,input$sety]
-             df.sub4$var2<- df.sub4[,input$setz]
-             nameaxis<-c(nameY(),nameZ()) 
-             Xtickmarks.size<-Ytickmarks.size()
-             Ytickmarks.size<-Ztickmarks.size()},
-           xz={
-             df.sub4$var<-df.sub4[,input$setx]
-             df.sub4$var2<- df.sub4[,input$setz]
-             nameaxis<-c(nameX(),nameZ())
-             Xtickmarks.size<-Xtickmarks.size()
-             Ytickmarks.size<-Ztickmarks.size()},
-           yx={
-             df.sub4$var<-df.sub4[,input$sety]
-             df.sub4$var2<- df.sub4[,input$setx]
-             nameaxis<-c(nameY(),nameX())
-             Xtickmarks.size<-Ytickmarks.size()
-             Ytickmarks.size<-Xtickmarks.size()}
-           
-    )
+    list.parameter.info<-var.function(input$var3)
+    var<-list.parameter.info[[1]]
+    var2<-list.parameter.info[[2]] 
+    nameaxis<-c(list.parameter.info[[3]],list.parameter.info[[4]])
+    Xtickmarks.size<-list.parameter.info[[5]]
+    Ytickmarks.size<-list.parameter.info[[6]]
+    Xminor.breaks<-list.parameter.info[[7]]
+    Yminor.breaks<-list.parameter.info[[8]]
     
-    df.sub4$density <- get_density(df.sub4$var, df.sub4$var2, n = 100)
-    
+     df.sub4$density <- get_density(df.sub4[[var]], df.sub4[[var2]], n = 100)
+
     # to correct the color for ggplot2
      myvaluesx2<-myvaluesx[levels(as.factor(df$df[[inputcolor()]])) %in% levels(as.factor(df.sub4[[inputcolor()]]))]
     # Density curve of x left panel 
-    ydensity <- ggplot(df.sub4, aes(var, fill=factor(.data[[inputcolor()]]))) + 
+    ydensity <- ggplot(df.sub4, aes(.data[[var]], fill=factor(.data[[inputcolor()]]))) + 
       geom_density(alpha=.5) + 
       scale_fill_manual( values = myvaluesx2)+
       match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
       theme(legend.position = "none")
-    
+
     # Density curve of y right panel 
-    zdensity <- ggplot(df.sub4, aes(var2, fill=factor(.data[[inputcolor()]]))) + 
+    zdensity <- ggplot(df.sub4, aes(.data[[var2]], fill=factor(.data[[inputcolor()]]))) + 
       geom_density(alpha=.5) + 
       scale_fill_manual( values = myvaluesx2)+match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
       theme(legend.position = "none")+coord_flip()
@@ -3006,10 +3052,10 @@ output$ratiotocoorsimple2=renderUI({
             axis.text.y = element_blank(),
             axis.ticks = element_blank()
       )
-    
+ 
     if (is.null(orthofile)){
-      p<-ggplot(df.sub4,aes(var, var2, color = density)) + 
-        geom_point(aes(var, var2, color = density), alpha=transpar(), size=df.sub4$point.size2)+ 
+      p<-ggplot(df.sub4,aes(.data[[var]], .data[[var2]], color = density)) + 
+        geom_point(aes(.data[[var]], .data[[var2]], color = density), alpha=transpar(), size=df.sub4$point.size2)+ 
         scale_size_manual(values=c(size.scale,min.size2))+
         labs(x = nameaxis[1],y = nameaxis[2])+
         match.fun(stringr::str_sub(themeforfigure.choice(), 1, -3))()+
@@ -3027,21 +3073,20 @@ output$ratiotocoorsimple2=renderUI({
                                  b = 3,
                                  maxpixels =500000,
                                  ggLayer = T) +
-      geom_point(df.sub4,mapping=aes(var, var2, color = density),alpha=transpar(), size=input$point.size3)+
+      geom_point(df.sub4,mapping=aes(.data[[var]], .data[[var2]], color = density),alpha=transpar(), size=df.sub4$point.size2)+
       labs(x = nameaxis[1],y = nameaxis[2])
     }
     
     if (input$var.plotlyg.lines== "yes") {
-      p<-p+geom_density_2d(mapping=aes(var, var2, color = ..level..),data=df.sub4)}
-    
+    p<-p+geom_density_2d(mapping=aes(.data[[var]],.data[[var2]], color = after_stat(level)),data=df.sub4)}
     p<-p+scale_color_viridis()+
       guides(fill = guide_legend(title = "Level"))+
       theme(axis.title.x = element_text(size=font_size()),
             axis.title.y = element_text(size=font_size()),
             axis.text.x = element_text(size=font_tick()),
             axis.text.y = element_text(size=font_tick()),)
-    p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub4$var)),max(df.sub4$var),Xtickmarks.size))+
-      scale_y_continuous(breaks=seq(floor(min(df.sub4$var2)),max(df.sub4$var2),Ytickmarks.size))
+    p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub4[[var]])),max(df.sub4[[var]]),Xtickmarks.size),minor_breaks = seq(floor(min(df.sub4[[var]])),max(df.sub4[[var]]),Xminor.breaks))+
+      scale_y_continuous(breaks=seq(floor(min(df.sub4[[var2]])),max(df.sub4[[var2]]),Ytickmarks.size), minor_breaks = seq(floor(min(df.sub4[[var2]])),max(df.sub4[[var2]]),Yminor.breaks))
     
     if (input$var.density.curves== "yes") {   
       
@@ -3051,11 +3096,10 @@ output$ratiotocoorsimple2=renderUI({
     } else {
       p} 
     session_store$plotdensity <- p
-    
     p
   }) #end output$sectiondensityplot  
   
-  observeEvent(input$transferxyz,{
+observeEvent(input$transferxyz,{
     
     if (dim(df$df[duplicated(df$df[,input$setID]),])[1]>0) { 
       showModal(modalDialog(
@@ -3123,17 +3167,29 @@ output$ratiotocoorsimple2=renderUI({
                 width=width.size()
     )
     
+    Xtval<-seq(floor(min(df.sub5[["x2"]])),max(df.sub5[["x2"]]),Xminorbreaks())
+    Xttxt <- rep("",length(Xtval)) 
+    Xttxt[seq(1,length(Xtval),Xtickmarks.size())]<-as.character(Xtval)[seq(1,length(Xtval),Xtickmarks.size())]
+    
+    Ytval<-seq(floor(min(df.sub5[["y2"]])),max(df.sub5[["y2"]]), Yminorbreaks())
+    Yttxt <- rep("",length(Ytval)) 
+    Yttxt[seq(1,length(Ytval),Ytickmarks.size())]<-as.character(Ytval)[seq(1,length(Ytval),Ytickmarks.size())]
+    
     p <- p %>% layout(showlegend = legendplotlyfig(),
                       scene = list(aspectratio=list(x=ratiox(),y=ratioy(),z=ratioz())),
                       xaxis = list(title=paste0(nameX()," modified"),
                                    dtick = Xtickmarks.size(), 
+                                   tickvals=Xtval,
+                                   ticktext=Xttxt,
                                    tick0 = floor(min(df.sub5[["x2"]])), 
-                                   tickmode = "linear",
+                                   #tickmode = "linear",
                                    titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
                       yaxis=list(title=paste(nameY()," modified"),
                                  dtick = Ytickmarks.size(), 
+                                 tickvals=Ytval,
+                                 ticktext=Yttxt,
                                  tick0 = floor(min(df.sub5[["y2"]])), 
-                                 tickmode = "linear",
+                                 #tickmode = "linear",
                                  titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
                       dragmode = "select")%>%
       event_register("plotly_selecting") 
@@ -3161,16 +3217,17 @@ output$ratiotocoorsimple2=renderUI({
     df.sub5<-as.data.frame(df.sub5)
     df.sub5$var2<- df.sub5[,input$setz]
     
-    switch(input$var.section2D,
-           xz={var<-"x2"
-           var3<-paste0(nameX()," modified")},
-           yz={   var<-"y2"
-           var3<-paste0(nameY()," modified") })
+     switch(input$var.section2D,
+            xz={var<-"x2"
+            var3<-paste0(nameX()," modified")},
+            yz={   var<-"y2"
+            var3<-paste0(nameY()," modified") })
+
     shapeX<-df.sub5$shapeX
     shape.level<-levels(as.factor(shapeX))
     df.sub5$point.size2<-size.scale()
     
-    p<- plot_ly(df.sub5, x = ~df.sub5[[var]], y = ~df.sub5[,input$setz],
+    p<- plot_ly(df.sub5, x = ~df.sub5[[var]], y = ~df.sub5[[setZZ()]],
                 type="scatter",
                 color = ~layer2,
                 colors = myvaluesx,
@@ -3187,17 +3244,29 @@ output$ratiotocoorsimple2=renderUI({
                 height=height.size(),
                 width=width.size()
     )
+    Xtval<-seq(floor(min(df.sub5[[var]])),max(df.sub5[[var]]),Xminorbreaks())
+    Xttxt <- rep("",length(Xtval)) 
+    Xttxt[seq(1,length(Xtval),Xtickmarks.size())]<-as.character(Xtval)[seq(1,length(Xtval),Xtickmarks.size())]
+    
+    Ytval<-seq(floor(min(df.sub5[[setZZ()]])),max(df.sub5[[setZZ()]]), Zminorbreaks())
+    Yttxt <- rep("",length(Ytval)) 
+    Yttxt[seq(1,length(Ytval),Ztickmarks.size())]<-as.character(Ytval)[seq(1,length(Ytval),Ztickmarks.size())]
+    
     p <-p %>% layout(showlegend = legendplotlyfig(),
                      scene = list(aspectratio=list(x=ratiox(),y=ratioy(),z=ratioz())),
                      xaxis = list(title=paste0(var3),
                                   dtick = Xtickmarks.size(), 
                                   tick0 = floor(min(df.sub5[[var]])), 
-                                  tickmode = "linear",
+                                  tickvals=Xtval,
+                                  ticktext=Xttxt,
+                                  #tickmode = "linear",
                                   titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
                      yaxis=list(title=paste(nameZ()),
                                 dtick = Ytickmarks.size(), 
+                                tickvals=Ytval,
+                                ticktext=Yttxt,
                                 tick0 = floor(min(df.sub5[,input$setz])), 
-                                tickmode = "linear",
+                               # tickmode = "linear",
                                 titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
                      dragmode = "select")%>%
       event_register("plotly_selecting")
@@ -3209,8 +3278,8 @@ output$ratiotocoorsimple2=renderUI({
     
   })
   
-  ##### download button ---- 
-  #3D plot
+##### download button ---- 
+  ##3D plot
   output$downloadData3D <- downloadHandler(
     filename = function() {
       paste("plot3D - ",paste(input$file1$name)," - ", Sys.Date(), ".html", sep="")
@@ -3298,8 +3367,7 @@ output$ratiotocoorsimple2=renderUI({
       write.table(save.col.react.fit(), file, row.names = FALSE, sep=";",dec=".")
     }
   )
-  
-  
+
   #rotated table
   output$downloadData_rotateddata<- downloadHandler( 
     filename = function() {
@@ -3310,7 +3378,7 @@ output$ratiotocoorsimple2=renderUI({
     }
   )
   
-  ##### output summary slide ----
+##### output summary slide ----
   output$liste.summary=renderUI({
     req(!is.null(fileisupload()))
     checkboxGroupInput("listesum", h4("Variables for summary table"),
@@ -3342,7 +3410,7 @@ output$ratiotocoorsimple2=renderUI({
   )#end renderDataTable
   
   
-  ####button example of Cassenade ----
+#### button example of Cassenade ----
   observeEvent(input$button_example, {
   updateTabsetPanel(session, "mainpanel",
                       selected = "Load data")
@@ -3352,16 +3420,11 @@ output$ratiotocoorsimple2=renderUI({
     url_file2="https://raw.githubusercontent.com/AurelienRoyer/SEAHORS/main/Example%20dataset/REMONTAGES.csv"
     df$file.fit<-read.csv(url_file2, sep=";",header = T)
     getdata.launch(1)
-    
-    
-    
-    
-    
+
   })
   
-  
-  
-  #### rmarkdown report template ----
+
+#### rmarkdown report template ----
   
   w.report<-function(){ 
     writeLines(con = "report.Rmd", text = "---
