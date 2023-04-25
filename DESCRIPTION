@@ -36,7 +36,8 @@ Imports:
     rmarkdown,
 	htmlwidgets
 Suggests: 
-    markdown
+    markdown,
+    knitr
 VignetteBuilder: knitr
 URL: https://github.com/AurelienRoyer/SEAHORS
 BugReports: https://github.com/AurelienRoyer/SEAHORS/issues

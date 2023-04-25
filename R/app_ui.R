@@ -26,7 +26,7 @@ ui <- shinyUI(
     useShinyjs(),
     theme = shinytheme(theme = "journal"),
     sidebarLayout(
-      sidebarPanel(span(img(src = "logo1.png", height = 110)),
+      sidebarPanel(span(img(src = "www/logo1.png", height = 110)),
                    tags$header(
                      tags$a(href = "https://github.com/AurelienRoyer/SEAHORS/",
                             "Spatial Exploration of ArcHaeological Objects in R Shiny")),
@@ -161,7 +161,7 @@ ui <- shinyUI(
                                tags$br(),
                                column(12, 
                                       column(3,),
-                                      column(6,span(img(src = "logo2.png", height = 200)),),
+                                      column(6,span(img(src = "www/logo2.png", height = 200)),),
                                       tags$br(),
                                       tags$br(),     
                                ),
