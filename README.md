@@ -1,11 +1,5 @@
----
-title: SEAHORS
-output:
-  html_document:
-    theme: yeti
-    highlight: zenburn	
----
-
+SEAHORS
+================
 
 # [<img src="https://raw.githubusercontent.com/AurelienRoyer/SEAHORS/main/www/logo1.png" height="60em" align="center"/>](https://github.com/AurelienRoyer/SEAHORS) Spatial Exploration of ArcHaeological Objects in R Shiny
 
@@ -39,7 +33,7 @@ analytical attributes).
   - Open the script in R or Rstudio.
   - To execute the R shiny script in R, you must highlight the code
     (“Select all” or CTRL + A) and click on “Run all” or press CTRL +
-    R.
+    18. 
   - To execute the R shiny script in R studio, you can either highlight
     the code (“Select all” or CTRL + A) and click on “Run selected
     lines” or CTRL + Enter, or simply click on the “Run App” button
