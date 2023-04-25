@@ -2667,9 +2667,11 @@ app_server <- function(input, output, session) {
   observeEvent(input$button_example, {
     updateTabsetPanel(session, "mainpanel",
                       selected = "Load data")
+    data(cassenade)
+    write.csv2(cassenade, "cassenade.csv")
     input_file1.name("cassenade.csv")
-    input_file1.datapath("data/cassenade.csv")
-    df$file.fit<-read.csv("data/cassenade-refits.csv", sep=";",header = T)
+    input_file1.datapath("cassenade.csv")
+    df$file.fit <- cassenade.refits
     getdata.launch(1)
   })
   
