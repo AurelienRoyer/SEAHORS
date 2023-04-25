@@ -2725,7 +2725,7 @@ library(DT)
 ```
 
 ```{r, echo=FALSE}
-if (file.exists(paste0(getwd(),'/logo1.png'))){
+if (file.exists(paste0(getwd(),'www/logo1.png'))){
 htmltools::img(src = knitr::image_uri(file.path(getwd(), 'logo1.png')), 
                alt = 'logo', 
                style = 'position:absolute; top:0; right:0; padding:10px; height:150px ;')
@@ -2891,7 +2891,7 @@ output$export.Rmarkdown<- downloadHandler(
     w.report()
     tmp_dir <- tempdir()
     tmp_pic2 <- file.path(tmp_dir,"logo1.png")
-    file.copy("www/logo1.png", tmp_pic2, overwrite = TRUE)
+    file.copy("logo1.png", tmp_pic2, overwrite = TRUE)
     tempReport <- tempfile(fileext = ".Rmd") # make sure to avoid conflicts with other shiny sessions if more params are used
     file.copy("report.Rmd", tempReport, overwrite = TRUE)
     rmarkdown::render(tempReport, output_format = paste0(input$docpdfhtml,"_document"), output_file = file, output_options = list(self_contained = TRUE),
