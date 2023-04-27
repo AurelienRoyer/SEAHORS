@@ -30,7 +30,7 @@ analytical attributes).
 ## Installation
 
   - Install [R](https://www.r-project.org) and optionally [Rstudio
-    Desktop](https://posit.co/download/rstudio-desktop) to have a more
+    Desktop](https://posit.co/download/rstudio-desktop/) to have a more
     comfortable R environment.
   - Install SEAHORS from github:
 
@@ -70,6 +70,6 @@ server](https://aurelienroyer.shinyapps.io/Seahors).
 
   - Royer, A., Discamps, E., Plutniak, S., Thomas, M. 2023.
     “SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny”.
-    [PCI Archaeology](https://archaeo.peercommunityin.org/PCIArchaeology),
+    [PCI Archaeology](https://archaeo.peercommunityin.org/),
     2023, DOI:
     [10.5281/zenodo.7674699](https://doi.org/10.5281/zenodo.7674699)
