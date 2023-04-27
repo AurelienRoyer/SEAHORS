@@ -2,7 +2,7 @@
 \alias{SEAHORS}
 
 \title{SEAHORS}
-\description{SEAHORS is a R shiny application dedicated to the intra-site spatial analysis of piece-plotted archaeological remains,making the two and three-dimensional spatial exploration of archaeological data as user-friendly as possible.}
+\description{This package is a R shiny application dedicated to the intra-site spatial analysis of piece-plotted archaeological remains,making the two and three-dimensional spatial exploration of archaeological data as user-friendly as possible.}
 
 \usage{
 SEAHORS()
