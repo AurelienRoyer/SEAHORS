@@ -68,9 +68,8 @@ server](https://aurelienroyer.shinyapps.io/Seahors).
 
 ## Reference
 
-  - Royer, A., Discamps, E., Plutniak, S., Thomas, M. (submitted).
-    SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny.
-    Submitted to [PCI
-    Archaeology](https://archaeo.peercommunityin.org/PCIArchaeology),
+  - Royer, A., Discamps, E., Plutniak, S., Thomas, M. 2023.
+    “SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny”.
+    [PCI Archaeology](https://archaeo.peercommunityin.org/PCIArchaeology),
     2023, DOI:
     [10.5281/zenodo.7674699](https://doi.org/10.5281/zenodo.7674699)
