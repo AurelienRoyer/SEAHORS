@@ -17,6 +17,7 @@ Description: This package is a R 'Shiny' free open-source application, that allo
 License: GPL-3
 Repository: CRAN
 Encoding: UTF-8
+LazyData: true
 Depends: R (>= 3.5.0)
 Imports:
 	shiny,

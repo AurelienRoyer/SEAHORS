@@ -607,7 +607,7 @@ app_server <- function(input, output, session) {
           if (k==0) k=nk
           if (selected_rainbow == "1") {
             selected2 <-mycolors[i]  }
-          spectrumInput(
+            shinyWidgets::spectrumInput(
             inputId = paste0(name,i),
             label = paste0(uvalues[i], ": " ),
             choices = list(mycolors,
@@ -2663,7 +2663,7 @@ app_server <- function(input, output, session) {
   observeEvent(input$button_example, {
     updateTabsetPanel(session, "mainpanel",
                       selected = "Load data")
-    data(cassenade)
+    # data(cassenade)
     write.csv2(cassenade, "cassenade.csv")
     input_file1.name("cassenade.csv")
     input_file1.datapath("cassenade.csv")
