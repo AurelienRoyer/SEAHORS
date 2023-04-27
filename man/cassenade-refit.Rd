@@ -1,7 +1,7 @@
-\name{cassenade-refits}
+\name{cassenade.refits}
 \docType{data}
 
-\alias{cassenade-refits}
+\alias{cassenade.refits}
 
 \title{Dataset: refitting relationships between objects found at the Palaeolithic Cassenade site}
 \description{
