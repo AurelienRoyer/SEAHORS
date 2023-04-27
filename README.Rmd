@@ -33,7 +33,7 @@ analytical attributes).
 
 ## Installation
 
-* Install [R](https://www.r-project.org) and optionally [Rstudio Desktop](https://posit.co/download/rstudio-desktop) to have a more comfortable R environment.
+* Install [R](https://www.r-project.org) and optionally [Rstudio Desktop](https://posit.co/download/rstudio-desktop/) to have a more comfortable R environment.
 * Install SEAHORS from github:
 
 ```r
