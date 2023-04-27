@@ -398,23 +398,23 @@ app_server <- function(input, output, session) {
       if (annotation) {
         dz <- matrix(z, nrow = nrow(rr), ncol = ncol(rr), 
                      byrow = TRUE)
-        p <- annotation_raster(raster = dz, xmin = exe[1], 
+        p <- ggplot2::annotation_raster(raster = dz, xmin = exe[1], 
                                xmax = exe[2], ymin = exe[3], ymax = exe[4], 
                                interpolate = FALSE)
         if (!ggLayer) {
-          p <- ggplot() + p + geom_blank(data = df, aes(x = x, 
+          p <- ggplot2::ggplot() + p + ggplot2::geom_blank(data = df, aes(x = x, 
                                                         y = y))
         }
       }
       else {
-        p <- geom_raster(data = df_raster, aes(x = x, y = y, 
+        p <- ggplot2::geom_raster(data = df_raster, aes(x = x, y = y, 
                                                fill = fill), alpha = alpha)
         if (!ggLayer) {
-          p <- ggplot() + p + scale_fill_identity()
+          p <- ggplot2::ggplot() + p + ggplot2::scale_fill_identity()
         }
       }
       if (coord_equal & !ggLayer) 
-        p <- p + coord_equal()
+        p <- p + ggplot2::coord_equal()
       return(p)
     }
     else {
@@ -546,16 +546,16 @@ app_server <- function(input, output, session) {
           shapeX<-df.sub.a$shapeX
           shape.level<-levels(as.factor(shapeX))
           ppsz<-df.sub.a$point.size2
-          p <-ggplot()
-          p<-p+geom_point(data = df.sub.a,
+          p <- ggplot2::ggplot()
+          p<- p + ggplot2::geom_point(data = df.sub.a,
                           aes(x = .data[[set.antivar.2d.slice]],
                               y = .data[[setZZ()]],
                               col=factor(layer2),
                               size=factor(ppsz), 
                               shape=shapeX  
                           ))+
-            coord_fixed(ratio.simple())
-          p<-p+scale_color_manual(values=myvaluesx2)+
+            ggplot2::coord_fixed(ratio.simple())
+          p<- p + scale_color_manual(values=myvaluesx2)+
             scale_shape_manual(values=shape.level)+
             scale_size_manual(values=c(min.size2,size.scale))+
             xlab(paste(set.antivar.2d.name))+ylab(nameZ())+
@@ -1984,14 +1984,14 @@ app_server <- function(input, output, session) {
         # to correct the color for ggplot2
         myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub2$layer2)))]
         
-        p <-ggplot()+
+        p <- ggplot2::ggplot()+
           ggRGB(img = orthofile,
                 r = 1,
                 g = 2,
                 b = 3,
                 maxpixels =500000,
                 ggLayer = T)+
-          geom_point(data = df.sub2,
+          ggplot2::geom_point(data = df.sub2,
                      aes(x = .data[[var]],
                          y = .data[[var2]],
                          fill=layer2,
@@ -2099,10 +2099,10 @@ app_server <- function(input, output, session) {
     shape.level<-levels(as.factor(shapeX))
     point.size3<-as.factor(df.sub2$point.size2)
     
-    p <-ggplot()
+    p <- ggplot2::ggplot()
     if (!is.null(orthofile)){
       
-      p<-p+ ggRGB(img = orthofile,
+      p<-p + ggRGB(img = orthofile,
                   r = 1,
                   g = 2,
                   b = 3,
@@ -2110,14 +2110,14 @@ app_server <- function(input, output, session) {
                   ggLayer = T)
     }   
     
-    p<-p+geom_point(data = df.sub2,
+    p<- p + ggplot2::geom_point(data = df.sub2,
                     aes(x = .data[[var]],
                         y = .data[[var2]],
                         col=factor(layer2),
                         size=point.size3,
                         shape=shapeX
                     ))    +
-      coord_fixed(ratio.simple())
+      ggplot2::coord_fixed(ratio.simple())
     
     if (input$var.fit.table.simple == "yes" & !is.null(data.fit.3D())){
       colorvalues<-unlist(colorvalues())
@@ -2278,20 +2278,21 @@ app_server <- function(input, output, session) {
     # to correct the color for ggplot2
     myvaluesx2<-myvaluesx[levels(as.factor(df$df[[inputcolor()]])) %in% levels(as.factor(df.sub4[[inputcolor()]]))]
     # Density curve of x left panel 
-    ydensity <- ggplot(df.sub4, aes(.data[[var]], fill=factor(.data[[inputcolor()]]))) + 
-      geom_density(alpha=.5) + 
-      scale_fill_manual( values = myvaluesx2)+
+    ydensity <- ggplot2::ggplot(df.sub4, aes(.data[[var]], fill=factor(.data[[inputcolor()]]))) + 
+      ggplot2::geom_density(alpha=.5) + 
+      ggplot2::scale_fill_manual( values = myvaluesx2)+
       do.call(themeforfigure.choice(), list()) +
-      theme(legend.position = "none")
+      ggplot2::theme(legend.position = "none")
     
     # Density curve of y right panel 
-    zdensity <- ggplot(df.sub4, aes(.data[[var2]], fill=factor(.data[[inputcolor()]]))) + 
-      geom_density(alpha=.5) + 
+    zdensity <- ggplot2::ggplot(df.sub4, aes(.data[[var2]], fill=factor(.data[[inputcolor()]]))) + 
+      ggplot2::geom_density(alpha=.5) + 
       scale_fill_manual( values = myvaluesx2) + 
       do.call(themeforfigure.choice(), list()) +
-      theme(legend.position = "none")+coord_flip()
-    blankPlot <- ggplot()+geom_blank(aes(1,1))+
-      theme(plot.background = element_blank(), 
+      ggplot2::theme(legend.position = "none")+coord_flip()
+    blankPlot <- ggplot2::ggplot() + 
+      ggplot2::geom_blank(aes(1,1))+
+      ggplot2::theme(plot.background = element_blank(), 
             panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(), 
             panel.border = element_blank(),
@@ -2305,41 +2306,41 @@ app_server <- function(input, output, session) {
     
     if (is.null(orthofile)){
       p<-ggplot(df.sub4,aes(.data[[var]], .data[[var2]], color = density)) + 
-        geom_point(aes(.data[[var]], .data[[var2]], color = density), alpha=transpar(), size=df.sub4$point.size2)+ 
-        scale_size_manual(values=c(size.scale,min.size2))+
-        labs(x = nameaxis[1],y = nameaxis[2])+
+        ggplot2::geom_point(aes(.data[[var]], .data[[var2]], color = density), alpha=transpar(), size=df.sub4$point.size2)+ 
+        ggplot2::scale_size_manual(values=c(size.scale,min.size2))+
+        ggplot2::labs(x = nameaxis[1],y = nameaxis[2])+
         do.call(themeforfigure.choice(), list()) +
-        theme(axis.title.x = element_text(size=font_size()),
+        ggplot2::theme(axis.title.x = element_text(size=font_size()),
               axis.title.y = element_text(size=font_size()),
               axis.text.x = element_text(size=font_tick()),
               axis.text.y = element_text(size=font_tick()))+
         
         {if (input$ratio.to.coord)coord_fixed()}
       
-    } else { p <-ggplot()+ ggRGB(img = orthofile,
+    } else { p <- ggplot2::ggplot()+ ggRGB(img = orthofile,
                                  r = 1,
                                  g = 2,
                                  b = 3,
                                  maxpixels =500000,
                                  ggLayer = T) +
-      geom_point(df.sub4,mapping=aes(.data[[var]], .data[[var2]], color = density),alpha=transpar(), size=df.sub4$point.size2)+
-      labs(x = nameaxis[1],y = nameaxis[2])
+      ggplot2::geom_point(df.sub4,mapping=aes(.data[[var]], .data[[var2]], color = density),alpha=transpar(), size=df.sub4$point.size2)+
+      ggplot2::labs(x = nameaxis[1],y = nameaxis[2])
     }
     
     if (input$var.plotlyg.lines== "yes") {
-      p<-p+geom_density_2d(mapping=aes(.data[[var]],.data[[var2]], color = after_stat(level)),data=df.sub4)}
-    p<-p+scale_color_viridis()+
-      guides(fill = guide_legend(title = "Level"))+
-      theme(axis.title.x = element_text(size=font_size()),
+      p<- p + ggplot2::geom_density_2d(mapping=aes(.data[[var]],.data[[var2]], color = after_stat(level)),data=df.sub4)}
+    p<- p + viridis::scale_color_viridis()+
+      ggplot2::guides(fill = guide_legend(title = "Level"))+
+      ggplot2::theme(axis.title.x = element_text(size=font_size()),
             axis.title.y = element_text(size=font_size()),
             axis.text.x = element_text(size=font_tick()),
             axis.text.y = element_text(size=font_tick()),)
-    p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub4[[var]])),max(df.sub4[[var]]),Xtickmarks.size),minor_breaks = seq(floor(min(df.sub4[[var]])),max(df.sub4[[var]]),Xminor.breaks))+
-      scale_y_continuous(breaks=seq(floor(min(df.sub4[[var2]])),max(df.sub4[[var2]]),Ytickmarks.size), minor_breaks = seq(floor(min(df.sub4[[var2]])),max(df.sub4[[var2]]),Yminor.breaks))
+    p<- p + ggplot2::scale_x_continuous(breaks=seq(floor(min(df.sub4[[var]])),max(df.sub4[[var]]),Xtickmarks.size),minor_breaks = seq(floor(min(df.sub4[[var]])),max(df.sub4[[var]]),Xminor.breaks)) + 
+      ggplot2::scale_y_continuous(breaks=seq(floor(min(df.sub4[[var2]])),max(df.sub4[[var2]]),Ytickmarks.size), minor_breaks = seq(floor(min(df.sub4[[var2]])),max(df.sub4[[var2]]),Yminor.breaks))
     
     if (input$var.density.curves== "yes") {   
       
-      p<-grid.arrange(ydensity, blankPlot, p, zdensity, 
+      p <- gridExtra::grid.arrange(ydensity, blankPlot, p, zdensity, 
                       ncol=2, nrow=2, widths=c(4, 1.4), heights=c(1.4, 4))
       
     } else {
@@ -2646,7 +2647,8 @@ app_server <- function(input, output, session) {
   })
   
   ##### output Table  ----
-  output$table <-  DT::renderDataTable(
+  # output$table <-  DT::renderDataTable(
+  output$table <-  shiny::renderDataTable(    
     DT::datatable(
       df.sub()[,-c(1:6)], extensions = 'Buttons', options = list(
         lengthMenu = list(c(5, 15,50,100, -1), c('5', '15','50','100', 'All')),

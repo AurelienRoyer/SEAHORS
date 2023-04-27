@@ -13,7 +13,7 @@ Author: Aurelien Royer [aut] (<https://orcid.org/0000-0002-0139-8765>),
 		Emmanuel Discamps [ctb] (<https://orcid.org/0000-0002-2464-0761>),
 		Marc Thomas [ctb]
 Maintainer: Sebastien Plutniak <sebastien.plutniak@posteo.net>
-Description: This package is a R 'Shiny' application dedicated to the intra-site spatial analysis of piece-plotted archaeological remains,making the two and three-dimensional spatial exploration of archaeological data as user-friendly as possible.
+Description: An R 'Shiny' application dedicated to the intra-site spatial analysis of piece-plotted archaeological remains,making the two and three-dimensional spatial exploration of archaeological data as user-friendly as possible.
 License: GPL-3
 Repository: CRAN
 Encoding: UTF-8
