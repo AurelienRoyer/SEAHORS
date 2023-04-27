@@ -2366,10 +2366,10 @@ app_server <- function(input, output, session) {
     df$df<-full_join(df$df,rotated.new.dataxy)
     updateSelectInput(session,"setx",
                       choices=names(df$df["X.rotated"]),
-                      select = names(df$df["X.rotated"]))
+                      selected = names(df$df["X.rotated"]))
     updateSelectInput(session,"sety",
                       choices=names(df$df["Y.rotated"]),
-                      select = names(df$df["Y.rotated"]))
+                      selected = names(df$df["Y.rotated"]))
   })
   
   ###output rotated 2D plot ----
