@@ -2664,10 +2664,10 @@ app_server <- function(input, output, session) {
     updateTabsetPanel(session, "mainpanel",
                       selected = "Load data")
     # data(cassenade)
-    write.csv2(cassenade, "cassenade.csv")
+    write.csv2(SEAHORS::cassenade, "cassenade.csv")
     input_file1.name("cassenade.csv")
     input_file1.datapath("cassenade.csv")
-    df$file.fit <- cassenade.refits
+    df$file.fit <- SEAHORS::cassenade.refits
     getdata.launch(1)
   })
   
