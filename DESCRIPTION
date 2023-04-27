@@ -1,0 +1,46 @@
+Package: SEAHORS
+Type: Package
+Title: Spatial Exploration of ArcHaeological Objects in R Shiny
+Version: 1.6.0
+Date: 2023-04-27
+Authors@R: c(person("Aurelien", "Royer", email = "aurelien.royer@u-bourgogne.fr", role = "aut", comment = c(ORCID = "0000-0002-0139-8765")),
+             person("Sebastien", "Plutniak", email = "sebastien.plutniak@posteo.net", role = "cre", comment = c(ORCID = "0000-0002-6674-3806")),
+             person("Emmanuel", "Discamps", email = "emmanuel.discamps@cnrs.fr", role = "ctb", comment = c(ORCID = "0000-0002-2464-0761")),
+             person("Marc", "Thomas", email = "marcthomas1@hotmail.fr", role = "ctb")
+             )
+Author: Aurelien Royer [aut] (<https://orcid.org/0000-0002-0139-8765>),
+		Sebastien Plutniak [cre] (<https://orcid.org/0000-0002-6674-3806>),
+		Emmanuel Discamps [ctb] (<https://orcid.org/0000-0002-2464-0761>),
+		Marc Thomas [ctb]
+Maintainer: Sebastien Plutniak <sebastien.plutniak@posteo.net>
+Description: This package is a R 'Shiny' application dedicated to the intra-site spatial analysis of piece-plotted archaeological remains,making the two and three-dimensional spatial exploration of archaeological data as user-friendly as possible.
+License: GPL-3
+Repository: CRAN
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 3.5.0)
+Imports:
+	shiny,
+	shinythemes,
+	shinyjs,
+	shinyWidgets,
+	ggplot2,
+	gridExtra,
+	dplyr,
+	plotly,
+	DT,
+	MASS,
+	readxl,
+	raster,
+	stringr,
+	viridis,
+    rmarkdown,
+	htmlwidgets
+Suggests: 
+    markdown,
+    knitr
+VignetteBuilder: knitr
+URL: https://github.com/AurelienRoyer/SEAHORS
+BugReports: https://github.com/AurelienRoyer/SEAHORS/issues
+
+
