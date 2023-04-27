@@ -17,7 +17,7 @@ importFrom(raster, stack, plotRGB, ncell, brick, sampleRegular, getValues, stret
 importFrom(rmarkdown, render)
 importFrom(tools, file_ext)
 importFrom(readxl, read_xls, read_xlsx, excel_sheets)
-importFrom(stringr, str_sub, str_to_lower, str_replace_all)
+importFrom(stringr, str_to_lower, str_replace_all)
 importFrom(htmlwidgets, JS, saveWidget)
 
  

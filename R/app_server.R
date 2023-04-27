@@ -193,18 +193,12 @@ app_server <- function(input, output, session) {
   
   output$themeforfigure=renderUI({
     req(!is.null(fileisupload()))
-    themes <- ls("package:ggplot2", pattern = "^theme_")
-    themes <- themes[themes != "theme_get" &
-                       themes != "theme_set" &
-                       themes != "theme_replace" &
-                       themes != "theme_test" &
-                       themes != "theme_update"]
-    themes <- paste0(themes, "()")
+    themes <- c("theme_bw", "theme_classic", "theme_dark", "theme_grey", "theme_light", "theme_linedraw", "theme_minimal")
     selectInput("themeforfigure.list", h4("Theme for 'Simple 2Dplot'"),
                 choices = themes,
-                selected = themes[5])
+                selected = "theme_classic")
   })
-  themeforfigure.choice<-reactiveVal(c("theme_classic()"))
+  themeforfigure.choice<-reactiveVal(c("theme_classic"))
   observeEvent(input$themeforfigure.list,{
     themeforfigure.choice(c(input$themeforfigure.list))
     
@@ -565,7 +559,7 @@ app_server <- function(input, output, session) {
             scale_shape_manual(values=shape.level)+
             scale_size_manual(values=c(min.size2,size.scale))+
             xlab(paste(set.antivar.2d.name))+ylab(nameZ())+
-            get(stringr::str_sub(themeforfigure.choice(), 1, -3), envir=environment(ggplot))() +
+            do.call(themeforfigure.choice(), list()) +
             theme(axis.title.x = element_text(size=font_size()),
                   axis.title.y = element_text(size=font_size()),
                   axis.text.x = element_text(size=font_tick()),
@@ -2036,7 +2030,7 @@ app_server <- function(input, output, session) {
           scale_shape_manual(values=shape.level)+
           scale_size_manual(values=c(size.scale,min.size2))+
           xlab(paste(axis.var.name))+ylab(paste(axis.var2.name))+
-          get(stringr::str_sub(themeforfigure.choice(), 1, -3), envir=environment(ggplot))() +
+          do.call(themeforfigure.choice(), list()) +
           theme(legend.position='none')+
           theme(axis.title.x = element_text(size=font_size()),
                 axis.title.y = element_text(size=font_size()),
@@ -2154,7 +2148,7 @@ app_server <- function(input, output, session) {
       scale_shape_manual(values=shape.level)+
       scale_size_manual(values=c(size.scale,min.size2))+
       xlab(paste(axis.var.name))+ylab(paste(axis.var2.name))+
-      get(stringr::str_sub(themeforfigure.choice(), 1, -3), envir=environment(ggplot))() +
+      do.call(themeforfigure.choice(), list()) +
       theme(axis.title.x = element_text(size=font_size()),
             axis.title.y = element_text(size=font_size()),
             axis.text.x = element_text(size=font_tick()),
@@ -2287,14 +2281,14 @@ app_server <- function(input, output, session) {
     ydensity <- ggplot(df.sub4, aes(.data[[var]], fill=factor(.data[[inputcolor()]]))) + 
       geom_density(alpha=.5) + 
       scale_fill_manual( values = myvaluesx2)+
-      get(stringr::str_sub(themeforfigure.choice(), 1, -3), envir=environment(ggplot))() +
+      do.call(themeforfigure.choice(), list()) +
       theme(legend.position = "none")
     
     # Density curve of y right panel 
     zdensity <- ggplot(df.sub4, aes(.data[[var2]], fill=factor(.data[[inputcolor()]]))) + 
       geom_density(alpha=.5) + 
       scale_fill_manual( values = myvaluesx2) + 
-      get(stringr::str_sub(themeforfigure.choice(), 1, -3), envir=environment(ggplot))() +
+      do.call(themeforfigure.choice(), list()) +
       theme(legend.position = "none")+coord_flip()
     blankPlot <- ggplot()+geom_blank(aes(1,1))+
       theme(plot.background = element_blank(), 
@@ -2314,7 +2308,7 @@ app_server <- function(input, output, session) {
         geom_point(aes(.data[[var]], .data[[var2]], color = density), alpha=transpar(), size=df.sub4$point.size2)+ 
         scale_size_manual(values=c(size.scale,min.size2))+
         labs(x = nameaxis[1],y = nameaxis[2])+
-        get(stringr::str_sub(themeforfigure.choice(), 1, -3), envir=environment(ggplot))() +
+        do.call(themeforfigure.choice(), list()) +
         theme(axis.title.x = element_text(size=font_size()),
               axis.title.y = element_text(size=font_size()),
               axis.text.x = element_text(size=font_tick()),
