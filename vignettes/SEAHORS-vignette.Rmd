@@ -8,9 +8,8 @@ vignette: >
 ---
 
 
-# [<img src="https://raw.githubusercontent.com/AurelienRoyer/SEAHORS/main/www/logo1.png" height="60em" align="center"/>](https://github.com/AurelienRoyer/SEAHORS) Spatial Exploration of ArcHaeological Objects in R Shiny
 
-[![DOI](https://zenodo.org/badge/581203118.svg)](https://zenodo.org/badge/latestdoi/581203118)
+## Presentation
 
 SEAHORS is a R Shiny free open-source application, that allows easy and
 quick exploration of the spatial distribution of archaeological objects.
@@ -34,69 +33,37 @@ analytical attributes).
 
 ## Installation
 
-  - Install R (<https://www.r-project.org/>) and optionally Rstudio
-    Desktop (<https://posit.co/download/rstudio-desktop/>) to have a
-    more comfortable R environment.
-  - Open the script in R or Rstudio.
-  - To execute the R shiny script in R, you must highlight the code
-    (“Select all” or CTRL + A) and click on “Run all” or press CTRL +
-    R.
-  - To execute the R shiny script in R studio, you can either highlight
-    the code (“Select all” or CTRL + A) and click on “Run selected
-    lines” or CTRL + Enter, or simply click on the “Run App” button
-    (at the top of the editor window).
+* Install [R](https://www.r-project.org) and optionally [Rstudio Desktop](https://posit.co/download/rstudio-desktop) to have a more comfortable R environment.
+* Install SEAHORS from github:
 
-The application will be launched automatically and the necessary R
-package will be installed automatically the first time.
+```r
+# install.packages("devtools")
+devtools::install_github("AurelienRoyer/SEAHORS")
+```
 
-The first launch may therefore take some time.
+Load the package and launch the SEAHORS app:
+
+```r
+library(SEAHORS)
+SEAHORS()
+```
 
 ## Demonstration and tutorial
 
 The application overview is detailled the paper (Royer et al. preprint,
 see Reference).
 
-A tutorial video of SEAHORS is available [in
-English](https://nakala.fr/10.34847/nkl.3fdd6h8j) and [in
-French](https://nakala.fr/10.34847/nkl.65bf1h72).
+A tutorial video of SEAHORS is available [in English](https://nakala.fr/10.34847/nkl.3fdd6h8j) and [in French](https://nakala.fr/10.34847/nkl.65bf1h72).
 
-A web application of SEAHORS v1 is deployed on the Shinyapps.io server:
-<https://aurelienroyer.shinyapps.io/Seahors/>
+A web application of SEAHORS is deployed on a [Shinyapps.io server](https://aurelienroyer.shinyapps.io/Seahors).
 
-## Data accessibility of Cassenade as example
+## Example data set: the Cassenade site
 
-  - Spatial data: <https://nakala.fr/10.34847/nkl.e30aie2u>
-  - Refit: <https://nakala.fr/10.34847/nkl.fe27j10z>
-  - Orthophoto: <https://nakala.fr/10.34847/nkl.7ea78e6u>
+* Spatial data: <https://nakala.fr/10.34847/nkl.e30aie2u>
+* Refit: <https://nakala.fr/10.34847/nkl.fe27j10z>
+* Orthophoto: <https://nakala.fr/10.34847/nkl.7ea78e6u>
 
 ## Reference
 
-Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (submitted).
-SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny.
-Submitted to [PCI Archaeology](https://archaeo.peercommunityin.org/PCIArchaeology), 2023
+* Royer, A., Discamps, E., Plutniak, S., Thomas, M. (submitted). SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny. Submitted to [PCI Archaeology](https://archaeo.peercommunityin.org/PCIArchaeology), 2023, DOI: [10.5281/zenodo.7674699](https://doi.org/10.5281/zenodo.7674699)  
 
-Preprint: <https://doi.org/10.5281/zenodo.7674699>
-
-## Update
-
-### v1.5 April 2023
-
-Add ggplot 2D tab :“Simple 2D plot” with pdf download and numeric imput
-to modify the projection ratio.
-
-Add a button “advanced plot” at ggplot 2D slide to activated plotly or
-ggplot figure. Add a ratio imput when the button is unchecked.
-
-Add “Figure options” sidebar conditional panel : to modify the labels
-axis, the size of the labels and the tick mark, the space between major
-tick mark and minor grid (without tick marks), and the theme of ggplot
-figure (“Simple 2D plot” and “Density Plot”).
-
-Add a button to directly load the dataset example of Cassenade. Button
-is on the overview panel.
-
-Correction DensityPlot and modification of point size and transparency.
-
-Correction color for simple 2D plot
-
-Correction color for refit projection
