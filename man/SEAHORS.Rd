@@ -26,7 +26,5 @@ Royer, A., Discamps, E., Plutniak, S., & Thomas, M. 2023. "SEAHORS: Spatial Expl
 }
 
 \examples{
-	\dontrun{
-	SEAHORS()
-	}
+	if(interactive(SEAHORS()))
 }
