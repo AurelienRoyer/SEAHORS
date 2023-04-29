@@ -2,7 +2,7 @@ Package: SEAHORS
 Type: Package
 Title: Spatial Exploration of ArcHaeological Objects in R Shiny
 Version: 1.6.0
-Date: 2023-04-27
+Date: 2023-04-29
 Authors@R: c(person("Aurelien", "Royer", email = "aurelien.royer@u-bourgogne.fr", role = "aut", comment = c(ORCID = "0000-0002-0139-8765")),
              person("Sebastien", "Plutniak", email = "sebastien.plutniak@posteo.net", role = "cre", comment = c(ORCID = "0000-0002-6674-3806")),
              person("Emmanuel", "Discamps", email = "emmanuel.discamps@cnrs.fr", role = "ctb", comment = c(ORCID = "0000-0002-2464-0761")),
@@ -13,7 +13,7 @@ Author: Aurelien Royer [aut] (<https://orcid.org/0000-0002-0139-8765>),
 		Emmanuel Discamps [ctb] (<https://orcid.org/0000-0002-2464-0761>),
 		Marc Thomas [ctb]
 Maintainer: Sebastien Plutniak <sebastien.plutniak@posteo.net>
-Description: An R 'Shiny' application dedicated to the intra-site spatial analysis of piece-plotted archaeological remains,making the two and three-dimensional spatial exploration of archaeological data as user-friendly as possible.
+Description: An R 'Shiny' application dedicated to the intra-site spatial analysis of piece-plotted archaeological remains, making the two and three-dimensional spatial exploration of archaeological data as user-friendly as possible.  Documentation about 'SEAHORS' is provided by the vignette included in this package and by the companion scientific paper: Royer, Discamps, Plutniak, Thomas (2023, PCI Archaeology, <doi:10.5281/zenodo.7674698>).
 License: GPL-3
 Repository: CRAN
 Encoding: UTF-8
