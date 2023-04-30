@@ -1617,7 +1617,8 @@ app_server <- function(input, output, session) {
     d <- event_data('plotly_selected')
     if (is.null(d)) return()
     if (length(d)==0) {
-      vv <<- NULL
+      # vv <<- NULL # replaced with the following line to avoid declaration of global variable (required for CRAN submission)
+      vv <- NULL
       return()
     }
     dd <- cbind(d[[3]],d[[4]])
@@ -1637,7 +1638,8 @@ app_server <- function(input, output, session) {
     
     WW<-which(g1[[var]] %in% dd[,1] & g1[[var2]] %in% dd[,2]) 
     vv<-df$df[WW,3:ncol(df$df)]
-    vv <<- vv
+    # vv <<- vv # replaced with the following line to avoid declaration of global variable (required for CRAN submission)
+    vv <- vv
     vv
   })  
   
@@ -2665,10 +2667,10 @@ app_server <- function(input, output, session) {
   observeEvent(input$button_example, {
     updateTabsetPanel(session, "mainpanel",
                       selected = "Load data")
-    # data(cassenade)
-    write.csv2(SEAHORS::cassenade, "cassenade.csv")
+    path <- paste0(tempdir(), "/cassenade.csv")
+    write.csv2(SEAHORS::cassenade, path)
     input_file1.name("cassenade.csv")
-    input_file1.datapath("cassenade.csv")
+    input_file1.datapath(path)
     df$file.fit <- SEAHORS::cassenade.refits
     getdata.launch(1)
   })
