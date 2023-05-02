@@ -14,7 +14,7 @@ app_server <- function(input, output, session) {
   ##### necessary settings----
   options(shiny.maxRequestSize=150*1024^2) ## limits 150 MO to import
   font.size <- "8pt"
-  vv<-NULL ## for plotly_selected
+   vv<-reactiveVal(NULL) ## for plotly_selected
   minsize<-reactiveVal(0.25) ##for min point
   size.scale<-reactiveVal(3) ##for point
   stepX<-reactiveVal(0.1) ## step size sliders
@@ -1617,30 +1617,17 @@ app_server <- function(input, output, session) {
     d <- event_data('plotly_selected')
     if (is.null(d)) return()
     if (length(d)==0) {
-      # vv <<- NULL # replaced with the following line to avoid declaration of global variable (required for CRAN submission)
-      vv <- NULL
+         vv(NULL)
       return()
     }
     dd <- cbind(d[[3]],d[[4]])
     
     list.parameter.info<-var.function(input$var1)
     var<-list.parameter.info[[1]]
-    var2<-list.parameter.info[[2]]      
-    
-    # switch(input$var1,
-    #        xy={var<-setXX()
-    #        var2<-setYY()       },
-    #        yz={   var<-setYY() 
-    #        var2<-setZZ()     },
-    #        xz={   var<-setXX()
-    #        var2<-setZZ()    },
-    #        yx={   var<-setYY() 
-    #        var2<-setXX() })
-    
+    var2<-list.parameter.info[[2]]         
     WW<-which(g1[[var]] %in% dd[,1] & g1[[var2]] %in% dd[,2]) 
-    vv<-df$df[WW,3:ncol(df$df)]
-    # vv <<- vv # replaced with the following line to avoid declaration of global variable (required for CRAN submission)
-    vv <- vv
+    vv<-df$df[WW,4:ncol(df$df)]
+    vv(vv)
     vv
   })  
   
@@ -1649,7 +1636,7 @@ app_server <- function(input, output, session) {
   })
   observeEvent(input$Change, {
     req(!is.null(input$Change))
-    df$df[which(row.names(df$df) %in% row.names(vv)),][input$text.new.group] <<-
+    df$df[which(row.names(df$df) %in% row.names(vv())),][input$text.new.group] <-
       input$NewGroup
     removeModal()
   }) # end of Observe Event
