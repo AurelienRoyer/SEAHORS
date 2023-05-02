@@ -4,9 +4,10 @@ SEAHORS
 # [<img src="https://raw.githubusercontent.com/AurelienRoyer/SEAHORS/main/inst/www/logo1.png" height="60em" align="center"/>](https://github.com/AurelienRoyer/SEAHORS) Spatial Exploration of ArcHaeological Objects in R Shiny
 
 [![DOI](https://zenodo.org/badge/581203118.svg)](https://zenodo.org/badge/latestdoi/581203118)
-[![CRAN Version](http://www.r-pkg.org/badges/version/SEAHORS)](https://cran.r-project.org/package=SEAHORS)
-[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/SEAHORS)](https://cran.r-project.org/package=SEAHORS)
-
+[![CRAN
+Version](http://www.r-pkg.org/badges/version/SEAHORS)](https://cran.r-project.org/package=SEAHORS)
+[![CRAN
+Downloads](http://cranlogs.r-pkg.org/badges/SEAHORS)](https://cran.r-project.org/package=SEAHORS)
 
 ## Presentation
 
@@ -35,7 +36,17 @@ analytical attributes).
   - Install [R](https://www.r-project.org) and optionally [Rstudio
     Desktop](https://posit.co/download/rstudio-desktop/) to have a more
     comfortable R environment.
-  - Install SEAHORS from github:
+  - Install SEAHORS from CRAN:
+
+<!-- end list -->
+
+``` r
+install.packages("SEAHORS")
+```
+
+or
+
+  - Install the SEAHORS development version from github:
 
 <!-- end list -->
 
@@ -71,8 +82,7 @@ server](https://aurelienroyer.shinyapps.io/Seahors).
 
 ## Reference
 
-  - Royer, A., Discamps, E., Plutniak, S., Thomas, M. 2023.
-    “SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny”.
-    [PCI Archaeology](https://archaeo.peercommunityin.org/),
-    2023, DOI:
-    [10.5281/zenodo.7674699](https://doi.org/10.5281/zenodo.7674699)
+  - Royer, A., Discamps, E., Plutniak, S., Thomas, M. 2023. “SEAHORS:
+    Spatial Exploration of ArcHaeological Objects in R Shiny”. [PCI
+    Archaeology](https://archaeo.peercommunityin.org/), 2023, DOI:
+    [10.5281/zenodo.7674699](https://doi.org/10.5281/zenodo.7674699).
