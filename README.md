@@ -4,6 +4,9 @@ SEAHORS
 # [<img src="https://raw.githubusercontent.com/AurelienRoyer/SEAHORS/main/inst/www/logo1.png" height="60em" align="center"/>](https://github.com/AurelienRoyer/SEAHORS) Spatial Exploration of ArcHaeological Objects in R Shiny
 
 [![DOI](https://zenodo.org/badge/581203118.svg)](https://zenodo.org/badge/latestdoi/581203118)
+[![CRAN Version](http://www.r-pkg.org/badges/version/SEAHORS)](https://cran.r-project.org/package=SEAHORS)
+[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/SEAHORS)](https://cran.r-project.org/package=SEAHORS)
+
 
 ## Presentation
 
