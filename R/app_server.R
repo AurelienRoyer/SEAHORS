@@ -1624,6 +1624,7 @@ app_server <- function(input, output, session) {
     dd <- cbind(d[[3]],d[[4]])
     
     list.parameter.info<-var.function(input$var1)
+    var<-list.parameter.info[[1]]
     var2<-list.parameter.info[[2]]      
     
     # switch(input$var1,
