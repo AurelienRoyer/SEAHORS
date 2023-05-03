@@ -142,7 +142,7 @@ ui <- shinyUI(
                                     column(10,
                                            column(4,numericInput("Xminor.breaks", "Position of X minor breaks",1, min = 0, max=40),),
                                            column(4,numericInput("Yminor.breaks", "Position of Y minor breaks",1, min = 0, max=40),),
-                                           column(4,numericInput("Zminor.breaks", "Position of Z minor breakss",1, min = 0, max=40),),),
+                                           column(4,numericInput("Zminor.breaks", "Position of Z minor breaks",1, min = 0, max=40),),),
                                     
                                     
                                     column(12,br(),
