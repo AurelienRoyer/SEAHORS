@@ -196,9 +196,9 @@ app_server <- function(input, output, session) {
     themes <- c("theme_bw", "theme_classic", "theme_dark", "theme_grey", "theme_light", "theme_linedraw", "theme_minimal")
     selectInput("themeforfigure.list", h4("Theme for 'Simple 2Dplot'"),
                 choices = themes,
-                selected = "theme_classic")
+                selected = "theme_minimal")
   })
-  themeforfigure.choice<-reactiveVal(c("theme_classic"))
+  themeforfigure.choice<-reactiveVal(c("theme_minimal"))
   observeEvent(input$themeforfigure.list,{
     themeforfigure.choice(c(input$themeforfigure.list))
     
