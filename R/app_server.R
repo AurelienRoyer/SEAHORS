@@ -2637,8 +2637,8 @@ app_server <- function(input, output, session) {
   })
   
   ##### output Table  ----
-  # output$table <-  DT::renderDataTable(
-  output$table <-  shiny::renderDataTable(    
+  # output$table <-  shiny::renderDataTable(
+  output$table <-  DT::renderDataTable(    
     DT::datatable(
       df.sub()[,-c(1:6)], extensions = 'Buttons', options = list(
         lengthMenu = list(c(5, 15,50,100, -1), c('5', '15','50','100', 'All')),
