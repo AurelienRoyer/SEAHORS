@@ -259,6 +259,9 @@ app_server <- function(input, output, session) {
   observeEvent(input$ratio.to.coord.simple.2, {
     ratio.simple(input$ratio.to.coord.simple.2)
   })    
+    observeEvent(input$ratio.to.coord, {
+    ratio.simple(input$ratio.to.coord)
+  })    
   
   ##### function used in the script ----
   #function for density
@@ -2328,9 +2331,9 @@ app_server <- function(input, output, session) {
         ggplot2::theme(axis.title.x = element_text(size=font_size()),
               axis.title.y = element_text(size=font_size()),
               axis.text.x = element_text(size=font_tick()),
-              axis.text.y = element_text(size=font_tick()))+
-        
-        {if (input$ratio.to.coord)coord_fixed()}
+               axis.text.y = element_text(size=font_tick()))+    
+         ggplot2::coord_fixed(ratio.simple()) 
+       # {if (input$ratio.to.coord)coord_fixed()}
       
     } else { p <- ggplot2::ggplot()+ ggRGB(img = orthofile,
                                  r = 1,
