@@ -850,9 +850,15 @@ app_server <- function(input, output, session) {
   
   observeEvent(input$checkbox.invX, {
     req(input$setx)
-    df$df[,input$setx]<-df$df[,input$setx]*-1
+    df$df[,setXX()]<-df$df[,setXX()]*-1
     updateSelectInput(session,"setx",choices = names(df$df)[c(3:ncol(df$df))],
                       selected = liste.x())
+    xmax = df$df[,setXX()] %>% ceiling() %>% max(na.rm = TRUE)
+    xmin=df$df[,setXX()] %>% floor() %>% min(na.rm = TRUE)
+    updateSliderInput(session,'xslider','x limits',min=xmin,max=xmax,value=c(xmin,xmax),step=stepX())
+    x2min=input$xslider[1]
+    x2max=input$xslider[2]
+    updateSliderInput(session,'ssectionXx2','x (point size): min/max',min=x2min,max=x2max,value=c(x2min,x2max),step=stepX())
   })
   
   observeEvent(input$checkbox.invY, {
@@ -860,12 +866,24 @@ app_server <- function(input, output, session) {
     df$df[,input$sety]<-df$df[,input$sety]*-1
     updateSelectInput(session,"sety",choices = names(df$df)[c(3:ncol(df$df))],
                       selected = liste.y())
+    ymax = df$df[,setYY()] %>% ceiling() %>% max(na.rm = TRUE)
+    ymin=df$df[,setYY()] %>% floor() %>% min(na.rm = TRUE)
+    updateSliderInput(session,'yslider','y limits',min=ymin,max=ymax,value=c(ymin,ymax),step=stepY())
+    y2min=input$yslider[1]
+    y2max=input$yslider[2]
+    updateSliderInput(session,'ssectionXy2','y (point size): min/max',min=y2min,max=y2max,value=c(y2min,y2max),step=stepY())
   })
   observeEvent(input$checkbox.invZ, {
     req(input$setz)
-    df$df[,input$setz]<-df$df[,input$setz]*-1
+    df$df[,setZZ()]<-df$df[,setZZ()]*-1
     updateSelectInput(session,"setz",choices = names(df$df)[c(3:ncol(df$df))],
                       selected = liste.z())
+    zmax = df$df[,setZZ()] %>% ceiling() %>% max(na.rm = TRUE)
+    zmin=df$df[,setZZ()] %>% floor() %>% min(na.rm = TRUE)
+    updateSliderInput(session,'zslider','z limits',min=zmin,max=zmax,value=c(zmin,zmax),step=stepZ())
+    z2min=input$zslider[1]
+    z2max=input$zslider[2]
+    updateSliderInput(session,'ssectionXz2','z (point size): min/max',min=z2min,max=z2max,value=c(z2min,z2max),step=stepZ())
   })
   
   
