@@ -852,20 +852,20 @@ app_server <- function(input, output, session) {
     req(input$setx)
     df$df[,input$setx]<-df$df[,input$setx]*-1
     updateSelectInput(session,"setx",choices = names(df$df)[c(3:ncol(df$df))],
-                      selected = liste.x()))
+                      selected = liste.x())
   })
   
   observeEvent(input$checkbox.invY, {
     req(input$sety)
     df$df[,input$sety]<-df$df[,input$sety]*-1
     updateSelectInput(session,"sety",choices = names(df$df)[c(3:ncol(df$df))],
-                      selected = liste.y()))
+                      selected = liste.y())
   })
   observeEvent(input$checkbox.invZ, {
     req(input$setz)
     df$df[,input$setz]<-df$df[,input$setz]*-1
     updateSelectInput(session,"setz",choices = names(df$df)[c(3:ncol(df$df))],
-                      selected = liste.z()))
+                      selected = liste.z())
   })
   
   
