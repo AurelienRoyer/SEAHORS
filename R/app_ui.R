@@ -86,7 +86,7 @@ ui <- shinyUI(
                                     tags$h5(style = "color: blue;","you can import color ramp from panel 'additional settings'"),
                                     
                                     tags$br(),
-                                    fluidRow(column (7,checkboxInput("optioninfosfigplotly", "Show figure legend", TRUE))),
+                                    #fluidRow(column (7,checkboxInput("optioninfosfigplotly", "Show figure legend", TRUE))),
                                     tags$br(),
                                     uiOutput("liste.Colors"),
                                     tags$hr(),
@@ -123,6 +123,8 @@ ui <- shinyUI(
                    ),# end of conditionalPanel
                    conditionalPanel(condition="input.bt2==5",
                                     h4(style = "color: red;","Figure options"),
+                                    tags$br(),
+                                    fluidRow(column (7,checkboxInput("optioninfosfigplotly", "Show figure legend", TRUE))),
                                     tags$br(),
                                     column(10,column(5,numericInput("height.size.b", label = h5("Figure height"), value = 800),),
                                            column(5,numericInput("width.size.b", label = h5("Figure width"), value = 1000),),
