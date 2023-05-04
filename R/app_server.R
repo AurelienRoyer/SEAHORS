@@ -2705,6 +2705,7 @@ params:
   file: NA
   path: NA
   plot2: NA
+  plot2simple: NA
   plot3: NA
   plotrota: NA
   plotdens: NA
@@ -2853,6 +2854,7 @@ paste('no refit table has been added')
 
 ```{r plotlyout, echo=FALSE, message=FALSE, out.width='100%'}
 if (!is.null(params$plot2)) {params$plot2}
+if (!is.null(params$plot2simple)) {params$plot2simple}
 if (!is.null(params$plot3)) {params$plot3}
 if (!is.null(params$plotdens)) {params$plotdens}
 if (!is.null(params$plotdens)) {params$plotrota}
@@ -2877,6 +2879,7 @@ output$export.Rmarkdown<- downloadHandler(
                     path= input$file1$datapath,
                     plot3= session_store$plt,
                     plot2= session_store$plt2D,
+                    plot2simple=session_store$plt2D.simple,
                     plotrota=session_store$plotrota,
                     plotdens=session_store$plotdensity,
                     nat=input$Nature,
