@@ -611,7 +611,7 @@ ui <- shinyUI(
                                                                                yz = "yz",
                                                                                xz = "xz"), inline=TRUE),),
                                              column(5, downloadButton("downloadDatadensity", "Download as .pdf")),
-                                             column(2,checkboxInput("ratio.to.coord", label = "Ratio = 1:1", value = F),),
+                                             column(2,numericInput("ratio.to.coord", label = h5("Ratio figure"), value = 1),),
                              ),
                              tags$hr(),
                              column(12,
