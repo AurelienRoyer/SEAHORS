@@ -64,7 +64,8 @@ app_server <- function(input, output, session) {
   input_file1.name<-reactiveVal()
   input_file1.datapath<-reactiveVal()
   getdata.launch<-reactiveVal()
-  
+  e<-reactiveVal(NULL) ## create an environment to save the 2D.slice pdf
+  ratio.slice<-reactiveVal(1) ##nb of slice for saving it
   
   ##### import data----
   df<-reactiveValues( #creation df 
@@ -572,7 +573,9 @@ app_server <- function(input, output, session) {
           
           p<-p+scale_x_continuous(limits= c(xymin,xymax), breaks=seq(floor(min(xymin)),max(xymax),Xtickmarks.size), minor_breaks =seq(floor(min(xymin)),max(xymax),Xminorbreaks()))+
             scale_y_continuous(limits= c(yymin,yymax),breaks=seq(floor(min(yymin)),max(yymax),Ztickmarks.size()), minor_breaks = seq(floor(min(yymin)),max(yymax),Zminorbreaks()))
-          p 
+          nb.slice(i)
+          assign(paste0("session_store$test$",i),p, envir=e())
+         p 
           
           
         }) # end of renderPlotly
@@ -2218,6 +2221,8 @@ app_server <- function(input, output, session) {
     }
     
     liste.valeur.slice<-vector(length=ratio.slice)
+    a <- new.env()
+    e(a)
     for (j in 1:ratio.slice){
       k<-j-1
       val<-min(input$range2dslice)+k*input$step2dslice
@@ -2570,6 +2575,18 @@ app_server <- function(input, output, session) {
     filename = function(){paste("plot2D - ",paste(input$file1$name)," - ", Sys.Date(), '.pdf', sep = '')},
     content = function(file){
       ggsave(session_store$plt2D.simple,filename=file, device = "pdf")
+    },
+  )
+  
+  ##2D plot slice.simple mode
+  output$download.slice <- downloadHandler(
+    filename = function(){paste("plot2D - ",paste(input$file1$name)," - ", Sys.Date(), '.pdf', sep = '')},
+    content = function(file){
+      plot.lists<-list()
+      for (i in 1:nb.slice()) {
+        plot.lists[[i]]<-get(paste0("session_store$test$",i), envir=e())
+      }
+      ggsave(grid.arrange(grobs = plot.lists, ncol = 1),filename=file, device = "pdf")
     },
   )
   
