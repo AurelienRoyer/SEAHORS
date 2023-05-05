@@ -77,7 +77,7 @@ ui <- shinyUI(
                                     fluidRow(column (6,numericInput("minsize", "Minimal point size", 0.25, min = 0.1, max=10, width="50%")),
                                              column (6,numericInput("point.size", "Default point size", 2, min = 1, max=20, width="50%"), ),  ),
                                      tags$br(),
-                                     h5(style = "color: blue;","(Only working with unique ID)"),        
+                                     h5(style = "color: blue;","Only working with unique ID: "),        
                                     uiOutput("sectionXx2"),
                                     uiOutput("sectionXy2"),
                                     uiOutput("sectionXz2"),
