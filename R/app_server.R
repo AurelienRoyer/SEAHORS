@@ -1346,7 +1346,7 @@ app_server <- function(input, output, session) {
   )
   
   observeEvent(input$do.shape1, {
-    df$df$shapeX<-factor(input$shape)
+    df$df$shapeX<-input$shape
   })
   
   observeEvent(input$do.shape2, {
