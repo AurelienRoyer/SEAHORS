@@ -2250,7 +2250,7 @@ app_server <- function(input, output, session) {
       plotServerList <- lapply(
         1:ratio.slice,
         function(i) {
-          plotServer.simple(paste0("plot", i),df.sub.list[i],set.antivar.2d.slice,setZZ(),liste.valeur.slice[i])
+          plotServer.simple(paste0("plot", i),df.sub.list[i],set.antivar.2d.slice,setZZ(),liste.valeur.slice[i],i)
         })
     }
     
