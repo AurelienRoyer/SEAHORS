@@ -556,6 +556,7 @@ ui <- shinyUI(
                              fluidRow(column(12,
                                              column(2, uiOutput("ratiotocoorsimple2"),),
                                              column(12, downloadButton("downloadData2d.slice", "Download as .HTML")),
+                                             tags$br(),
                                              column(12, uiOutput("download.slice.output")),
                              ),),#end of fluidrow
                              
