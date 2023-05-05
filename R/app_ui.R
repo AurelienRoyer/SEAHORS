@@ -106,8 +106,9 @@ ui <- shinyUI(
                                            column(6,selectInput("shape", "main shape",
                                                                 choices= list("circle"='circle',
                                                                               "square"= 'square',
-                                                                              "triangle"='triangle-up',
-                                                                              "diamond"='diamond' )),
+                                                                              "triangle"='triangle',
+                                                                              "diamond"='diamond',
+                                                                              "star"='star')),
                                            ),
                                            
                                            column(6, style = "margin-top: 25px;", actionButton("do.shape1", "Set main shape ")),
