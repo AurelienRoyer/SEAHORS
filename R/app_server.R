@@ -522,7 +522,7 @@ app_server <- function(input, output, session) {
       }
     )
   }
-  plotServer.simple <- function(id,df.sub.a, Xvar, Yvar,liste.valeur.slice) {
+  plotServer.simple <- function(id,df.sub.a, Xvar, Yvar,liste.valeur.slice,i) {
     moduleServer(
       id,
       function(input, output, session) {
