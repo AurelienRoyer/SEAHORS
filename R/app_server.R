@@ -1312,7 +1312,7 @@ app_server <- function(input, output, session) {
   output$shape2=renderUI({
     req(!is.null(fileisupload()))
     req(input$shape)
-    s2<-list("circle","square","triangle","diamond")
+    s2<-list("circle","square","triangle","diamond","star")
     s2<-s2[s2!=input$shape]
     selectInput("setshape2", h4("Secondary shape"),
                 choices = s2)
