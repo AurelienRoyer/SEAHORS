@@ -179,7 +179,7 @@ ui <- shinyUI(
    
    <i>SEAHORS</i> is dedicated to the intra-site spatial analysis of archaeological piece-plotted</p>
    
-   <p> v1.6</p>
+   <p> v1.7</p>
    <p>This shiny R script makes possible to explore the spatial organisation of coordinate points taken on archaeological fields 
   and to visualise their distributions using interactive 3D and 2D plots </p>
    <br>
