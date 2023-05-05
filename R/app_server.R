@@ -65,8 +65,8 @@ app_server <- function(input, output, session) {
   input_file1.datapath<-reactiveVal()
   getdata.launch<-reactiveVal()
   e<-reactiveVal(NULL) ## create an environment to save the 2D.slice pdf
-  ratio.slice<-reactiveVal(1) ##nb of slice for saving it
-  
+  ratio.slice<-reactiveVal(1)
+  nb.slice<-reactiveVal(1) ##nb of slice for saving it
   ##### import data----
   df<-reactiveValues( #creation df 
     df=NULL) # end reactivevalues
@@ -2205,7 +2205,7 @@ app_server <- function(input, output, session) {
     sliderInput('range2dslice','Range of slices',min=xymin,max=xymax,value=c(xymin,xymax),step=input$step2dslice)
   })
   
-  ratio.slice<-reactiveVal(1)
+
   observeEvent(c(input$range2dslice, input$step2dslice,input$advanced.slice,input$xslider,input$yslider,input$zslider), {
     req(!is.null(input$range2dslice))
     ratio.slice<-(max(input$range2dslice)-min(input$range2dslice))/input$step2dslice 
