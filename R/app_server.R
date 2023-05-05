@@ -2592,7 +2592,7 @@ app_server <- function(input, output, session) {
       for (i in 1:nb.slice()) {
         plot.lists[[i]]<-get(paste0("session_store$test$",i), envir=e())
       }
-      ggsave(grid.arrange(grobs = plot.lists, ncol = 1),filename=file, device = "pdf")
+      ggsave(grid.arrange(grobs = plot.lists, ncol = 1),filename=file, device = "pdf",scale=nb.slice(),limitsize=FALSE)
     },
   )
   
