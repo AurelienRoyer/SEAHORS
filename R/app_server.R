@@ -1796,9 +1796,12 @@ app_server <- function(input, output, session) {
     myvaluesx<-unlist(myvaluesx())
     
     size.scale <- size.scale()
-    if (nrow(df.sub3)>0){
-      df.sub$point.size[!((df.sub[,input$setx] %in% df.sub3[,input$setx]) & (df.sub[,input$sety] %in% df.sub3[,input$sety]) & (df.sub[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-    } 
+   # if (nrow(df.sub3)>0){
+   #   df.sub$point.size[!((df.sub[,input$setx] %in% df.sub3[,input$setx]) & (df.sub[,input$sety] %in% df.sub3[,input$sety]) & (df.sub[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+   # } 
+    if (nrow(df.sub3)>0 && input$setID != "null"){
+    df.sub$point.size[!((df.sub[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
+     }
     shapeX<-df.sub$shapeX
     shape.level<-levels(as.factor(shapeX))
     text2<-df.sub$text
@@ -1929,8 +1932,11 @@ app_server <- function(input, output, session) {
       df.sub3<-df.sub.minpoint()
       myvaluesx<-unlist(myvaluesx())
       size.scale <- size.scale()
-      if (nrow(df.sub3)>0){
-        df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+     # if (nrow(df.sub3)>0){
+     #   df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+      #}
+      if (nrow(df.sub3)>0 && input$setID != "null"){
+      df.sub2$point.size2[!((df.sub2[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
       }
       shapeX<-df.sub2$shapeX
       shape.level<-levels(as.factor(shapeX))
@@ -2107,10 +2113,13 @@ app_server <- function(input, output, session) {
     # to correct the color for ggplot2
     myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub2$layer2)))]
     
-    if (nrow(df.sub3)>0){
-      df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-    }
-    
+   # if (nrow(df.sub3)>0){
+   #   df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+   # }
+      if (nrow(df.sub3)>0 && input$setID != "null"){
+       df.sub2$point.size2[!((df.sub2[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
+      }
+      
     list.parameter.info<-var.function(input$var1.simple)
     var<-list.parameter.info[[1]]
     var2<-list.parameter.info[[2]]      
@@ -2225,10 +2234,13 @@ app_server <- function(input, output, session) {
     set.antivar.2d.slice<-c(setXX(),setYY())[c(setXX(),setYY())!=set.var.2d.slice()]
     
     df.sub3<-df.sub.minpoint() 
-    if (nrow(df.sub3)>0){
-      df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-    }
-    
+   # if (nrow(df.sub3)>0){
+    #  df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+    #}
+    if (nrow(df.sub3)>0 && input$setID != "null"){
+     df.sub2$point.size2[!((df.sub2[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
+     }
+     
     liste.valeur.slice<-vector(length=ratio.slice)
     a <- new.env()
     e(a)
@@ -2282,10 +2294,13 @@ app_server <- function(input, output, session) {
     size.scale <- size.scale()
     
     df.sub3<-df.sub.minpoint()
-    if (nrow(df.sub3)>0){
-      df.sub4$point.size2[!((df.sub4[,input$setx] %in% df.sub3[,input$setx]) & (df.sub4[,input$sety] %in% df.sub3[,input$sety]) & (df.sub4[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-      
-    }
+   # if (nrow(df.sub3)>0){
+    #  df.sub4$point.size2[!((df.sub4[,input$setx] %in% df.sub3[,input$setx]) & (df.sub4[,input$sety] %in% df.sub3[,input$sety]) & (df.sub4[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+     #   }
+    if (nrow(df.sub3)>0 && input$setID != "null"){
+      df.sub4$point.size2[!((df.sub4[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
+      }  
+        
     myvaluesx<-unlist(myvaluesx())
     
     orthofile<-NULL
