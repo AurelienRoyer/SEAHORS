@@ -571,7 +571,7 @@ app_server <- function(input, output, session) {
                   legend.title = element_blank())+
             theme(legend.position='none')
           
-          p<-p+sggplot2::cale_x_continuous(limits= c(xymin,xymax), breaks=seq(floor(min(xymin)),max(xymax),Xtickmarks.size), minor_breaks =seq(floor(min(xymin)),max(xymax),Xminorbreaks()))+
+          p<-p+ggplot2::scale_x_continuous(limits= c(xymin,xymax), breaks=seq(floor(min(xymin)),max(xymax),Xtickmarks.size), minor_breaks =seq(floor(min(xymin)),max(xymax),Xminorbreaks()))+
             ggplot2::scale_y_continuous(limits= c(yymin,yymax),breaks=seq(floor(min(yymin)),max(yymax),Ztickmarks.size()), minor_breaks = seq(floor(min(yymin)),max(yymax),Zminorbreaks()))
           nb.slice(i)
           assign(paste0("session_store$test$",i),p, envir=e())
