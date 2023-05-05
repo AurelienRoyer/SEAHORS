@@ -1362,6 +1362,12 @@ app_server <- function(input, output, session) {
     numericInput("ratio.to.coord.simple.2", label = h5("Ratio figure"), value = 1)
   })
   
+    output$download.slice.output=renderUI({ 
+    req(input$advanced.slice==FALSE)
+    downloadButton("download.slice", "Download as .pdf")
+  })
+  
+  
   #### liste infos  ----
   observeEvent(req(!is.null(listinfosmarqueur())),{
     df$df$text<-""}
