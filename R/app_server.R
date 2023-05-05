@@ -2206,7 +2206,10 @@ app_server <- function(input, output, session) {
   })
   
 
-  observeEvent(c(input$range2dslice, input$step2dslice,input$advanced.slice,input$xslider,input$yslider,input$zslider), {
+    observeEvent(c(input$range2dslice, input$step2dslice,input$advanced.slice,input$xslider,input$yslider,input$zslider,myvaluesx(),
+                 minsize(),
+                 size.scale(),
+                 shape_all()), {
     req(!is.null(input$range2dslice))
     ratio.slice<-(max(input$range2dslice)-min(input$range2dslice))/input$step2dslice 
     ratio.slice<-ceiling(ratio.slice)
