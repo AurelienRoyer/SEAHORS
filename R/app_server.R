@@ -554,14 +554,14 @@ app_server <- function(input, output, session) {
           p<- p + ggplot2::geom_point(data = df.sub.a,
                           aes(x = .data[[set.antivar.2d.slice]],
                               y = .data[[setZZ()]],
-                              col=factor(layer2),
-                              size=factor(ppsz), 
+                              col=factor(layer2)),
+                              size=ppsz, 
                               shape=shapeX  
-                          ))+
+                          )+
             ggplot2::coord_fixed(ratio.simple())
-          p<- p + scale_color_manual(values=myvaluesx2)+
-            scale_shape_manual(values=shape.level)+
-            scale_size_manual(values=c(min.size2,size.scale))+
+          p<- p + ggplot2::scale_color_manual(values=myvaluesx2)+
+            ggplot2::scale_shape_manual(values=shape.level)+
+            ggplot2::scale_size_manual(values=c(min.size2,size.scale))+
             xlab(paste(set.antivar.2d.name))+ylab(nameZ())+
             do.call(themeforfigure.choice(), list()) +
             theme(axis.title.x = element_text(size=font_size()),
@@ -571,8 +571,8 @@ app_server <- function(input, output, session) {
                   legend.title = element_blank())+
             theme(legend.position='none')
           
-          p<-p+scale_x_continuous(limits= c(xymin,xymax), breaks=seq(floor(min(xymin)),max(xymax),Xtickmarks.size), minor_breaks =seq(floor(min(xymin)),max(xymax),Xminorbreaks()))+
-            scale_y_continuous(limits= c(yymin,yymax),breaks=seq(floor(min(yymin)),max(yymax),Ztickmarks.size()), minor_breaks = seq(floor(min(yymin)),max(yymax),Zminorbreaks()))
+          p<-p+sggplot2::cale_x_continuous(limits= c(xymin,xymax), breaks=seq(floor(min(xymin)),max(xymax),Xtickmarks.size), minor_breaks =seq(floor(min(xymin)),max(xymax),Xminorbreaks()))+
+            ggplot2::scale_y_continuous(limits= c(yymin,yymax),breaks=seq(floor(min(yymin)),max(yymax),Ztickmarks.size()), minor_breaks = seq(floor(min(yymin)),max(yymax),Zminorbreaks()))
           nb.slice(i)
           assign(paste0("session_store$test$",i),p, envir=e())
          p 
@@ -2133,7 +2133,7 @@ app_server <- function(input, output, session) {
     
     shapeX<-df.sub2$shapeX
     shape.level<-levels(as.factor(shapeX))
-    point.size3<-as.factor(df.sub2$point.size2)
+    #point.size3<-as.factor(df.sub2$point.size2)
     
     p <- ggplot2::ggplot()
     if (!is.null(orthofile)){
@@ -2149,10 +2149,10 @@ app_server <- function(input, output, session) {
     p<- p + ggplot2::geom_point(data = df.sub2,
                     aes(x = .data[[var]],
                         y = .data[[var2]],
-                        col=factor(layer2),
-                        size=point.size3,
+                        col=factor(layer2)),
+                        size=df.sub2$point.size2,
                         shape=shapeX
-                    ))    +
+                    )    +
       ggplot2::coord_fixed(ratio.simple())
     
     if (input$var.fit.table.simple == "yes" & !is.null(data.fit.3D())){
@@ -2180,9 +2180,9 @@ app_server <- function(input, output, session) {
       p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
                                               yend=.data[[var2end]]), color=data.fit.3D$color.fit, size=input$w2, inherit.aes = F)
     }
-    p<-p+scale_color_manual(values=myvaluesx2)+
-      scale_shape_manual(values=shape.level)+
-      scale_size_manual(values=c(min.size2,size.scale))+
+    p<-p+ggplot2::scale_color_manual(values=myvaluesx2)+
+      ggplot2::scale_shape_manual(values=shape.level)+
+      ggplot2::scale_size_manual(values=c(min.size2,size.scale))+
       xlab(paste(axis.var.name))+ylab(paste(axis.var2.name))+
       do.call(themeforfigure.choice(), list()) +
       theme(axis.title.x = element_text(size=font_size()),
