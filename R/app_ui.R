@@ -72,6 +72,7 @@ ui <- shinyUI(
                    ), # end of conditionalPanel
                    conditionalPanel(condition="input.bt2==2",
                                     h4(style = "color: red;","Modifying point size according to a variable"),
+                                    h5(style = "color: blue;","(Only working with unique ID)"),
                                     tags$br(),
                                     fluidRow(column (6,numericInput("minsize", "Minimal point size", 0.25, min = 0.1, max=10, width="50%")),
                                              column (6,numericInput("point.size", "Default point size", 2, min = 1, max=20, width="50%"), ),  ),
