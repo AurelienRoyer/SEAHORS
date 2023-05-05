@@ -2173,7 +2173,7 @@ app_server <- function(input, output, session) {
     }
     p<-p+scale_color_manual(values=myvaluesx2)+
       scale_shape_manual(values=shape.level)+
-      scale_size_manual(values=c(size.scale,min.size2))+
+      scale_size_manual(values=c(min.size2,size.scale))+
       xlab(paste(axis.var.name))+ylab(paste(axis.var2.name))+
       do.call(themeforfigure.choice(), list()) +
       theme(axis.title.x = element_text(size=font_size()),
