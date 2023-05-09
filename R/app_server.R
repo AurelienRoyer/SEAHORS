@@ -114,10 +114,10 @@ app_server <- function(input, output, session) {
     shapeX<-shape_all()
     df$df<-df$df2[,!sapply(df$df2, function(x) is.logical(x))] ##remove column without data
     if (input$set.dec == TRUE){
-      df$df[] <- apply(df$df,2,function (x) str_replace_all(x,",","."))
+      df$df[] <- apply(df$df,2,function (x) stringr::str_replace_all(x,",","."))
     } else{}
     if(!is.null(df$df[sapply(df$df, function(x) !is.numeric(x))])) {
-      df$df[sapply(df$df, function(x) !is.numeric(x))] <- mutate_all(df$df[sapply(df$df, function(x) !is.numeric(x))], .funs=str_to_lower)}
+      df$df[sapply(df$df, function(x) !is.numeric(x))] <- mutate_all(df$df[sapply(df$df, function(x) !is.numeric(x))], .funs=stringr::str_to_lower)}
     text<-""
     df$df<-cbind(shapeX,text,null,df$df)
     nnrow.df.df(nrow(df$df))
