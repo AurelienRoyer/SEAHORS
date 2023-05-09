@@ -37,7 +37,7 @@ Imports:
     rmarkdown,
 	htmlwidgets
 Suggests: 
-    markdown,
+    rmarkdown,
     knitr
 VignetteBuilder: knitr
 URL: https://github.com/AurelienRoyer/SEAHORS
