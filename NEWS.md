@@ -1,11 +1,11 @@
 # SEAHORS 1.7
 Released:
 
-*Fix graphical bugs (Table, ggplot2::theme, 2Dslice reactivity)
-*Add a button to download slices from 2Dplot slice in .pdf
-*Add 2D plot simple to Rmarkdown
-*Modification of ratio from density plot
-*Modification of button to display plot legends
+* Fix graphical bugs (Table, ggplot2::theme, 2Dslice reactivity)
+* Add a button to download slices from 2Dplot slice in .pdf
+* Add 2D plot simple to Rmarkdown
+* Modification of ratio from density plot
+* Modification of button to display plot legends
 
 
 # SEAHORS 1.6
