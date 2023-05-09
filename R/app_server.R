@@ -2053,8 +2053,8 @@ app_server <- function(input, output, session) {
           
           
           data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
-          varend<-str_to_lower(paste0(var,"end"))
-          var2end<-str_to_lower(paste0(var2,"end"))
+          varend<-stringr::str_to_lower(paste0(var,"end"))
+          var2end<-stringr::str_to_lower(paste0(var2,"end"))
           p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
                                                   yend=.data[[var2end]]), color=data.fit.3D$color.fit, size=input$w2, inherit.aes = F)
         }
@@ -2174,8 +2174,8 @@ app_server <- function(input, output, session) {
           }}} #end of if
       
       data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
-      varend<-str_to_lower(paste0(var,"end"))
-      var2end<-str_to_lower(paste0(var2,"end"))
+      varend<-stringr::str_to_lower(paste0(var,"end"))
+      var2end<-stringr::str_to_lower(paste0(var2,"end"))
       
       p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
                                               yend=.data[[var2end]]), color=data.fit.3D$color.fit, size=input$w2, inherit.aes = F)
