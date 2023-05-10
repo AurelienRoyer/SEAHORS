@@ -924,6 +924,27 @@ app_server <- function(input, output, session) {
       ))
     } 
   })
+
+##verification to use distinct size options 
+
+observeEvent(ignoreInit = TRUE, 
+               c(min.point.sliderx(),
+               min.point.slidery(),
+               min.point.sliderz(),
+               set.var.gris(),
+               minsize()),
+               {
+    diff<-nrow(df.sub())-nrow(df.sub.minpoint())
+
+               if(diff>0 && input$setID == "null"){
+               showModal(modalDialog(
+                 title = "No unique ID",
+                   HTML("Size options are not available without unique ID")
+              
+                  ))
+               }
+  })
+  
   
   ##### import extradata ----
   observe({
