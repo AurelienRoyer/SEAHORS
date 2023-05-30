@@ -271,6 +271,7 @@ ui <- shinyUI(
                                                   ),#end of fluidrow   
                                                   tags$hr(),
                                                   tableOutput("contents")
+                                             
                                          ), #end of tabPanel
                                          tabPanel(tags$h5("Merge additional data"), 
                                                   tags$br(),
@@ -346,7 +347,7 @@ ui <- shinyUI(
                                                   tags$br(),
                                                   tags$h5(style = "color: blue;","Table of refits"),
                                                   verbatimTextOutput("Fit.table.output"),
-                                                  downloadButton("downloadData_redata", "Download"),
+                                                  downloadButton("downloadData_redata", "Download")
                                          ),#end tabpanel
                                          tabPanel(tags$h5("Concatenate two columns"), 
                                                   tags$br(),
@@ -374,9 +375,14 @@ ui <- shinyUI(
                              tabsetPanel(type = "tabs",
                                          tabPanel(tags$h5("Raw table"), 
                                                   fluidRow(
-                                                    column(10,
-                                                           DTOutput("table"))),
-                                                  column(11, downloadButton("downloadData_rawdata", "Download")),
+                                                  column(10, 
+                                                         br(),
+                                                         downloadButton("downloadData_rawdata", "Download raw table"),
+                                                         downloadButton("download.archeoviz", "Export to the archeoViz file format"),
+                                                         br(),br(),
+                                                        DTOutput("table")
+                                                    # column(10,)
+                                                        ))
                                          ),#end tabpanel
                                          tabPanel(tags$h5("Pivot table"),
                                                   fluidRow(

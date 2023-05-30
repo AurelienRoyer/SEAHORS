@@ -1804,6 +1804,56 @@ observeEvent(ignoreInit = TRUE,
     return(df.6[1:5,1:9])
   })
   
+  # output to archeoViz format ----
+  
+  output.archeoviz <- reactive({
+    req(!is.null(fileisupload()))
+    isTruthy(df.sub())
+    
+    # subsetting:
+    df <- df.sub()
+    col.names <- c("id"=input$setID, "xmin"=input$setx, "ymin"=input$sety, "zmin"=input$setz, "layer"=input$setlevels, "object_type"=input$setnature, "object_other"=input$setpasse, "year"=input$setdate)
+    df <- df[, col.names]
+    colnames(df) <- names(col.names)
+    df$square_x <- ""
+    df$square_y <- ""
+    
+    # guess if values are in meter, then convert to cm
+    test.x <- max(df$xmin, na.rm = T) - min(df$xmin, na.rm = T) < 100
+    test.y <- max(df$ymin, na.rm = T) - min(df$ymin, na.rm = T) < 100
+    if(test.x & test.y){
+      df[, c("xmin", "ymin", "zmin")] <-  apply(
+        df[, c("xmin", "ymin", "zmin")], 2, function(x) x * 100)
+    }
+    
+    # guess if altitude are used, then convert them into depth values
+    test.z <- table(df$zmin < 0)
+    test.z <- test.z[which(names(test.z) == "TRUE")] > test.z[which(names(test.z) == "FALSE")]
+    if(test.z){ df$zmin <- df$zmin * -1  }
+    
+    # recoding, if needed:
+    if(length(unique(df$id))){ df$id <- seq_len(nrow(df)) }
+    if( length(unique(df$object_other)) == 1 ){
+      if(unique(df$object_other) == "0"){df$object_other <- ""}
+    }
+    if( length(unique(df$year)) == 1) {
+      if(unique(df$year) == "0"){df$year <- ""}
+    }
+    
+    # output:
+    df[c("id", "square_x", "square_y", "layer", "xmin", "ymin", "zmin", "object_type", "object_other", "year")]
+  })
+  
+  output$download.archeoviz<- downloadHandler(
+    filename = function() {
+      paste0(Sys.Date(), "-", paste(input$file1$name),"archeoviz.csv",sep="")
+    },
+    content = function(file) {
+      write.table(output.archeoviz(), file, row.names = FALSE, sep=",")
+    }
+  )
+  
+ 
   
   ##### 3D plot ----
   output$plot3Dbox <- renderUI({
