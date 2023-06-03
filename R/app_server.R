@@ -14,7 +14,7 @@ app_server <- function(input, output, session) {
   ##### necessary settings----
   options(shiny.maxRequestSize=150*1024^2) ## limits 150 MO to import
   font.size <- "8pt"
-   vv<-reactiveVal(NULL) ## for plotly_selected
+  vv<-reactiveVal(NULL) ## for plotly_selected
   minsize<-reactiveVal(0.25) ##for min point
   size.scale<-reactiveVal(3) ##for point
   stepX<-reactiveVal(0.1) ## step size sliders
@@ -260,7 +260,7 @@ app_server <- function(input, output, session) {
   observeEvent(input$ratio.to.coord.simple.2, {
     ratio.simple(input$ratio.to.coord.simple.2)
   })    
-    observeEvent(input$ratio.to.coord, {
+  observeEvent(input$ratio.to.coord, {
     ratio.simple(input$ratio.to.coord)
   })    
   
@@ -403,16 +403,16 @@ app_server <- function(input, output, session) {
         dz <- matrix(z, nrow = nrow(rr), ncol = ncol(rr), 
                      byrow = TRUE)
         p <- ggplot2::annotation_raster(raster = dz, xmin = exe[1], 
-                               xmax = exe[2], ymin = exe[3], ymax = exe[4], 
-                               interpolate = FALSE)
+                                        xmax = exe[2], ymin = exe[3], ymax = exe[4], 
+                                        interpolate = FALSE)
         if (!ggLayer) {
           p <- ggplot2::ggplot() + p + ggplot2::geom_blank(data = df, aes(x = x, 
-                                                        y = y))
+                                                                          y = y))
         }
       }
       else {
         p <- ggplot2::geom_raster(data = df_raster, aes(x = x, y = y, 
-                                               fill = fill), alpha = alpha)
+                                                        fill = fill), alpha = alpha)
         if (!ggLayer) {
           p <- ggplot2::ggplot() + p + ggplot2::scale_fill_identity()
         }
@@ -552,12 +552,12 @@ app_server <- function(input, output, session) {
           ppsz<-df.sub.a$point.size2
           p <- ggplot2::ggplot()
           p<- p + ggplot2::geom_point(data = df.sub.a,
-                          aes(x = .data[[set.antivar.2d.slice]],
-                              y = .data[[setZZ()]],
-                              col=factor(layer2)),
-                              size=ppsz, 
-                              shape=shapeX  
-                          )+
+                                      aes(x = .data[[set.antivar.2d.slice]],
+                                          y = .data[[setZZ()]],
+                                          col=factor(layer2)),
+                                      size=ppsz, 
+                                      shape=shapeX  
+          )+
             ggplot2::coord_fixed(ratio.simple())
           p<- p + ggplot2::scale_color_manual(values=myvaluesx2)+
             ggplot2::scale_shape_manual(values=shape.level)+
@@ -575,7 +575,7 @@ app_server <- function(input, output, session) {
             ggplot2::scale_y_continuous(limits= c(yymin,yymax),breaks=seq(floor(min(yymin)),max(yymax),Ztickmarks.size()), minor_breaks = seq(floor(min(yymin)),max(yymax),Zminorbreaks()))
           nb.slice(i)
           assign(paste0("session_store$test$",i),p, envir=e())
-         p 
+          p 
           
           
         }) # end of renderPlotly
@@ -613,7 +613,7 @@ app_server <- function(input, output, session) {
           if (k==0) k=nk
           if (selected_rainbow == "1") {
             selected2 <-mycolors[i]  }
-            shinyWidgets::spectrumInput(
+          shinyWidgets::spectrumInput(
             inputId = paste0(name,i),
             label = paste0(uvalues[i], ": " ),
             choices = list(mycolors,
@@ -924,26 +924,26 @@ app_server <- function(input, output, session) {
       ))
     } 
   })
-
-##verification to use distinct size options 
-
-observeEvent(ignoreInit = TRUE, 
+  
+  ##verification to use distinct size options 
+  
+  observeEvent(ignoreInit = TRUE, 
                c(min.point.sliderx(),
-               min.point.slidery(),
-               min.point.sliderz(),
-               set.var.gris(),
-               minsize()),
+                 min.point.slidery(),
+                 min.point.sliderz(),
+                 set.var.gris(),
+                 minsize()),
                {
-    diff<-nrow(df.sub())-nrow(df.sub.minpoint())
-
-               if(diff>0 && input$setID == "null"){
-               showModal(modalDialog(
-                 title = "No unique ID",
-                   HTML("Size options are not available without unique ID")
-              
-                  ))
-               }
-  })
+                 diff<-nrow(df.sub())-nrow(df.sub.minpoint())
+                 
+                 if(diff>0 && input$setID == "null"){
+                   showModal(modalDialog(
+                     title = "No unique ID",
+                     HTML("Size options are not available without unique ID")
+                     
+                   ))
+                 }
+               })
   
   
   ##### import extradata ----
@@ -1383,7 +1383,7 @@ observeEvent(ignoreInit = TRUE,
     numericInput("ratio.to.coord.simple.2", label = h5("Ratio figure"), value = 1)
   })
   
-    output$download.slice.output=renderUI({ 
+  output$download.slice.output=renderUI({ 
     req(input$advanced.slice==FALSE)
     downloadButton("download.slice", "Download as .pdf")
   })
@@ -1675,7 +1675,7 @@ observeEvent(ignoreInit = TRUE,
     d <- event_data('plotly_selected')
     if (is.null(d)) return()
     if (length(d)==0) {
-         vv(NULL)
+      vv(NULL)
       return()
     }
     dd <- cbind(d[[3]],d[[4]])
@@ -1844,7 +1844,7 @@ observeEvent(ignoreInit = TRUE,
     df[c("id", "square_x", "square_y", "layer", "xmin", "ymin", "zmin", "object_type", "object_other", "year")]
   })
   
-  output$download.archeoviz<- downloadHandler(
+  output$download.archeoviz <- downloadHandler(
     filename = function() {
       paste0(Sys.Date(), "-", paste(input$file1$name),"archeoviz.csv",sep="")
     },
@@ -1853,7 +1853,35 @@ observeEvent(ignoreInit = TRUE,
     }
   )
   
- 
+  archeoviz.url <- reactive({
+    req(output.archeoviz())
+    
+    data.url <- session$registerDataObj(name = "table",
+                                          data = output.archeoviz(),
+                                          filterFunc = function(data, req) { 
+                                            httpResponse(200, "text/csv",
+                                                         write.csv2(data)
+                                            )
+                                          })
+      
+    object.id <- gsub(".*w=(.*)&nonce.*", "\\1", data.url)
+      
+    data.url <- paste0("https://analytics.huma-num.fr/Sebastien.Plutniak/SEAHORS/_w_", object.id, 
+                         "/session/", session$token, "/download/download.archeoviz")
+      
+    paste0("https://analytics.huma-num.fr/archeoviz/en/?data=", data.url)
+  })
+  
+  output$run.archeoviz <- renderUI({
+    
+    if(Sys.getenv('SHINY_PORT') != ""){ # if remote use of the app
+      actionLink("run.archeoviz",
+                 label = "* Directly send your data online to archeoViz",
+                 onclick = paste("window.open('",
+                                 archeoviz.url(), "', '_blank')"))
+      }
+    
+  })
   
   ##### 3D plot ----
   output$plot3Dbox <- renderUI({
@@ -1867,12 +1895,12 @@ observeEvent(ignoreInit = TRUE,
     myvaluesx<-unlist(myvaluesx())
     
     size.scale <- size.scale()
-   # if (nrow(df.sub3)>0){
-   #   df.sub$point.size[!((df.sub[,input$setx] %in% df.sub3[,input$setx]) & (df.sub[,input$sety] %in% df.sub3[,input$sety]) & (df.sub[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-   # } 
+    # if (nrow(df.sub3)>0){
+    #   df.sub$point.size[!((df.sub[,input$setx] %in% df.sub3[,input$setx]) & (df.sub[,input$sety] %in% df.sub3[,input$sety]) & (df.sub[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+    # } 
     if (nrow(df.sub3)>0 && input$setID != "null"){
-    df.sub$point.size[!((df.sub[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
-     }
+      df.sub$point.size[!((df.sub[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
+    }
     shapeX<-df.sub$shapeX
     shape.level<-levels(as.factor(shapeX))
     text2<-df.sub$text
@@ -2003,11 +2031,11 @@ observeEvent(ignoreInit = TRUE,
       df.sub3<-df.sub.minpoint()
       myvaluesx<-unlist(myvaluesx())
       size.scale <- size.scale()
-     # if (nrow(df.sub3)>0){
-     #   df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+      # if (nrow(df.sub3)>0){
+      #   df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
       #}
       if (nrow(df.sub3)>0 && input$setID != "null"){
-      df.sub2$point.size2[!((df.sub2[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
+        df.sub2$point.size2[!((df.sub2[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
       }
       shapeX<-df.sub2$shapeX
       shape.level<-levels(as.factor(shapeX))
@@ -2096,13 +2124,13 @@ observeEvent(ignoreInit = TRUE,
                 maxpixels =500000,
                 ggLayer = T)+
           ggplot2::geom_point(data = df.sub2,
-                     aes(x = .data[[var]],
-                         y = .data[[var2]],
-                         fill=layer2,
-                         size=as.factor(point.size2),
-                         shape=shapeX,
-                         text= paste(paste(var,":"), .data[[var]], paste(var2,":"), .data[[var2]], paste(df.sub2$text))
-                     ))
+                              aes(x = .data[[var]],
+                                  y = .data[[var2]],
+                                  fill=layer2,
+                                  size=as.factor(point.size2),
+                                  shape=shapeX,
+                                  text= paste(paste(var,":"), .data[[var]], paste(var2,":"), .data[[var2]], paste(df.sub2$text))
+                              ))
         
         if (input$var.fit.table == "yes" & !is.null(data.fit.3D())){
           colorvalues<-unlist(colorvalues())
@@ -2184,13 +2212,13 @@ observeEvent(ignoreInit = TRUE,
     # to correct the color for ggplot2
     myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub2$layer2)))]
     
-   # if (nrow(df.sub3)>0){
-   #   df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-   # }
-      if (nrow(df.sub3)>0 && input$setID != "null"){
-       df.sub2$point.size2[!((df.sub2[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
-      }
-      
+    # if (nrow(df.sub3)>0){
+    #   df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+    # }
+    if (nrow(df.sub3)>0 && input$setID != "null"){
+      df.sub2$point.size2[!((df.sub2[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
+    }
+    
     list.parameter.info<-var.function(input$var1.simple)
     var<-list.parameter.info[[1]]
     var2<-list.parameter.info[[2]]      
@@ -2210,20 +2238,20 @@ observeEvent(ignoreInit = TRUE,
     if (!is.null(orthofile)){
       
       p<-p + ggRGB(img = orthofile,
-                  r = 1,
-                  g = 2,
-                  b = 3,
-                  maxpixels =500000,
-                  ggLayer = T)
+                   r = 1,
+                   g = 2,
+                   b = 3,
+                   maxpixels =500000,
+                   ggLayer = T)
     }   
     
     p<- p + ggplot2::geom_point(data = df.sub2,
-                    aes(x = .data[[var]],
-                        y = .data[[var2]],
-                        col=factor(layer2)),
-                        size=df.sub2$point.size2,
-                        shape=shapeX
-                    )    +
+                                aes(x = .data[[var]],
+                                    y = .data[[var2]],
+                                    col=factor(layer2)),
+                                size=df.sub2$point.size2,
+                                shape=shapeX
+    )    +
       ggplot2::coord_fixed(ratio.simple())
     
     if (input$var.fit.table.simple == "yes" & !is.null(data.fit.3D())){
@@ -2285,62 +2313,62 @@ observeEvent(ignoreInit = TRUE,
     sliderInput('range2dslice','Range of slices',min=xymin,max=xymax,value=c(xymin,xymax),step=input$step2dslice)
   })
   
-
-    observeEvent(c(input$range2dslice, input$step2dslice,input$advanced.slice,input$xslider,input$yslider,input$zslider,myvaluesx(),
+  
+  observeEvent(c(input$range2dslice, input$step2dslice,input$advanced.slice,input$xslider,input$yslider,input$zslider,myvaluesx(),
                  minsize(),
                  size.scale(),
                  shape_all()), {
-    req(!is.null(input$range2dslice))
-    ratio.slice<-(max(input$range2dslice)-min(input$range2dslice))/input$step2dslice 
-    ratio.slice<-ceiling(ratio.slice)
-    if (ratio.slice<1) {
-      ratio.slice<-1
-    }
-    
-    ratio.slice(ratio.slice)
-    df.sub.list<-vector("list", ratio.slice)
-    min.size2<-minsize()
-    df.sub2<-df.sub()
-    set.var.2d.slice<-set.var.2d.slice()
-    set.antivar.2d.slice<-c(setXX(),setYY())[c(setXX(),setYY())!=set.var.2d.slice()]
-    
-    df.sub3<-df.sub.minpoint() 
-   # if (nrow(df.sub3)>0){
-    #  df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-    #}
-    if (nrow(df.sub3)>0 && input$setID != "null"){
-     df.sub2$point.size2[!((df.sub2[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
-     }
-     
-    liste.valeur.slice<-vector(length=ratio.slice)
-    a <- new.env()
-    e(a)
-    for (j in 1:ratio.slice){
-      k<-j-1
-      val<-min(input$range2dslice)+k*input$step2dslice
-      val2<-val+input$step2dslice
-      if(val2>max(input$range2dslice)){ 
-        val2<-max(input$range2dslice)
-      }
-      liste.valeur.slice[j]<-paste("2D slice from ",val," to ",val2, " in ",set.var.2d.slice()," axis")
-      df.sub.list[[j]]<- filter (df.sub2, .data[[set.var.2d.slice]]>= val, .data[[set.var.2d.slice]]<=val2)
-    }
-    if (input$advanced.slice==TRUE){
-      
-      plotServerList <- lapply(
-        1:ratio.slice,
-        function(i) {
-          plotServer(paste0("plot", i),df.sub.list[i],set.antivar.2d.slice,setZZ(),liste.valeur.slice[i])
-        }    ) 
-    } else { 
-      plotServerList <- lapply(
-        1:ratio.slice,
-        function(i) {
-          plotServer.simple(paste0("plot", i),df.sub.list[i],set.antivar.2d.slice,setZZ(),liste.valeur.slice[i],i)
-        })
-    }
-    
-  })
+                   req(!is.null(input$range2dslice))
+                   ratio.slice<-(max(input$range2dslice)-min(input$range2dslice))/input$step2dslice 
+                   ratio.slice<-ceiling(ratio.slice)
+                   if (ratio.slice<1) {
+                     ratio.slice<-1
+                   }
+                   
+                   ratio.slice(ratio.slice)
+                   df.sub.list<-vector("list", ratio.slice)
+                   min.size2<-minsize()
+                   df.sub2<-df.sub()
+                   set.var.2d.slice<-set.var.2d.slice()
+                   set.antivar.2d.slice<-c(setXX(),setYY())[c(setXX(),setYY())!=set.var.2d.slice()]
+                   
+                   df.sub3<-df.sub.minpoint() 
+                   # if (nrow(df.sub3)>0){
+                   #  df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
+                   #}
+                   if (nrow(df.sub3)>0 && input$setID != "null"){
+                     df.sub2$point.size2[!((df.sub2[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
+                   }
+                   
+                   liste.valeur.slice<-vector(length=ratio.slice)
+                   a <- new.env()
+                   e(a)
+                   for (j in 1:ratio.slice){
+                     k<-j-1
+                     val<-min(input$range2dslice)+k*input$step2dslice
+                     val2<-val+input$step2dslice
+                     if(val2>max(input$range2dslice)){ 
+                       val2<-max(input$range2dslice)
+                     }
+                     liste.valeur.slice[j]<-paste("2D slice from ",val," to ",val2, " in ",set.var.2d.slice()," axis")
+                     df.sub.list[[j]]<- filter (df.sub2, .data[[set.var.2d.slice]]>= val, .data[[set.var.2d.slice]]<=val2)
+                   }
+                   if (input$advanced.slice==TRUE){
+                     
+                     plotServerList <- lapply(
+                       1:ratio.slice,
+                       function(i) {
+                         plotServer(paste0("plot", i),df.sub.list[i],set.antivar.2d.slice,setZZ(),liste.valeur.slice[i])
+                       }    ) 
+                   } else { 
+                     plotServerList <- lapply(
+                       1:ratio.slice,
+                       function(i) {
+                         plotServer.simple(paste0("plot", i),df.sub.list[i],set.antivar.2d.slice,setZZ(),liste.valeur.slice[i],i)
+                       })
+                   }
+                   
+                 })
   
   output$plot.2dslide <- renderUI({
     ns <- session$ns
@@ -2365,13 +2393,13 @@ observeEvent(ignoreInit = TRUE,
     size.scale <- size.scale()
     
     df.sub3<-df.sub.minpoint()
-   # if (nrow(df.sub3)>0){
+    # if (nrow(df.sub3)>0){
     #  df.sub4$point.size2[!((df.sub4[,input$setx] %in% df.sub3[,input$setx]) & (df.sub4[,input$sety] %in% df.sub3[,input$sety]) & (df.sub4[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-     #   }
+    #   }
     if (nrow(df.sub3)>0 && input$setID != "null"){
       df.sub4$point.size2[!((df.sub4[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
-      }  
-        
+    }  
+    
     myvaluesx<-unlist(myvaluesx())
     
     orthofile<-NULL
@@ -2411,15 +2439,15 @@ observeEvent(ignoreInit = TRUE,
     blankPlot <- ggplot2::ggplot() + 
       ggplot2::geom_blank(aes(1,1))+
       ggplot2::theme(plot.background = element_blank(), 
-            panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank(), 
-            panel.border = element_blank(),
-            panel.background = element_blank(),
-            axis.title.x = element_blank(),
-            axis.title.y = element_blank(),
-            axis.text.x = element_blank(), 
-            axis.text.y = element_blank(),
-            axis.ticks = element_blank()
+                     panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(), 
+                     panel.border = element_blank(),
+                     panel.background = element_blank(),
+                     axis.title.x = element_blank(),
+                     axis.title.y = element_blank(),
+                     axis.text.x = element_blank(), 
+                     axis.text.y = element_blank(),
+                     axis.ticks = element_blank()
       )
     
     if (is.null(orthofile)){
@@ -2429,18 +2457,18 @@ observeEvent(ignoreInit = TRUE,
         ggplot2::labs(x = nameaxis[1],y = nameaxis[2])+
         do.call(themeforfigure.choice(), list()) +
         ggplot2::theme(axis.title.x = element_text(size=font_size()),
-              axis.title.y = element_text(size=font_size()),
-              axis.text.x = element_text(size=font_tick()),
-               axis.text.y = element_text(size=font_tick()))+    
-         ggplot2::coord_fixed(ratio.simple()) 
-       # {if (input$ratio.to.coord)coord_fixed()}
+                       axis.title.y = element_text(size=font_size()),
+                       axis.text.x = element_text(size=font_tick()),
+                       axis.text.y = element_text(size=font_tick()))+    
+        ggplot2::coord_fixed(ratio.simple()) 
+      # {if (input$ratio.to.coord)coord_fixed()}
       
     } else { p <- ggplot2::ggplot()+ ggRGB(img = orthofile,
-                                 r = 1,
-                                 g = 2,
-                                 b = 3,
-                                 maxpixels =500000,
-                                 ggLayer = T) +
+                                           r = 1,
+                                           g = 2,
+                                           b = 3,
+                                           maxpixels =500000,
+                                           ggLayer = T) +
       ggplot2::geom_point(df.sub4,mapping=aes(.data[[var]], .data[[var2]], color = density),alpha=transpar(), size=df.sub4$point.size2)+
       ggplot2::labs(x = nameaxis[1],y = nameaxis[2])
     }
@@ -2450,16 +2478,16 @@ observeEvent(ignoreInit = TRUE,
     p<- p + viridis::scale_color_viridis()+
       ggplot2::guides(fill = guide_legend(title = "Level"))+
       ggplot2::theme(axis.title.x = element_text(size=font_size()),
-            axis.title.y = element_text(size=font_size()),
-            axis.text.x = element_text(size=font_tick()),
-            axis.text.y = element_text(size=font_tick()),)
+                     axis.title.y = element_text(size=font_size()),
+                     axis.text.x = element_text(size=font_tick()),
+                     axis.text.y = element_text(size=font_tick()),)
     p<- p + ggplot2::scale_x_continuous(breaks=seq(floor(min(df.sub4[[var]])),max(df.sub4[[var]]),Xtickmarks.size),minor_breaks = seq(floor(min(df.sub4[[var]])),max(df.sub4[[var]]),Xminor.breaks)) + 
       ggplot2::scale_y_continuous(breaks=seq(floor(min(df.sub4[[var2]])),max(df.sub4[[var2]]),Ytickmarks.size), minor_breaks = seq(floor(min(df.sub4[[var2]])),max(df.sub4[[var2]]),Yminor.breaks))
     
     if (input$var.density.curves== "yes") {   
       
       p <- gridExtra::grid.arrange(ydensity, blankPlot, p, zdensity, 
-                      ncol=2, nrow=2, widths=c(4, 1.4), heights=c(1.4, 4))
+                                   ncol=2, nrow=2, widths=c(4, 1.4), heights=c(1.4, 4))
       
     } else {
       p} 

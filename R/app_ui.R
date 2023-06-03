@@ -378,7 +378,6 @@ ui <- shinyUI(
                                                   column(10, 
                                                          br(),
                                                          downloadButton("downloadData_rawdata", "Download raw table"),
-                                                         downloadButton("download.archeoviz", "Export to the archeoViz file format"),
                                                          br(),br(),
                                                         DTOutput("table")
                                                     # column(10,)
@@ -393,6 +392,20 @@ ui <- shinyUI(
                                                     column(11, downloadButton("downloadData_pivotdata", "Download")),
                                                   ) #end fluidrow
                                          ), #end tabpanel
+                                         tabPanel(tags$h5("archeoViz exports"), 
+                                                  fluidRow(
+                                                    column(10, 
+                                                           br(),
+                                                           HTML("As <i>SEAHORS</i>, <a href=https://analytics.huma-num.fr/archeoviz/en target=_blank><i>archeoViz </i> </a>  is a web application to visualise spatial archaeological data. In addition, <i>archeoViz </i> allows to edit and communicate spatial datasets as <a href=https://analytics.huma-num.fr/archeoviz/home/ target=_blank>static web applications</a>.</p>
+                                                                <p> Interoperability between archaeological software matters. So, here, you can:
+                                                                 </p>"),
+                                                           br(),
+                                                           downloadLink("download.archeoviz", "* Export your data in archeoViz format (CSV)"),
+                                                           br(),
+                                                           br(),
+                                                           uiOutput("run.archeoviz")
+                                                    ))
+                                         ),#end tabpanel
                              ), #end tabset panel
                     ), #end tabPanel
                     
