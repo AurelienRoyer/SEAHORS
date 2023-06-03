@@ -1866,20 +1866,23 @@ app_server <- function(input, output, session) {
       
     object.id <- gsub(".*w=(.*)&nonce.*", "\\1", data.url)
       
-    data.url <- paste0("https://analytics.huma-num.fr/Sebastien.Plutniak/SEAHORS/_w_", object.id, 
-                         "/session/", session$token, "/download/download.archeoviz")
-      
+    data.url <- paste0(session$clientData$url_protocol, "//",
+                       session$clientData$url_hostname,
+                       session$clientData$url_pathname,
+                       "_w_", object.id, 
+                       "/session/", session$token, "/download/download.archeoviz")
+    
     paste0("https://analytics.huma-num.fr/archeoviz/en/?data=", data.url)
   })
   
   output$run.archeoviz <- renderUI({
     
-    if(Sys.getenv('SHINY_PORT') != ""){ # if remote use of the app
+    if(Sys.getenv('SHINY_PORT') != ""){ # only if remote use of the app
       actionLink("run.archeoviz",
-                 label = "* Directly send your data online to archeoViz",
+                 label = "* Directly send your SEAHORS data to archeoViz",
                  onclick = paste("window.open('",
                                  archeoviz.url(), "', '_blank')"))
-      }
+      } else( return() )
     
   })
   

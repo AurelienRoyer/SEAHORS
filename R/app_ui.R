@@ -396,7 +396,7 @@ ui <- shinyUI(
                                                   fluidRow(
                                                     column(10, 
                                                            br(),
-                                                           HTML("As <i>SEAHORS</i>, <a href=https://analytics.huma-num.fr/archeoviz/en target=_blank><i>archeoViz </i> </a>  is a web application to visualise spatial archaeological data. In addition, <i>archeoViz </i> allows to edit and communicate spatial datasets as <a href=https://analytics.huma-num.fr/archeoviz/home/ target=_blank>static web applications</a>.</p>
+                                                           HTML("Like <i>SEAHORS</i>, <a href=https://analytics.huma-num.fr/archeoviz/en target=_blank><i>archeoViz </i> </a>  is a web application to visualise spatial archaeological data. In addition, <i>archeoViz </i> allows to edit and communicate spatial datasets as <a href=https://analytics.huma-num.fr/archeoviz/home/ target=_blank>static web applications</a>.</p>
                                                                 <p> Interoperability between archaeological software matters. So, here, you can:
                                                                  </p>"),
                                                            br(),
