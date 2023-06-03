@@ -177,45 +177,45 @@ ui <- shinyUI(
                                              br(),
                                              
                                              HTML(
-                                               " <div style=width:100%;, align=left>
+                                               paste0(" <div style=width:100%;, align=left>
     <font size=3>
    <span style='text-transform:none'>
    
-   <i>SEAHORS</i> is dedicated to the intra-site spatial analysis of archaeological piece-plotted</p>
-   
-   <p> v1.7</p>
-   <p>This shiny R script makes possible to explore the spatial organisation of coordinate points taken on archaeological fields 
-  and to visualise their distributions using interactive 3D and 2D plots </p>
-   <br>
-   <p> An overview of the possibility was published by: </p>
-   <p> Royer, A., Discamps, E., Plutniak, S., & Thomas, M. (submitted) - SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny. </p>
-   <p> Submitted to PCIArchaeology, 2023 
-   <a href=https://archaeo.peercommunityin.org/PCIArchaeology target=_blank>https://archaeo.peercommunityin.org/PCIArchaeology/</a></p>
-   <p> Preprint: https://doi.org/10.5281/zenodo.7674699 </p>
-   <p>A video explaining the features is also available <a href=https://nakala.fr/10.34847/nkl.3fdd6h8j target=_blank>here</a></p>
-  <br>
-   <p>The source code is openly published on the dedicated <a href=https://github.com/AurelienRoyer/SEAHORS/ target=_blank>github repository</a>
-   <p style = 'color:blue;'> <i>ENJOY IT !</i></color> </p> 
-   
-   </span> 
-   
-      </font size>           
-                                               <br>
-                                               <br>
-                                               <br>
-                                               <br>
-                                               <br></div>" )
-                                      ), ), #end of column
-                             ), # end div()
-                             column(12,  column(8,),column(2, HTML(
-                               "  <div style=height:50%;, align=rigth> 
-                          <font size=2>
-                          <p>To import an example:</p>
-                          </font size>
-                          </div>"),#end html
-                               actionButton("button_example","Click to load the Cassenade dataset",style="height:50%")),
-                               tags$br(),
-                               tags$br(),),
+   <i>SEAHORS</i> (v. ", packageVersion("SEAHORS"), ") is an application dedicated to the intra-site spatial analysis of archaeological piece-plotted objects.</p>
+   <p>It makes it possible to explore the spatial organisation of coordinate points taken on archaeological fields  and to visualise their distributions using interactive 3D and 2D plots.</p>
+   <p> Its functionalities are presented in: </p>
+   <p>
+   <ul>
+    <li>a <a href=https://nakala.fr/10.34847/nkl.3fdd6h8j target=_blank>video </a> tutorial</li>
+    <li>and a paper: Royer, A., E. Discamps, S. Plutniak, M. Thomas. (submitted). “SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny”. <a href=https://archaeo.peercommunityin.org/PCIArchaeology target=_blank> <i>PCI Archaeology</i> </a>, DOI: <a href=https://doi.org/10.5281/zenodo.7674699 target=_blank>10.5281/zenodo.7674699</a>.</li>
+   </ul>
+  </p>
+   <p>This is an open and free software, 
+   <ul>
+      <li>it is available as an R package on the <a href=https://cran.r-project.org/package=SEAHORS target=_blank>CRAN</a>, and</li>
+      <li> its source code is published on a <a href=https://github.com/AurelienRoyer/SEAHORS/ target=_blank>github repository</a>.</li>
+    </ul>
+    </p>
+    <br>
+    <p>Try <i>SEAHORS</i> now with the <a href=https://hal.science/hal-02190243 target=_blank>Cassenade</a> Paleolithic site dataset:</p>
+    </span> 
+    </font>" ))
+    ), 
+                               actionButton("button_example", 
+                                            "Click to load the Cassenade dataset", style="height:50%"),
+    br(), br(),
+                               HTML("<p style = 'color:blue;'> <i>ENJOY IT !</i></color> </p> </div>"),
+                                      ), #end of column
+                             ) # end div()
+                          #    column(12, column(2, HTML(
+                          #      "  <div style=height:50%;, align=left> 
+                          # <font size=2>
+                          # <p>Try <i>SEAHORS</i> with the <a href=https://hal.science/hal-02190243 target=_blank>Cassenade</a> Paleolithic site dataset:</p>
+                          # </font size>
+                          # </div>"),#end html
+                          #      actionButton("button_example","Click to load the Cassenade dataset",style="height:50%")),
+                          #      tags$br(),
+                               # tags$br(),),
                              
                     ), #end of tabPanel
                     tabPanel("Load data", 
