@@ -1872,7 +1872,7 @@ app_server <- function(input, output, session) {
                        "_w_", object.id, 
                        "/session/", session$token, "/download/download.archeoviz")
     
-    paste0("https://analytics.huma-num.fr/archeoviz/en/?data=", data.url)
+    paste0("https://analytics.huma-num.fr/archeoviz/en/?objects.df=", data.url)
   })
   
   output$run.archeoviz <- renderUI({
