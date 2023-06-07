@@ -6,8 +6,8 @@ bibentry(
    title  = "SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny",
    journal = "PCI Archaeoloy",
    year   = "2023",
-   doi    = "10.5281/zenodo.7674699",
-   textVersion = "Royer, Aurelien, Emmanuel Discamps, Sebastien Plutniak, Marc Thomas (2023). SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny. PCI Archaeology, DOI: 10.5281/zenodo.7674699"
+   doi    = "10.5281/zenodo.7674698",
+   textVersion = "Royer, Aurelien, Emmanuel Discamps, Sebastien Plutniak, Marc Thomas (2023). SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny. PCI Archaeology, DOI: 10.5281/zenodo.7674698"
 )
 
 citFooter("This free open-source software implements academic research by the authors and co-workers. If you use it, please support the project by citing the appropriate journal articles.")
