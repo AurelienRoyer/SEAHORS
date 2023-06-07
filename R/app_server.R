@@ -1832,7 +1832,12 @@ app_server <- function(input, output, session) {
     if(test.z){ df$zmin <- df$zmin * -1  }
     
     # recoding, if needed:
-    if(length(unique(df$id))){ df$id <- seq_len(nrow(df)) }
+    if(length(unique(df$id)) != nrow(df)){
+      df$id_original <- df$id
+      df$id <- seq_len(nrow(df)) 
+      showNotification("ID are not unique and have been recoded", 
+                       type = "warning")
+      }
     if( length(unique(df$object_other)) == 1 ){
       if(unique(df$object_other) == "0"){df$object_other <- ""}
     }
@@ -1846,7 +1851,9 @@ app_server <- function(input, output, session) {
   
   output$download.archeoviz <- downloadHandler(
     filename = function() {
-      paste0(Sys.Date(), "-", paste(input$file1$name),"archeoviz.csv",sep="")
+      paste(Sys.Date(),  
+             sub("(.*)\\..*$", "\\1", input$worksheet),
+             "archeoviz.csv", sep="-")
     },
     content = function(file) {
       write.table(output.archeoviz(), file, row.names = FALSE, sep=",")
@@ -1872,7 +1879,7 @@ app_server <- function(input, output, session) {
                        "_w_", object.id, 
                        "/session/", session$token, "/download/download.archeoviz")
     
-    paste0("https://analytics.huma-num.fr/archeoviz/en/?objects.df=", data.url)
+    paste0("https://analytics.huma-num.fr/archeoviz/en/?run.plots=TRUE&objects.df=", data.url)
   })
   
   output$run.archeoviz <- renderUI({
