@@ -123,5 +123,5 @@ sub-tab:
     <https://cran.r-project.org/package=SEAHORS>
    - Royer, A., Discamps, E., Plutniak, S., Thomas, M. 2023. “SEAHORS:
     Spatial Exploration of ArcHaeological Objects in R Shiny”. [*Peer Community Journal, 3, n°e55*](https://peercommunityjournal.org/articles/10.24072/pcjournal.289/), DOI:
-    [10.24072/pcjournal.289].
+    10.24072/pcjournal.289.
     
