@@ -12,7 +12,7 @@ Downloads](http://cranlogs.r-pkg.org/badges/SEAHORS)](https://cran.r-project.org
   - [**Presentation**](#presentation)
   - [**Installation**](#installation)
   - [**Demonstration and tutorial**](#demonstration-and-tutorial)
-  - [\*\* Example data set\*\*](#example-data-set)
+  - [**Example data set**](#example-data-set)
   - [**Interoperability**](#interoperability)
   - [**References**](#references)
 

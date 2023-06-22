@@ -188,8 +188,8 @@ ui <- shinyUI(
    <ul>
     <li>a <a href=https://nakala.fr/10.34847/nkl.3fdd6h8j target=_blank>video </a> tutorial</li>
     <li>and papers: 
-<p> -Royer, A., E. Discamps, S. Plutniak, M. Thomas. (2023). “SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny”. <a href=https://archaeo.peercommunityin.org/articles/rec?id=320 target=_blank> <i>PCI Archaeology</i> </a>, DOI: <a href=https://doi.org/10.5281/zenodo.7674698 target=_blank>10.5281/zenodo.7674698</a>.</li> </p>
-<p> -Royer, A., E. Discamps, S. Plutniak, M. Thomas. (2023). “SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny”. <a href=https://peercommunityjournal.org/articles/10.24072/pcjournal.289/ target=_blank> <i>Peer Community Journal</i> </a>, DOI: <a href=10.24072/pcjournal.289 target=_blank>10.24072/pcjournal.289</a>.</li>  </p>
+<p> -Royer, A., E. Discamps, S. Plutniak, M. Thomas. (2023). 'SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny'. <a href=https://archaeo.peercommunityin.org/articles/rec?id=320 target=_blank> <i>PCI Archaeology</i> </a>, DOI: <a href=https://doi.org/10.5281/zenodo.7674698 target=_blank>10.5281/zenodo.7674698</a>.</li> </p>
+<p> -Royer, A., E. Discamps, S. Plutniak, M. Thomas. (2023). 'SEAHORS: Spatial Exploration of ArcHaeological Objects in R Shiny'. <a href=https://peercommunityjournal.org/articles/10.24072/pcjournal.289/ target=_blank> <i>Peer Community Journal</i> </a>, DOI: <a href=10.24072/pcjournal.289 target=_blank>10.24072/pcjournal.289</a>.</li>  </p>
 </ul>
   </p>
    <p>This is an open and free software, 

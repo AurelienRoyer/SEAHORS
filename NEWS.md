@@ -1,5 +1,10 @@
+# SEAHORS 1.8
+Released: 22-06-2023
+
+* add conversion to the archeoViz format
+
 # SEAHORS 1.7
-Released:
+Released: 12-05-2023
 
 * Fix graphical bugs (Table, ggplot2::theme, 2Dslice reactivity)
 * Add a button to download slices from 2Dplot slice in .pdf
