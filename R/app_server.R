@@ -1,6 +1,6 @@
 
 app_server <- function(input, output, session) {
-  
+  base::options(digits=20) ##add 1.8.x
   ##### set variable to avoid notes in R package----
   .stretch <- NULL
   layer2 <- NULL
