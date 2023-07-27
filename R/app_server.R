@@ -1,6 +1,6 @@
 
 app_server <- function(input, output, session) {
-  base::options(digits=20) ##add 1.8.x
+  base::options(digits=11) ##add 1.8.x
   ##### set variable to avoid notes in R package----
   .stretch <- NULL
   layer2 <- NULL
@@ -120,6 +120,7 @@ app_server <- function(input, output, session) {
       df$df[sapply(df$df, function(x) !is.numeric(x))] <- mutate_all(df$df[sapply(df$df, function(x) !is.numeric(x))], .funs=stringr::str_to_lower)}
     text<-""
     df$df<-cbind(shapeX,text,null,df$df)
+    df$df[is.na(df$df)] <- ""  ### add to 1.8.x                                                                            
     nnrow.df.df(nrow(df$df))
     listinfosmarqueur(1)
   }) #end observe 
