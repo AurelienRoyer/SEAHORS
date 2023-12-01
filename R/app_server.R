@@ -2201,7 +2201,45 @@ app_server <- function(input, output, session) {
     }) #end isolate
     
   }) #plot2D.react
+
+## interactive stack bar mode ---- 
+  df_2 <- reactiveVal(NULL)
+  observeEvent(input$chr_settingbp, {
+    req(!is.null(vv()))
+    data.val <-vv()
+    df2<-data.val%>% group_by(.data[[input$setlevels]],.data[[input$setnature]])%>% summarise(value=n())
+    df_2(df2)
+    showModal(
+      modalDialog(
+        title = tags$h4(style = "color: red;","Bar plot of selected points per levels and nature"),
+        easyClose = T,
+        plotlyOutput("sectioninteractivebarplot")
+        
+        
+      ))
+  })
   
+  output$sectioninteractivebarplot <- renderPlotly({
+    df2<-df_2()
+    fig<-plot_ly(df2, x = df2[[input$setlevels]],
+                 y = df2$value,
+                 type = 'bar',
+                 name = df2[[input$setnature]],
+                 text = df2$value
+                 #color = df2[[input$setnature]],
+                 #colors = brewer.pal(length(unique(df2[[input$setnature]])),
+                 #                    "Paired")
+    )%>%
+      layout(barmode = 'stack',hoverlabel = list(bgcolor= 'white') ,bargap = 0.5) %>%
+      layout(xaxis = list(categoryorder = 'array',
+                          categoryarray = df2[[input$setlevels]]), showlegend = T)
+    session_store$interactive.stack.bar<- fig
+    return(fig)
+     })
+  
+  
+
+        
   ## simple 2D plot ----
   output$plot2Dbox.simple <- renderUI({
     plotOutput("sectionYplot.simple", height = height.size(), width = width.size())
