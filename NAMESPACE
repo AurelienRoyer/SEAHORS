@@ -1,5 +1,6 @@
 export(SEAHORS)
 import(shiny)
+import(shinyBS)
 import(shinythemes)
 import(dplyr)
 import(plotly)
