@@ -443,6 +443,49 @@ ui <- shinyUI(
                     tabPanel("2D plot", 
                              
                              tabsetPanel(type = "tabs",
+                                         tabPanel(tags$h5("Simple 2D plot"),
+                                                  fluidRow(tags$br(),
+                                                           htmlOutput("nb2.2"),
+                                                           tags$br(),
+                                                           tags$br(),
+                                                           tags$br(),
+                                                           column(12,      
+                                                                  radioButtons("var1.simple", "section",
+                                                                               choices = c(xy = "xy",
+                                                                                           yx = "yx",
+                                                                                           yz = "yz",
+                                                                                           xz = "xz"),
+                                                                               selected = "xy", inline=TRUE),
+                                                                  tags$br(),),
+                                                           
+                                                           column(12,
+                                                                  uiOutput("plot2Dbox.simple"),),
+                                                           tags$br(),),
+                                                  fluidRow(
+                                                    tags$br(),
+                                                    tags$br(),
+                                                    hr(style = "border-top: 1px solid #000000;"), 
+                                                    column(12,
+                                                           column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
+                                                           column(2),
+                                                    ),
+                                                  ),
+                                                  column(12,
+                                                         column(2,radioButtons("var.ortho.simple", "include ortho",
+                                                                               choices = c(no = "no",
+                                                                                           yes = "yes"),
+                                                                               selected = "no", inline=TRUE),  ),
+                                                         column(2, radioButtons("var.fit.table.simple", "Include refits",
+                                                                                choices = c(no = "no",
+                                                                                            yes = "yes"),
+                                                                                selected = "no", inline=TRUE),),
+                                                         column(2),
+                                                         column(6,downloadButton("downloadData2D.simple", "Download as .pdf")), 
+                                                         hr(style = "border-top: 0.5px solid #000000;"), ),
+                                                  tags$br(),
+                                                  
+                                                  
+                                         ),#end tabpanel 
                                          tabPanel(tags$h5("Advanced 2D plot"),
                                                   
                                                   fluidRow(tags$br(),
@@ -503,49 +546,7 @@ ui <- shinyUI(
                                                   ) #end fluidrow
                                          ), #end sub-tabpanel
                                          
-                                         tabPanel(tags$h5("Simple 2D plot"),
-                                                  fluidRow(tags$br(),
-                                                           htmlOutput("nb2.2"),
-                                                           tags$br(),
-                                                           tags$br(),
-                                                           tags$br(),
-                                                           column(12,      
-                                                                  radioButtons("var1.simple", "section",
-                                                                               choices = c(xy = "xy",
-                                                                                           yx = "yx",
-                                                                                           yz = "yz",
-                                                                                           xz = "xz"),
-                                                                               selected = "xy", inline=TRUE),
-                                                                  tags$br(),),
-                                                           
-                                                           column(12,
-                                                                  uiOutput("plot2Dbox.simple"),),
-                                                           tags$br(),),
-                                                  fluidRow(
-                                                    tags$br(),
-                                                    tags$br(),
-                                                    hr(style = "border-top: 1px solid #000000;"), 
-                                                    column(12,
-                                                           column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
-                                                           column(2),
-                                                    ),
-                                                  ),
-                                                  column(12,
-                                                         column(2,radioButtons("var.ortho.simple", "include ortho",
-                                                                               choices = c(no = "no",
-                                                                                           yes = "yes"),
-                                                                               selected = "no", inline=TRUE),  ),
-                                                         column(2, radioButtons("var.fit.table.simple", "Include refits",
-                                                                                choices = c(no = "no",
-                                                                                            yes = "yes"),
-                                                                                selected = "no", inline=TRUE),),
-                                                         column(2),
-                                                         column(6,downloadButton("downloadData2D.simple", "Download as .pdf")), 
-                                                         hr(style = "border-top: 0.5px solid #000000;"), ),
-                                                  tags$br(),
-                                                  
-                                                  
-                                         ),#end tabpanel    
+                                            
                              ), #end tabset panel
                     ), #end tabPanel
                     
@@ -561,7 +562,7 @@ ui <- shinyUI(
                                                           selected = "yz", inline=TRUE),
                                            tags$br(),),
                                     column(2),
-                                    column(3,checkboxInput("advanced.slice",label="Advanced plot", value=TRUE)),
+                                    column(3,checkboxInput("advanced.slice",label="Advanced plot", value=FALSE)),
                              ),
                              
                              column(12, numericInput("step2dslice", HTML("Thickness of slices <br> (lower this parameter to get more slices)"), 4, min = 0.1, max=10,step = 1, width="50%")),
