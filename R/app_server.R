@@ -2319,6 +2319,12 @@ app_server <- function(input, output, session) {
   
   ##### 2D slice ---- 
   set.var.2d.slice<-reactiveVal()
+          step.input.step2dslice<-reactiveVal(4)
+  observeEvent(input$step2dslice,{
+    if (is.numeric(input$step2dslice) && input$step2dslice !=0) 
+      
+        step.input.step2dslice(input$step2dslice)
+            })
   output$range.2d.slice=renderUI({
     req(!is.null(fileisupload()))
     req(input$var.2d.slice)
@@ -2328,16 +2334,17 @@ app_server <- function(input, output, session) {
     set.var.2d.slice(set.var.2d.slice)
     xymax = df$df[,set.var.2d.slice] %>% ceiling() %>% max(na.rm = TRUE)
     xymin=df$df[,set.var.2d.slice] %>% floor() %>% min(na.rm = TRUE)
-    sliderInput('range2dslice','Range of slices',min=xymin,max=xymax,value=c(xymin,xymax),step=input$step2dslice)
+       sliderInput('range2dslice','Range of slices',min=xymin,max=xymax,value=c(xymin,xymax),step=step.input.step2dslice())
+
   })
   
   
-  observeEvent(c(input$range2dslice, input$step2dslice,input$advanced.slice,input$xslider,input$yslider,input$zslider,myvaluesx(),
+  observeEvent(c(input$range2dslice, step.input.step2dslice(),input$advanced.slice,input$xslider,input$yslider,input$zslider,myvaluesx(),
                  minsize(),
                  size.scale(),
                  shape_all()), {
                    req(!is.null(input$range2dslice))
-                   ratio.slice<-(max(input$range2dslice)-min(input$range2dslice))/input$step2dslice 
+                   ratio.slice<-(max(input$range2dslice)-min(input$range2dslice))/step.input.step2dslice() 
                    ratio.slice<-ceiling(ratio.slice)
                    if (ratio.slice<1) {
                      ratio.slice<-1
@@ -2363,8 +2370,8 @@ app_server <- function(input, output, session) {
                    e(a)
                    for (j in 1:ratio.slice){
                      k<-j-1
-                     val<-min(input$range2dslice)+k*input$step2dslice
-                     val2<-val+input$step2dslice
+                     val<-min(input$range2dslice)+k*step.input.step2dslice()
+                     val2<-val+step.input.step2dslice()
                      if(val2>max(input$range2dslice)){ 
                        val2<-max(input$range2dslice)
                      }
