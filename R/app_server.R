@@ -1,6 +1,13 @@
 
 app_server <- function(input, output, session) {
+    digitnumber<-reactiveVal(11)
   base::options(digits=11) ##add 1.8.x
+  observeEvent(input$digit.number, { 
+    print(input$digit.number)
+    digitnumber(input$digit.number)
+    print(digitnumber())
+    base::options(digits=digitnumber())
+    })
   ##### set variable to avoid notes in R package----
   .stretch <- NULL
   layer2 <- NULL
