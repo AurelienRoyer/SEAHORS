@@ -558,7 +558,7 @@ ui <- shinyUI(
                                                              label = "Bar plot display",
                                                              style = "unite",
                                                              color = "danger",
-                                                             icon = icon("fas fa-cogs",lib = "font-awesome")
+                                                             icon = icon("fas fa-chart-column",lib = "font-awesome")
                                                            ),
                                                            ),
                                                     radioButtons("var.ortho", "include ortho",
