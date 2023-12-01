@@ -748,12 +748,7 @@ ui <- shinyUI(
                                                           actionButton("go.ng2", "Modify"),),
                                                   
                                          ), #end tabpanel
-                                         tabPanel(tags$h5("Digit number configuration "), 
-                                                  tags$h3(style = "color: blue;","To fix some issue related to the digit numbers of coordinates"),
-                                                  br(),
-                                                  column (12,numericInput("digit.number", "Number of digit for the decimal ", 11, min = 1, step=1, max=30, width="50%")),
-                                                  
-                                                   ), #end tabpanel   
+
                                          tabPanel(tags$h5("Export settings"), 
                                                   br(),
                                                   radioButtons("docpdfhtml", "Export format",
