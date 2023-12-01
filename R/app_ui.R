@@ -226,14 +226,18 @@ ui <- shinyUI(
                                                   tags$br(),
                                                   tags$br(),
                                                   tags$hr(),
-                                                  fluidRow(column(10,
-                                                                  tags$h4(style = "color: red;","Options for loading file"), 
-                                                                  checkboxInput("header", "Header", TRUE),
-                                                                  checkboxInput("set.dec", "Check this option to automatically correct for the presence of comma in decimal numbers", TRUE),
-                                                                  tags$hr(),
-                                                  ),#endcolumn
-                                                  ),#end of fluidrow  
-                                                  fluidRow(column(12,
+                                                  tags$h4(style = "color: red;","Loading file"), 
+                                                  #fluidRow(
+                                                  #   column(10,
+                                                  #                 tags$h4(style = "color: red;","Options for loading file"), 
+                                                  #                 checkboxInput("header", "Header", TRUE),
+                                                  #                 checkboxInput("set.dec", "Check this option to automatically correct for the presence of comma in decimal numbers", TRUE),
+                                                  #                 numericInput("digit.number", "To control the number of significant digit", 11, min = 1, step=1, max=30, width="50%"),
+                                                  #                 
+                                                  #                        tags$hr(),
+                                                  # ),#endcolumn
+                                                  #),#end of fluidrow  
+                                                  fluidRow(column(9,
                                                                   fileInput("file1", "Choose File (.csv/.xls/.xlsx)",
                                                                             multiple = TRUE,
                                                                             accept = c("text/csv",
@@ -243,7 +247,44 @@ ui <- shinyUI(
                                                                   selectInput(inputId = "worksheet", label="Worksheet Name", choices =''),
                                                                   actionButton(inputId = "getData",label="Get Data"),
                                                                   actionButton('reset.BDD', 'Reset Input')
-                                                  )),
+                                                  ),
+                                                  column(3,
+                                                         shinyWidgets::actionBttn(
+                                                           inputId = "chr_setting",
+                                                           label = "Options for loading file",
+                                                           style = "unite",
+                                                           color = "danger",
+                                                           icon = icon("fas fa-cogs",lib = "font-awesome")
+                                                         ),
+                                                         tags$style("#bsmodal_param .modal-dialog{ width:1200px} 
+                                                                .modal-backdrop {
+                                                                                    display: none;
+                                                                                    z-index: 1040 !important;
+                                                                                }
+                                                                                
+                                                                                .modal-content {
+                                                                                    margin: 2px auto;
+                                                                                    z-index: 1100 !important;
+                                                                                }
+                                                                                
+                                                                                "),
+                                                         
+                                                         bsModal(
+                                                           id = "bsmodal_param",
+                                                           title = tags$h4(style = "color: red;","Options for loading file"),
+                                                           trigger = "chr_setting",size = "large",
+                                                           
+                                                           
+                                                           checkboxInput("header", "Header", TRUE),
+                                                           checkboxInput("set.dec", "Check this option to automatically correct for the presence of comma in decimal numbers", TRUE),
+                                                         
+                                                         
+                                                           numericInput("digit.number", "To control the number of significant digit", 11, min = 1, step=1, max=30)
+                                                     
+                                                         ),)
+                                                  
+                                                  
+                                                  ),
                                                   fluidRow(
                                                     tags$br(),
                                                     htmlOutput("nb6"),
