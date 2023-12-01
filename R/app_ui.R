@@ -552,7 +552,15 @@ ui <- shinyUI(
                                                     tags$br(),
                                                     tags$br(),
                                                     hr(style = "border-top: 1px solid #000000;"), 
-                                                    
+                                                    column(7,
+                                                           shinyWidgets::actionBttn(
+                                                             inputId = "chr_settingbp",
+                                                             label = "Bar plot display",
+                                                             style = "unite",
+                                                             color = "danger",
+                                                             icon = icon("fas fa-cogs",lib = "font-awesome")
+                                                           ),
+                                                           ),
                                                     radioButtons("var.ortho", "include ortho",
                                                                  choices = c(no = "no",
                                                                              yes = "yes"),
