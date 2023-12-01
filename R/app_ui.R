@@ -807,7 +807,27 @@ ui <- shinyUI(
                                                   br(),
                                                   fluidRow(
                                                     column(6, downloadButton("export.Rmarkdown", "Export settings as Rmarkdown document")),
-                                                  )
+                                                  ),
+                                                  br(),
+                                                  hr(),
+                                                  br(),
+                                                  tags$h4("To save the settings as .csv"),
+                                                  fluidRow(
+                                                    column(7, downloadButton("export.settings", "Export settings as csv document")),
+                                                    br(),
+                                                    hr(),
+                                                    br(),),
+                                                  br(), 
+                                                  tags$h4("To load settings"),
+                                                  fluidRow(
+                                                    column(7, fileInput("file.color.set", "Choose File to import settings (.csv)",
+                                                              multiple = TRUE,
+                                                              accept = c("text/csv",
+                                                                         "text/comma-separated-values,text/plain",
+                                                                         ".csv")),
+                                                     
+                                                    actionButton("go.load.settings", "load it"))
+                                                    )
                                          ), #end tabpanel
                                          
                              ),#end tabsetpanel temp
