@@ -33,7 +33,28 @@ ui <- shinyUI(
                    tags$hr(),
                    
                    tags$style(HTML(css)),
-                   
+                   column(12,
+               column(2,
+        shinyWidgets::actionBttn(
+          inputId = "save_load",
+          label = "save",
+          style = "stretch",
+          color = "danger",
+          size= "xs",
+          icon = icon("fas fa-save",lib = "font-awesome")
+        ),
+               ),
+        column(2,),
+        column(2,
+               shinyWidgets::actionBttn(
+                 inputId = "save_load2",
+                 label = "load",
+                 style = "stretch",
+                 color = "danger",
+                 size= "xs",
+                 icon = icon("fas fa-upload",lib = "font-awesome")
+               ),)
+        ),
                    radioButtons(
                      "bt2", h4("QUICK SIDEBAR"),
                      choices = c("Data" = 1,
@@ -810,23 +831,23 @@ ui <- shinyUI(
                                                   ),
                                                   br(),
                                                   hr(),
-                                                  br(),
-                                                  tags$h4("To save the settings as .csv"),
+                                                #  br(),
+                                                #  tags$h4("To save the settings as .csv"),
+                                                #  fluidRow(
+                                                #    column(7, downloadButton("export.settings", "Export settings as csv document")),
+                                                #    br(),
+                                                #    hr(),
+                                                #    br(),),
+                                                #  br(), 
+                                                #  tags$h4("To load settings"),
                                                   fluidRow(
-                                                    column(7, downloadButton("export.settings", "Export settings as csv document")),
-                                                    br(),
-                                                    hr(),
-                                                    br(),),
-                                                  br(), 
-                                                  tags$h4("To load settings"),
-                                                  fluidRow(
-                                                    column(7, fileInput("file.color.set", "Choose File to import settings (.csv)",
-                                                              multiple = TRUE,
-                                                              accept = c("text/csv",
-                                                                         "text/comma-separated-values,text/plain",
-                                                                         ".csv")),
+                                               #     column(7, fileInput("file.color.set", "Choose File to import settings (.csv)",
+                                               #               multiple = TRUE,
+                                               #               accept = c("text/csv",
+                                                 #                        "text/comma-separated-values,text/plain",
+                                                 #                        ".csv")),
                                                      
-                                                    actionButton("go.load.settings", "load it"))
+                                                  #  actionButton("go.load.settings", "load it"))
                                                     )
                                          ), #end tabpanel
                                          
