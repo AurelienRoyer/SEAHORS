@@ -940,7 +940,9 @@ app_server <- function(input, output, session) {
                  set.var.gris(),
                  minsize()),
                {
-                 diff<-nrow(df.sub())-nrow(df.sub.minpoint())
+                    req(!is.null(df.sub())) ##ajout 1.9
+                 req(!is.null(df.sub.minpoint())) ##ajout 1.9
+                   diff<-nrow(df.sub())-nrow(df.sub.minpoint())
                  
                  if(diff>0 && input$setID == "null"){
                    showModal(modalDialog(
