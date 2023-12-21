@@ -2210,6 +2210,10 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
   df_2 <- reactiveVal(NULL)
   observeEvent(input$chr_settingbp, {
     req(!is.null(vv()))
+    req(input$setnature != "null")
+    req(input$setlevels != "null")
+    req(input$setlevels != input$setnature)
+      
     data.val <-vv()
     df2<-data.val%>% group_by(.data[[input$setlevels]],.data[[input$setnature]])%>% summarise(value=n())
     df_2(df2)
