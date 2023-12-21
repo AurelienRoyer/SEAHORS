@@ -72,6 +72,8 @@ app_server <- function(input, output, session) {
   e<-reactiveVal(NULL) ## create an environment to save the 2D.slice pdf
   ratio.slice<-reactiveVal(1)
   nb.slice<-reactiveVal(1) ##nb of slice for saving it
+fileisupload.avoidload<-reactiveVal() ## add for 1.9
+    
   ##### import data----
   df<-reactiveValues( #creation df 
     df=NULL) # end reactivevalues
@@ -111,10 +113,12 @@ app_server <- function(input, output, session) {
                      xls = readxl::read_xls(input_file1.datapath(), sheet=input$worksheet),
                      xlsx = readxl::read_xlsx(input_file1.datapath(), sheet=input$worksheet))
     fileisupload(1)
+    fileisupload.avoidload(1) #add for 1.9
   })# end observe of df$df2
   
   observeEvent(!is.null(fileisupload()), { ## add two necessary columns for the rest of manipulations, correct issues with comma and majuscule
     req(!is.null(fileisupload()))
+     req(!is.null(fileisupload.avoidload())) #add for 1.9
     null<-"0"
     shapeX<-shape_all()
     df$df<-df$df2[,!sapply(df$df2, function(x) is.logical(x))] ##remove column without data
