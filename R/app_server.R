@@ -3163,7 +3163,7 @@ observeEvent(input$save_load2, {
 
   showModal(
     modalDialog(
-      title = tags$h4(style = "color: red;","Save & load"),
+      title = tags$h4(style = "color: red;","Load file"),
       easyClose = T,
       fluidRow(
         column(7, fileInput("file.set", "Choose File to import settings (.rds)",
@@ -3171,7 +3171,11 @@ observeEvent(input$save_load2, {
                             accept = c(
                               ".rds")),
                
-       actionButton("go.load.settings", "load it")))
+     actionButton("go.load.settings", "load it")),
+       br(),
+       tags$h5(style = "color: blue;","This option is still in progress. Not all parameters could be loaded "),
+       tags$h5(style = "color: blue;"," And is still not totally perfectly scripted. You may need to load twice or third the datafile to recover all the parameters. ")
+      )
   )
 )
 })
