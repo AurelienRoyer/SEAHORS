@@ -3130,5 +3130,489 @@ output$export.Rmarkdown<- downloadHandler(
   }
 )
 
+############################### ADD save & load for v1.9  ----
+#button
+observeEvent(input$save_load, {
+  req(!is.null(fileisupload()))
+  showModal(
+    modalDialog(
+      title = tags$h4(style = "color: red;","Save settings and data"),
+      easyClose = T,
+      fluidRow(
+        br(),
+        column(7, radioGroupButtons(
+          inputId = "Save_settings",
+          label = NULL,
+          choices = c("Save settings" = 1, "Save settings and data" = 2),
+          status = "danger"
+          
+        ),br(),
+        br(),),
+        br(),
+        br(),
+        #column(3, actionButton("go.gen.settings", "Generate"),),
+        column(7, downloadButton("export.settings", "Export settings as .rds document")),
+        br(),
+        hr(),
+        br(),),
+    )
+  )
+})
+
+observeEvent(input$save_load2, {
+
+  showModal(
+    modalDialog(
+      title = tags$h4(style = "color: red;","Save & load"),
+      easyClose = T,
+      fluidRow(
+        column(7, fileInput("file.set", "Choose File to import settings (.rds)",
+                            multiple = TRUE,
+                            accept = c(
+                              ".rds")),
+               
+       actionButton("go.load.settings", "load it")))
+  )
+)
+})
+
+#save
+global<-reactiveValues(digitnumber=NULL)
+
+output$export.settings<- downloadHandler( 
+  filename = function() {
+    paste0(Sys.Date(),"save.settings",".rds")
+  },
+  content = function(file) {
+    req(!is.null(fileisupload))
+    global$data <-0
+    if (input$Save_settings ==2){
+      global$data <-"data_upload"
+      global$df<-df$df
+    }
+
+    global$digitnumber<-digitnumber()
+    global$setnature<-input$setnature
+    global$minsize<-minsize() 
+    global$size.scale<-size.scale()
+    global$stepX<-stepX() 
+    global$stepY<-stepY() 
+    global$stepZ<-stepZ() 
+    global$transpar<-transpar() 
+    global$data.fit<-data.fit() 
+    global$data.fit2<-data.fit2() 
+    global$data.fit3<-data.fit3() 
+    global$rotated.new.dataxy<-rotated.new.dataxy()
+    global$shape_all<-shape_all() 
+    global$setXX<- setXX()
+    global$setYY<- setYY()
+    global$setZZ<- setZZ()
+    global$height.size<- height.size()
+    global$width.size<- width.size() #
+    global$data.fit.3D<- data.fit.3D() #
+    global$listinfosmarqueur<- listinfosmarqueur() 
+    global$colorofrefit<- colorofrefit()#t
+    global$legendplotlyfig<- legendplotlyfig()
+    global$inputcolor<- inputcolor()
+    global$save.col.react.fit<- save.col.react.fit()
+    global$mypaletteofcolors.fit<- mypaletteofcolors.fit()
+    global$ratiox<- ratiox() 
+    global$ratioy<- ratioy() 
+    global$ratioz<- ratioz() 
+    global$ratio.simple<- ratio.simple()
+    global$font_size<- font_size()
+    global$font_tick<- font_tick()
+    global$nameX<- input$Name.X
+    global$nameY<- input$Name.Y
+    global$nameZ<- input$Name.Z
+    global$Xtickmarks.size<- Xtickmarks.size()
+    global$Ytickmarks.size<- Ytickmarks.size()
+    global$Ztickmarks.size<- Ztickmarks.size()
+    global$Xminorbreaks<- Xminorbreaks()
+    global$Yminorbreaks<- Yminorbreaks()
+    global$Zminorbreaks<- Zminorbreaks()
+    global$ID.no.suppl.data.txt<- ID.no.suppl.data.txt()
+    global$notunique.txt<- notunique.txt()
+    global$notunique2.txt<- notunique2.txt()
+    global$suppl.no.include.txt<- suppl.no.include.txt()
+    global$input_file1.name<-input_file1.name()
+    global$input_file1.datapath<-input_file1.datapath()
+    global$getdata.launch<-getdata.launch()
+    global$ratio.slice<-ratio.slice()
+    global$nb.slice<-nb.slice()
+    global$themeforfigure.choice<-themeforfigure.choice()
+    global$textnbobject<-textnbobject()
+    global$var.sub2<-var.sub2()
+    global$min.point.sliderx<-min.point.sliderx()
+    global$min.point.slidery<-min.point.slidery()
+    global$min.point.sliderz<-min.point.sliderz()
+    global$set.var.gris<-set.var.gris()
+    global$set.var.2d.slice<-set.var.2d.slice()
+    global$step.input.step2dslice<-step.input.step2dslice()
+    
+    #reactiveValues
+    global$values.newgroup<-values$newgroup
+    
+    #input 
+    global$setx<-input$setx
+    global$sety<-input$sety
+    global$setz<-input$setz
+    global$setnature<-input$setnature
+    global$setlevels<-input$setlevels
+    global$setdate<-input$setdate
+    global$setpasse<-input$setpasse
+    global$setID<-input$setID
+    global$setsector<-input$setsector
+    global$checkbox.invX<-input$checkbox.invX
+    global$input_xslider_1<-input$xslider[1]
+    global$input_xslider_2<-input$xslider[2]
+    global$checkbox.invY<-input$checkbox.invY
+    global$input_yslider_1<-input$yslider[1]
+    global$input_yslider_2<-input$yslider[2]
+    global$checkbox.invZ<-input$checkbox.invZ
+    global$input_zslider_1<-input$zslider[1]
+    global$input_zslider_2<-input$zslider[2]
+    
+    global$pi2<-input$pi2
+    
+    global$file2<-input$file2
+    global$file3<-input$file3
+    global$file4<-input$file4
+    global$file5<-input$file5
+    global$var.plotlyg.lines<-input$var.plotlyg.lines
+    global$var.density.curves<-input$var.density.curves
+    
+    global$listeinfos.go<-input$listeinfos.go # to modify // mettre en reactival pour reaction auto
+
+    global$themeforfigure.list<-input$themeforfigure.list
+    
+    #selectInput
+    global$Colors<-input$Colors
+    #checkboxGroupInput
+    global$Nature<-input$Nature
+    global$Passe<-input$Passe
+    global$localisation<-input$localisation
+    global$UAS<-input$UAS
+    global$listeinfos<-input$listeinfos
+    
+    #sliderinput
+    global$yslider<- input$yslider
+    global$xslider<-input$xslider
+    print(input$xslider)
+    global$zslider<-input$zslider
+    print(input$zslider)
+    global$Date2<-input$Date2
+    global$ssectionXy2<-input$ssectionXy2
+    global$ssectionXx2<-input$ssectionXx2
+    global$ssectionXz2<-input$ssectionXz2
+    global$ssectionXx3<-input$ssectionXx3
+    global$ssectionXy3<-input$ssectionXy3
+    global$range2dslice<-input$range2dslice
+    #selectInput
+    global$setshape2<-input$setshape2
+    global$setshape2.1<-input$setshape2.1
+    global$setshape2.2<-input$setshape2.2
+    #numeric imput
+    global$ratio.to.coord.simple.2<-input$ratio.to.coord.simple.2
+    #pour les couleurs
+    global$save.col.react<-save.col.react()
+    global$save.col.react.fit<-save.col.react.fit()
+    #df$file.color<-save.col.react()
+    #df$file.color.fit<-save.col.react.fit()
+    
+    #radiobutton
+    global$var1<-input$var1
+    global$var.ortho<-input$var.ortho
+    global$var.fit.table<-input$var.fit.table
+    global$var1.simple<-input$var1.simple
+    global$var.ortho.simple<-input$var.ortho.simple
+    global$var.fit.table.simple<-input$var.fit.table.simple
+    global$var.2d.slice<-input$var.2d.slice
+    global$var.section2D<-input$var.section2D
+    global$var3<-input$var3
+    global$var.ortho2<-input$var.ortho2
+    global$var.plotlyg.lines<-input$var.plotlyg.lines
+    global$var.density.curves<-input$var.density.curves
+    global$separatormerge<-input$separatormerge
+    global$var.fit.3D<-input$var.fit.3D
+    #checkboxinput
+    global$header<-input$header
+    global$set.dec<-input$set.dec
+    global$advanced.slice<-input$advanced.slice
+    
+    to_save <- reactiveValuesToList(global)
+    saveRDS(to_save, file = file)
+
+  })
+
+#load part 
+nexstep<-reactiveVal(0)
+input_file.load<-reactiveVal(NULL)
+input_file.load.datapath<-reactiveVal(NULL) 
+
+observe({
+req(nexstep()==1)
+ global.load<-readRDS(input_file.load.datapath())
+ df$df$shapeX[df$df[,global.load$setshape2.1] %in% global.load$setshape2.2]<-global.load$setshape2
+
+ input_file1.name(global.load$input_file1.name)
+ updateNumericInput(session,"minsize", value=global.load$minsize)
+ updateNumericInput(session,"point.size", value=global.load$size.scale)
+
+ updateCheckboxInput(session,'advanced.slice',value = global.load$advanced.slice)
+ getdata.launch(global.load$getdata.launch)
+ rotated.new.dataxy(global.load$rotated.new.dataxy)
+
+ updateSliderInput(session,"alpha.density", value=global.load$transpar)
+ updateNumericInput(session,"height.size.b", value=global.load$height.size)
+ updateNumericInput(session,"width.size.b", value=global.load$width.size)
+ transpar(global.load$transpar)
+ height.size(global.load$height.size)
+ width.size(global.load$width.size)
+ shape_all(global.load$shape_all)
+
+ updateCheckboxInput(session, 'optioninfosfigplotly ', value = global.load$legendplotlyfig)
+ legendplotlyfig(global.load$legendplotlyfig)
+ listinfosmarqueur(global.load$listinfosmarqueur) ################################### celui la est a revoir
+ ID.no.suppl.data.txt(global.load$ID.no.suppl.data.txt)
+ notunique.txt(global.load$notunique.txt)
+ notunique2.txt(global.load$notunique2.txt)
+ updateSliderInput(session,"pi2",
+                   value = global.load$pi2)
+
+ updateNumericInput(session,"ratiox", value=global.load$ratiox)
+ updateNumericInput(session,"ratioy", value=global.load$ratioy)
+ updateNumericInput(session,"ratioz", value=global.load$ratioz)
+ ratiox(global.load$ratiox)
+ ratioy(global.load$ratioy)
+ ratioz(global.load$ratioz)
+ updateNumericInput(session,"ratio.to.coord", value=global.load$ratio.simple)
+ updateNumericInput(session,"ratio.to.coord.simple", value=global.load$ratio.simple)
+ updateNumericInput(session,"ratio.to.coord.simple.2", value=global.load$ratio.to.coord.simple.2)
+
+ updateNumericInput(session,"stepXsize", value=global.load$stepX)
+ updateNumericInput(session,"stepYsize", value=global.load$stepY)
+ updateNumericInput(session,"stepZsize", value=global.load$stepZ)
+ stepX(global.load$stepX)
+ stepY(global.load$stepY)
+ stepZ(global.load$stepZ)
+
+ updateRadioButtons(session,"var1",selected = global.load$var1)
+ updateRadioButtons(session,"var.ortho",selected = global.load$var.ortho)
+ updateRadioButtons(session,"var.fit.table",selected = global.load$var.fit.table)
+ updateRadioButtons(session,"var1.simple",selected = global.load$var1.simple)
+ updateRadioButtons(session,"var.ortho.simple",selected = global.load$var.ortho.simple)
+ updateRadioButtons(session,"var.fit.table.simple",selected = global.load$var.fit.table.simple)
+ updateRadioButtons(session,"var.2d.slice",selected = global.load$var.2d.slice)
+ updateRadioButtons(session,"var.section2D",selected = global.load$var.section2D)
+ updateRadioButtons(session,"var3",selected = global.load$var3)
+ updateRadioButtons(session,"var.ortho2",selected = global.load$var.ortho2)
+ updateRadioButtons(session,"var.plotlyg.lines",selected = global.load$var.plotlyg.lines)
+ updateRadioButtons(session,"var.density.curves",selected = global.load$var.density.curves)
+ updateRadioButtons(session,"separatormerge",selected = global.load$separatormerge1)
+ updateRadioButtons(session,"var.fit.3D",selected = global.load$var.fit.3D)
+
+ set.var.2d.slice(global.load$set.var.2d.slice)
+ step.input.step2dslice(global.load$step.input.step2dslice)
+ ratio.slice(global.load$ratio.slice)
+ nb.slice(global.load$nb.slice)
+
+ #input_file1.datapath(global.load$input_file1.datapath)
+ updateSelectInput(session, 'themeforfigure.list', selected = global.load$themeforfigure.list)
+ themeforfigure.choice(global.load$themeforfigure.choice)
+
+ textnbobject(global.load$textnbobject) # no need ?
+
+ updateRadioButtons(session,"var.plotlyg.lines",selected = global.load$var.plotlyg.lines)
+ updateRadioButtons(session,"var.density.curves",selected = global.load$var.density.curves)
+ 
+ updateNumericInput(session,"fontsizeaxis",value=global.load$font_size)
+ updateNumericInput(session,"fontsizetick",value=global.load$font_tick)
+ updateTextInput(session, 'Name.X',value= global.load$nameX)
+ updateTextInput(session, 'Name.Y',value= global.load$nameY)
+ updateTextInput(session, 'Name.Z',value= global.load$nameZ)
+ updateNumericInput(session,"Xtickmarks",value=global.load$Xtickmarks.size)
+ updateNumericInput(session,"Ytickmarks",value=global.load$Ytickmarks.size)
+ updateNumericInput(session,"Ztickmarks",value=global.load$Ztickmarks.size)
+ updateNumericInput(session,"Xminor.breaks",value=global.load$Xminorbreaks)
+ updateNumericInput(session,"Yminor.breaks",value=global.load$Yminorbreaks)
+ updateNumericInput(session,"Zminor.breaks",value=global.load$Zminorbreaks)
+ 
+ 
+ set.var.gris(global.load$set.var.gris)
+ var.sub2(global.load$var.sub2)
+ updateSelectInput(session, 'set.var.gris.2D ', selected = global.load$set.var.gris)
+ updateCheckboxGroupInput(session, 'set.var.gris.2D ', selected = global.load$set.var.gris)
+
+ #values$newgroup<-global.load$values.newgroup
+#refit to finish
+ data.fit(global.load$data.fit) ##for import fit data
+ data.fit2(global.load$data.fit2) ##for import fit data
+ data.fit3(global.load$data.fit3) ##for import fit data
+ data.fit.3D(global.load$data.fit.3D) ## for refit data for 3D plot
+ colorofrefit(global.load$colorofrefit)## color base for refit
+ #save.col.react.fit(global.load$save.col.react.fit)
+ mypaletteofcolors.fit(global.load$mypaletteofcolors.fit)
+ suppl.no.include.txt(global.load$suppl.no.include.txt)
+
+ save.col.react(global.load$save.col.react)
+ df$file.color<-save.col.react()
+ save.col.react.fit(global.load$save.col.react.fit)
+ df$file.color.fit<-save.col.react.fit()
+
+
+  updateSelectInput(session,"setx",
+                    selected = global.load$setx)
+  updateSelectInput(session,"sety",
+                    selected = global.load$sety)
+  updateSelectInput(session,"setz",
+                    selected = global.load$setz)
+
+  updateCheckboxInput(session,"checkbox.invX",
+                      value =global.load$checkbox.invX)
+  updateCheckboxInput(session,"checkbox.invY",
+                      value =global.load$checkbox.invY)
+  
+  updateCheckboxInput(session,"checkbox.invZ",
+                      value =global.load$checkbox.invZ)
+
+  updateSelectInput(session,"setnature",
+                    selected = global.load$setnature)
+  updateSelectInput(session,"setlevels",
+                    selected = global.load$setlevels)
+  updateSelectInput(session,"setdate",
+                    selected = global.load$setdate)
+  updateSelectInput(session,"setpasse",
+                    selected = global.load$setpasse)
+  updateSelectInput(session,"setID",
+                    selected = global.load$setID)
+  updateSelectInput(session,"setsector",
+                    selected = global.load$setsector)
+
+df.sub()
+  nexstep(2)
+ })
+observe({
+  req(nexstep()==2)
+
+  global.load<-readRDS(input_file.load.datapath())
+  dmin=min(as.numeric(df$df[,global.load$setdate]), na.rm=T)
+  dmax=max(as.numeric(df$df[,global.load$setdate]), na.rm=T)
+  if (!is.infinite(dmin) && !is.infinite(dmax)) {
+    updateSliderInput(session,'Date2',min=dmin,max=dmax,value=c(global.load$Date2[1],global.load$Date2[2]))
+    }
+  xmax = df$df[,global.load$setXX] %>% as.numeric() %>% ceiling() %>% max(na.rm = TRUE)
+  xmin=df$df[,global.load$setXX] %>% as.numeric() %>% floor() %>% min(na.rm = TRUE)
+  updateSliderInput(session,'xslider',min=xmin,max=xmax,
+                    value=c(global.load$xslider[1],global.load$xslider[2]),step=global.load$stepX)
+  ymax = df$df[,global.load$setYY] %>% as.numeric() %>% ceiling() %>% max(na.rm = TRUE)
+  ymin=df$df[,global.load$setYY] %>% as.numeric() %>% floor() %>% min(na.rm = TRUE)
+
+  zmax = df$df[,global.load$setZZ] %>% as.numeric() %>% ceiling() %>% max(na.rm = TRUE)
+  zmin=df$df[,global.load$setZZ] %>% as.numeric() %>% floor() %>% min(na.rm = TRUE)
+  updateSliderInput(session,'yslider','y limits',min=ymin,max=ymax,
+                    value=c(global.load$yslider[1],global.load$yslider[2]),step=global.load$stepY)
+  updateSliderInput(session,'zslider','z limits',min=zmin,max=zmax,
+                    value=c(global.load$zslider[1],global.load$zslider[2]),step=global.load$stepZ)
+
+  updateCheckboxGroupInput(session,"UAS", selected=global.load$UAS)
+  updateCheckboxGroupInput(session,"Nature", selected=global.load$Nature)
+  updateCheckboxGroupInput(session,"Passe", selected=global.load$Passe)
+  updateCheckboxGroupInput(session,"localisation", selected=global.load$localisation)
+  updateCheckboxGroupInput(session,"listeinfos", selected=global.load$listeinfos)
+
+# don't work strangely
+    updateSliderInput(session,'ssectionXy2',min=global.load$yslider[1],max=global.load$yslider[2],
+                      value=c(global.load$ssectionXy2[1],global.load$ssectionXy2[2]),step=global.load$stepY)
+    updateSliderInput(session,'ssectionXx2',min=global.load$xslider[1],max=global.load$xslider[2],
+                       value=c(global.load$ssectionXx2[1],global.load$ssectionXx2[2]),step=global.load$stepX)
+    updateSliderInput(session,'ssectionXz2',min=global.load$zslider[1],max=global.load$zslider[2],
+                      value=c(global.load$ssectionXz2[1],global.load$ssectionXz2[2]),step=global.load$stepZ)
+  min.point.sliderx(global.load$min.point.sliderx)
+  min.point.slidery(global.load$min.point.slidery)
+  min.point.sliderz(global.load$min.point.sliderz)
+   updateSliderInput(session,'ssectionXy3',min=global.load$yslider[1],max=global.load$yslider[2],
+                     value=c(global.load$ssectionXy3[1],global.load$ssectionXy3[2]),step=global.load$stepY)
+   updateSliderInput(session,'ssectionXx3',min=global.load$xslider[1],max=global.load$xslider[2],
+                     value=c(global.load$ssectionXx3[1],global.load$ssectionXx3[2]),step=global.load$stepX)
+ updateSliderInput(session,'range2dslice',min=global.load$range2dslice[1],max=global.load$range2dslice[2],
+                     value=c(global.load$range2dslice[1],global.load$range2dslice[2]))
+ df.sub.minpoint()
+nexstep(4)
+})
+observeEvent(nexstep(),{
+  req(nexstep()==4)
+  req(!is.null(ttemp()))
+  global.load<-readRDS(input_file.load.datapath())
+  req(!is.null(df.sub.minpoint()))
+  nexstep(0)
+  input_file.load.datapath(NULL)
+})
+
+
+ttemp<-reactiveVal(NULL)
+observeEvent(nexstep(),{
+   req(nexstep()==1)
+   updateRadioButtons(session,"bt2",selected=3)
+   ttemp(1)
+ })
+ observe({
+   req(!is.null(ttemp()))
+   req(!is.null(input_file.load.datapath()))
+   global.load<-readRDS(input_file.load.datapath())
+   updateSelectInput(session,"Colors",
+                     selected =  global.load$Colors)
+   inputcolor(global.load$Colors)
+   basiccolor()
+ })
+
+ observeEvent(input$file.set, {
+   nexstep(0)
+   input_file.load.datapath(NULL)
+   input_file.load(input$file.set$name)
+   input_file.load.datapath(input$file.set$datapath)
+  
+ })
+
+observe({
+  
+   file = input$go.load.settings
+   ext = tools::file_ext(input_file.load.datapath())
+   req(file)
+   
+   validate(need(ext == "rds", "Please upload a rds file"))
+   req(nexstep()==0)
+   global.load<-readRDS(input_file.load.datapath())
+   digitnumber(global.load$digitnumber)
+   updateCheckboxInput(session,'header',value = global.load$header)
+   updateCheckboxInput(session,'set.dec',value = global.load$set.dec)
+ 
+   if (global.load$data  =="data_upload"){
+        
+     df$df<-global.load$df
+     
+     updateTabsetPanel(session, "mainpanel",
+                       selected = "Load data")
+     inputcolor("null")
+     fileisupload(1)
+   } else {
+     if (is.null(df$df)) {
+       input_file.load(NULL)
+       input_file.load.datapath(NULL)
+     }
+     else {
+       updateTabsetPanel(session, "mainpanel",
+                         selected = "Load data")
+       inputcolor(global.load$Colors)
+       fileisupload(1)
+     }
+     req(!is.null(df$df))
+     
+   }
+   
+   nexstep(1)
+ })
+
+
 } # end server
 
