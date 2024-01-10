@@ -124,4 +124,11 @@ sub-tab:
    - Royer, A., Discamps, E., Plutniak, S., Thomas, M. 2023. “SEAHORS:
     Spatial Exploration of ArcHaeological Objects in R Shiny”. [*Peer Community Journal, 3, n°e55*](https://peercommunityjournal.org/articles/10.24072/pcjournal.289/), DOI:
     10.24072/pcjournal.289.
-    
+
+
+ ##  Major news 
+ -12/2023 : addition of a "Bar plot display" in the "advanced 2D plot" panel, to obtain an histogram of selected points per levels and nature
+ -01/2024 : addition of two buttons "save" and "load" in the sidebarpanel, allowing to save and load settings and/or data. 
+ -01/2024 : addition option in "figure options" panel to expand limits of X and Y for "simple 2D plot" projection.  
+ -01/2024 : modification of the button "options for loading file" in the "import XYZ data" panel and addition of a numeric imput modifying the number of significant digit when the data are imported. 
+ 
