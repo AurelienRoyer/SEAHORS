@@ -170,7 +170,11 @@ ui <- shinyUI(
                                            column(4,numericInput("Xminor.breaks", "Position of X minor breaks",1, min = 0, max=40),),
                                            column(4,numericInput("Yminor.breaks", "Position of Y minor breaks",1, min = 0, max=40),),
                                            column(4,numericInput("Zminor.breaks", "Position of Z minor breaks",1, min = 0, max=40),),),
-                                    
+                                                                         column(10,
+                                            checkboxInput("checkbox.auto.limits", label = "Automatic limits", value = TRUE),
+                                            uiOutput("X.limx2"),
+                                            uiOutput("Y.limx2"),
+                                     ),
                                     
                                     column(12,br(),
                                            hr(),),
