@@ -3592,6 +3592,7 @@ observeEvent(nexstep(),{
    req(!is.null(ttemp()))
    req(!is.null(input_file.load.datapath()))
    global.load<-readRDS(input_file.load.datapath())
+   req(!is.null(global.load$Colors))
    updateSelectInput(session,"Colors",
                      selected =  global.load$Colors)
    inputcolor(global.load$Colors)
