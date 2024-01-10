@@ -3140,7 +3140,7 @@ observeEvent(input$save_load, {
       easyClose = T,
       fluidRow(
         br(),
-        column(7, radioGroupButtons(
+        column(7, shinyWidgets::radioGroupButtons(
           inputId = "Save_settings",
           label = NULL,
           choices = c("Save settings" = 1, "Save settings and data" = 2),
