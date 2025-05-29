@@ -1,10 +1,10 @@
 # SEAHORS 1.9
 Released: 27-05-2025
-    * graphical change pannel "load data "
-    * addition of a "Bar plot display" in the "advanced 2D plot" panel, to obtain an histogram of selected points per levels and nature.
-    * addition of two buttons "save" and "load" in the sidebarpanel, allowing to save and load settings and/or data.
-    * addition option in "figure options" panel to expand limits of X and Y for "simple 2D plot" projection.
-    * modification of the button "options for loading file" in the "import XYZ data" panel and addition of a numeric imput modifying the number of significant digit when the data are imported. -14/05/2025 : bug with refits fixed
+* graphical change pannel "load data "
+* addition of a "Bar plot display" in the "advanced 2D plot" panel, to obtain an histogram of selected points per levels and nature.
+* addition of two buttons "save" and "load" in the sidebarpanel, allowing to save and load settings and/or data.
+* addition option in "figure options" panel to expand limits of X and Y for "simple 2D plot" projection.
+* modification of the button "options for loading file" in the "import XYZ data" panel and addition of a numeric imput modifying the number of significant digit when the data are imported. -14/05/2025 : bug with refits fixed
 
 # SEAHORS 1.8
 Released: 22-06-2023

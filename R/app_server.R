@@ -2384,7 +2384,7 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
     p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xtickmarks.size), minor_breaks = seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xminor.breaks))+
       scale_y_continuous(breaks=seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Ytickmarks.size), minor_breaks = seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Yminor.breaks))
     if (input$checkbox.auto.limits==FALSE) {
-      p<-p+expand_limits(x=c(input$X.limx[1],input$X.limx[2]), y=c(input$Y.limx[1], input$Y.limx[2]))
+      p<-p + ggplot2::expand_limits(x=c(input$X.limx[1],input$X.limx[2]), y=c(input$Y.limx[1], input$Y.limx[2]))
     }
       p   
     

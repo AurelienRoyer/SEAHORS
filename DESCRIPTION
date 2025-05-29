@@ -42,4 +42,4 @@ Suggests:
 VignetteBuilder: knitr
 URL: https://github.com/AurelienRoyer/SEAHORS
 BugReports: https://github.com/AurelienRoyer/SEAHORS/issues
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
