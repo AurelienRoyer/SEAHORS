@@ -1146,7 +1146,7 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
   observeEvent(data.fit(), {
     req(input$setREM)
     data.REM<-left_join(data.fit(),df$df)
-    if(is.na(data.REM$shapeX)[1]==TRUE){ ##test to go next step
+    if(all(is.na(data.REM$shapeX))==TRUE){ ##test to go next step
       showModal(modalDialog(
         title = "Issues with merging data", 
         HTML(paste("No refit data have been merged. <br> Unique IDs should not match together"))
