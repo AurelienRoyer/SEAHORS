@@ -80,7 +80,7 @@ The `SEAHORS` comes with an embedded example data set, from the Cassenade Palaeo
 
 ## Interoperability
 
-To improve the interoperability between archaeological software, `SEAHORS` can export data to the format required by the `[archeoViz](https://analytics.huma-num.fr/archeoviz/en/)` application.
+To improve the interoperability between archaeological software, `SEAHORS` can export data to the format required by the [`archeoViz`](https://analytics.huma-num.fr/archeoviz/en/) application.
 Two options are available in the `Table` tab, `archeoViz exports` sub-tab:
 
 * “Export your data in archeoViz format”: to download your data as a CSV to upload in the `archeoViz` application.
