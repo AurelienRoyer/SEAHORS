@@ -8,7 +8,7 @@ app_server <- function(input, output, session) {
     base::options(digits=digitnumber())
     })
   ##### set variable to avoid notes in R package----
-  .stretch <- NULL
+  # .stretch <- NULL
   layer2 <- NULL
   level <- NULL
   null.2 <- NULL
@@ -309,133 +309,133 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
     }
   }
   
-  #function for orthopho import from Rstoolbox
-  .toRaster <- function(x) {
-    if (inherits(x, "SpatRaster")) {
-      return(stack(x))
-    } else {
-      return(x)
-    }
-  }
-  
-  .numBand <- function(raster, ...){
-    bands <- list(...)
-    lapply(bands, function(band) if(is.character(band)) which(names(raster) == band) else band ) 
-  }
-  ggRGB<-function(img, r = 3, g = 2, b = 1, scale, maxpixels = 5e+05, 
-                  stretch = "none", ext = NULL, limits = NULL, clipValues = "limits", 
-                  quantiles = c(0.02, 0.98), ggObj = TRUE, ggLayer = FALSE, 
-                  alpha = 1, coord_equal = TRUE, geom_raster = FALSE, nullValue = 0) 
-  {
-    img <- .toRaster(img)
-    verbose <- getOption("RStoolbox.verbose")
-    annotation <- !geom_raster
-    rgb <- unlist(.numBand(raster = img, r, g, b))
-    nComps <- length(rgb)
-    if (inherits(img, "RasterLayer")) 
-      img <- brick(img)
-    rr <- sampleRegular(img[[rgb]], maxpixels, ext = ext, asRaster = TRUE)
-    RGB <- getValues(rr)
-    if (!is.matrix(RGB)) 
-      RGB <- as.matrix(RGB)
-    if (!is.null(limits)) {
-      if (!is.matrix(limits)) {
-        limits <- matrix(limits, ncol = 2, nrow = nComps, 
-                         byrow = TRUE)
-      }
-      if (!is.matrix(clipValues)) {
-        if (!anyNA(clipValues) && clipValues[1] == "limits") {
-          clipValues <- limits
-        }
-        else {
-          clipValues <- matrix(clipValues, ncol = 2, nrow = nComps, 
-                               byrow = TRUE)
-        }
-      }
-      for (i in 1:nComps) {
-        if (verbose) {
-          message("Number of pixels clipped in ", 
-                  c("red", "green", "blue")[i], 
-                  " band:\n", "below limit: ", sum(RGB[, 
-                                                       i] < limits[i, 1], na.rm = TRUE), " | above limit: ", 
-                  sum(RGB[, i] > limits[i, 2], na.rm = TRUE))
-        }
-        RGB[RGB[, i] < limits[i, 1], i] <- clipValues[i, 
-                                                      1]
-        RGB[RGB[, i] > limits[i, 2], i] <- clipValues[i, 
-                                                      2]
-      }
-    }
-    rangeRGB <- range(RGB, na.rm = TRUE)
-    if (missing("scale")) {
-      scale <- rangeRGB[2]
-    }
-    if (rangeRGB[1] < 0) {
-      RGB <- RGB - rangeRGB[1]
-      scale <- scale - rangeRGB[1]
-      rangeRGB <- rangeRGB - rangeRGB[1]
-    }
-    if (scale < rangeRGB[2]) {
-      warning("Scale < max value. Resetting scale to max.", 
-              call. = FALSE)
-      scale <- rangeRGB[2]
-    }
-    RGB <- na.omit(RGB)
-    if (stretch != "none") {
-      stretch <- tolower(stretch)
-      for (i in seq_along(rgb)) {
-        RGB[, i] <- .stretch(RGB[, i], method = stretch, 
-                             quantiles = quantiles, band = i)
-      }
-      scale <- 1
-    }
-    naind <- as.vector(attr(RGB, "na.action"))
-    nullbands <- sapply(list(r, g, b), is.null)
-    if (any(nullbands)) {
-      RGBm <- matrix(nullValue, ncol = 3, nrow = NROW(RGB))
-      RGBm[, !nullbands] <- RGB
-      RGB <- RGBm
-    }
-    if (!is.null(naind)) {
-      z <- rep(NA, times = ncell(rr))
-      z[-naind] <- rgb(RGB[, 1], RGB[, 2], RGB[, 3], max = scale, 
-                       alpha = alpha * scale)
-    }
-    else {
-      z <- rgb(RGB[, 1], RGB[, 2], RGB[, 3], max = scale, alpha = alpha * 
-                 scale)
-    }
-    df_raster <- data.frame(coordinates(rr), fill = z, stringsAsFactors = FALSE)
-    x <- y <- fill <- NULL
-    if (ggObj) {
-      exe <- as.vector(extent(rr))
-      df <- data.frame(x = exe[1:2], y = exe[3:4])
-      if (annotation) {
-        dz <- matrix(z, nrow = nrow(rr), ncol = ncol(rr), 
-                     byrow = TRUE)
-        p <- ggplot2::annotation_raster(raster = dz, xmin = exe[1], 
-                                        xmax = exe[2], ymin = exe[3], ymax = exe[4], 
-                                        interpolate = FALSE)
-        if (!ggLayer) {
-          p <- ggplot2::ggplot() + p + ggplot2::geom_blank(data = df, aes(x = x, 
-                                                                          y = y))
-        }
-      }
-      else {
-        p <- ggplot2::geom_raster(data = df_raster, aes(x = x, y = y, 
-                                                        fill = fill), alpha = alpha)
-        if (!ggLayer) {
-          p <- ggplot2::ggplot() + p + ggplot2::scale_fill_identity()
-        }
-      }
-      if (coord_equal & !ggLayer) 
-        p <- p + ggplot2::coord_equal()
-      return(p)
-    }
-    else {
-      return(df_raster)
-    }
-  }
+  # #function for orthopho import from Rstoolbox 
+  # .toRaster <- function(x) {
+  #   if (inherits(x, "SpatRaster")) {
+  #     return(terra::stack(x))
+  #   } else {
+  #     return(x)
+  #   }
+  # }
+  # 
+  # .numBand <- function(raster, ...){
+  #   bands <- list(...)
+  #   lapply(bands, function(band) if(is.character(band)) which(names(raster) == band) else band ) 
+  # }
+  # ggRGB<-function(img, r = 3, g = 2, b = 1, scale, maxpixels = 5e+05, 
+  #                 stretch = "none", ext = NULL, limits = NULL, clipValues = "limits", 
+  #                 quantiles = c(0.02, 0.98), ggObj = TRUE, ggLayer = FALSE, 
+  #                 alpha = 1, coord_equal = TRUE, geom_raster = FALSE, nullValue = 0) 
+  # {
+  #   img <- .toRaster(img)
+  #   verbose <- getOption("RStoolbox.verbose")
+  #   annotation <- !geom_raster
+  #   rgb <- unlist(.numBand(raster = img, r, g, b))
+  #   nComps <- length(rgb)
+  #   if (inherits(img, "RasterLayer")) 
+  #     img <- brick(img)
+  #   rr <- sampleRegular(img[[rgb]], maxpixels, ext = ext, asRaster = TRUE)
+  #   RGB <- getValues(rr)
+  #   if (!is.matrix(RGB)) 
+  #     RGB <- as.matrix(RGB)
+  #   if (!is.null(limits)) {
+  #     if (!is.matrix(limits)) {
+  #       limits <- matrix(limits, ncol = 2, nrow = nComps, 
+  #                        byrow = TRUE)
+  #     }
+  #     if (!is.matrix(clipValues)) {
+  #       if (!anyNA(clipValues) && clipValues[1] == "limits") {
+  #         clipValues <- limits
+  #       }
+  #       else {
+  #         clipValues <- matrix(clipValues, ncol = 2, nrow = nComps, 
+  #                              byrow = TRUE)
+  #       }
+  #     }
+  #     for (i in 1:nComps) {
+  #       if (verbose) {
+  #         message("Number of pixels clipped in ", 
+  #                 c("red", "green", "blue")[i], 
+  #                 " band:\n", "below limit: ", sum(RGB[, 
+  #                                                      i] < limits[i, 1], na.rm = TRUE), " | above limit: ", 
+  #                 sum(RGB[, i] > limits[i, 2], na.rm = TRUE))
+  #       }
+  #       RGB[RGB[, i] < limits[i, 1], i] <- clipValues[i, 
+  #                                                     1]
+  #       RGB[RGB[, i] > limits[i, 2], i] <- clipValues[i, 
+  #                                                     2]
+  #     }
+  #   }
+  #   rangeRGB <- range(RGB, na.rm = TRUE)
+  #   if (missing("scale")) {
+  #     scale <- rangeRGB[2]
+  #   }
+  #   if (rangeRGB[1] < 0) {
+  #     RGB <- RGB - rangeRGB[1]
+  #     scale <- scale - rangeRGB[1]
+  #     rangeRGB <- rangeRGB - rangeRGB[1]
+  #   }
+  #   if (scale < rangeRGB[2]) {
+  #     warning("Scale < max value. Resetting scale to max.", 
+  #             call. = FALSE)
+  #     scale <- rangeRGB[2]
+  #   }
+  #   RGB <- na.omit(RGB)
+  #   if (stretch != "none") {
+  #     stretch <- tolower(stretch)
+  #     for (i in seq_along(rgb)) {
+  #       RGB[, i] <- .stretch(RGB[, i], method = stretch, 
+  #                            quantiles = quantiles, band = i)
+  #     }
+  #     scale <- 1
+  #   }
+  #   naind <- as.vector(attr(RGB, "na.action"))
+  #   nullbands <- sapply(list(r, g, b), is.null)
+  #   if (any(nullbands)) {
+  #     RGBm <- matrix(nullValue, ncol = 3, nrow = NROW(RGB))
+  #     RGBm[, !nullbands] <- RGB
+  #     RGB <- RGBm
+  #   }
+  #   if (!is.null(naind)) {
+  #     z <- rep(NA, times = ncell(rr))
+  #     z[-naind] <- rgb(RGB[, 1], RGB[, 2], RGB[, 3], max = scale, 
+  #                      alpha = alpha * scale)
+  #   }
+  #   else {
+  #     z <- rgb(RGB[, 1], RGB[, 2], RGB[, 3], max = scale, alpha = alpha * 
+  #                scale)
+  #   }
+  #   df_raster <- data.frame(coordinates(rr), fill = z, stringsAsFactors = FALSE)
+  #   x <- y <- fill <- NULL
+  #   if (ggObj) {
+  #     exe <- as.vector(extent(rr))
+  #     df <- data.frame(x = exe[1:2], y = exe[3:4])
+  #     if (annotation) {
+  #       dz <- matrix(z, nrow = nrow(rr), ncol = ncol(rr), 
+  #                    byrow = TRUE)
+  #       p <- ggplot2::annotation_raster(raster = dz, xmin = exe[1], 
+  #                                       xmax = exe[2], ymin = exe[3], ymax = exe[4], 
+  #                                       interpolate = FALSE)
+  #       if (!ggLayer) {
+  #         p <- ggplot2::ggplot() + p + ggplot2::geom_blank(data = df, aes(x = x, 
+  #                                                                         y = y))
+  #       }
+  #     }
+  #     else {
+  #       p <- ggplot2::geom_raster(data = df_raster, aes(x = x, y = y, 
+  #                                                       fill = fill), alpha = alpha)
+  #       if (!ggLayer) {
+  #         p <- ggplot2::ggplot() + p + ggplot2::scale_fill_identity()
+  #       }
+  #     }
+  #     if (coord_equal & !ggLayer) 
+  #       p <- p + ggplot2::coord_equal()
+  #     return(p)
+  #   }
+  #   else {
+  #     return(df_raster)
+  #   }
+  # }
   # functions for 2D slice
   plotUI <- function(id) {
     ns <- NS(id)
@@ -1201,34 +1201,34 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
   ##### ortho slide import ----
   observe({                                  ### ortho xy
     req(input$file2)
-    df$ortho.2<-stack(input$file2$datapath) 
+    df$ortho.2<-terra::rast(input$file2$datapath) 
   })
   output$liste.ortho.file2=renderUI({
     req(input$file2)
     renderPlot({                                                    
-      s2<-stack(input$file2$datapath)
-      plotRGB(s2,maxpixels=50000)
+      s2<-terra::rast(input$file2$datapath)
+      terra::plotRGB(s2,maxpixels=50000)
     })
   })
   output$liste.ortho.file3=renderUI({
     req(input$file3)
     renderPlot({
-      s3<-stack(input$file3$datapath)
-      plotRGB(s3,maxpixels=50000)
+      s3<-terra::rast(input$file3$datapath)
+      terra::plotRGB(s3,maxpixels=50000)
     })
   })
   output$liste.ortho.file4=renderUI({
     req(input$file4)
     renderPlot({
-      s4<-stack(input$file4$datapath)
-      plotRGB(s4,maxpixels=50000)
+      s4<-terra::rast(input$file4$datapath)
+      terra::plotRGB(s4,maxpixels=50000)
     })
   })
   output$liste.ortho.file5=renderUI({
     req(input$file5)
     renderPlot({
-      s5<-stack(input$file5$datapath)
-      plotRGB(s5,maxpixels=50000)
+      s5<-terra::rast(input$file5$datapath)
+      terra::plotRGB(s5,maxpixels=50000)
     })
   })
   
@@ -2047,10 +2047,10 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
     orthofile<-NULL
     if (input$var.ortho == "yes" ){
       orthofile <- switch(input$var1,
-                          xy = if(!is.null(input$file2)) {stack(input$file2$datapath)},
-                          yx = if(!is.null(input$file5)) {stack(input$file5$datapath)},
-                          xz = if(!is.null(input$file3)) {stack(input$file3$datapath)},
-                          yz = if(!is.null(input$file4)) {stack(input$file4$datapath)})
+                          xy = if(!is.null(input$file2)) {terra::rast(input$file2$datapath)},
+                          yx = if(!is.null(input$file5)) {terra::rast(input$file5$datapath)},
+                          xz = if(!is.null(input$file3)) {terra::rast(input$file3$datapath)},
+                          yz = if(!is.null(input$file4)) {terra::rast(input$file4$datapath)})
     }
     
     height.size2<-height.size()
@@ -2084,6 +2084,7 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
       }
       shapeX<-df.sub2$shapeX
       shape.level<-levels(as.factor(shapeX))
+      assign("df.sub2",df.sub2,envir = .GlobalEnv)
       
       if (is.null(orthofile)){
         p<- plot_ly(height = height.size(),
@@ -2160,14 +2161,27 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
       } else {
         # to correct the color for ggplot2
         myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub2$layer2)))]
+        df_raster <- as.data.frame(orthofile, xy = TRUE, na.rm = FALSE)
+        df_raster$rgb <- rgb(
+          df_raster$red,
+          df_raster$green,
+          df_raster$blue,
+          maxColorValue = 255
+        )
         
         p <- ggplot2::ggplot()+
-          ggRGB(img = orthofile,
-                r = 1,
-                g = 2,
-                b = 3,
-                maxpixels =500000,
-                ggLayer = T)+
+          # ggRGB(img = orthofile,
+          #       r = 1,
+          #       g = 2,
+          #       b = 3,
+          #       maxpixels =50000,
+          #       ggLayer = T)+
+          geom_raster(
+            data = df_raster,
+            aes(x = x, y = y, fill = rgb)
+          ) +
+          scale_fill_identity() +
+        
           ggplot2::geom_point(data = df.sub2,
                               aes(x = .data[[var]],
                                   y = .data[[var2]],
@@ -2285,11 +2299,12 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
     orthofile<-NULL
     if (input$var.ortho.simple == "yes" ){
       orthofile <- switch(input$var1.simple,
-                          xy = if(!is.null(input$file2)) {stack(input$file2$datapath)},
-                          yx = if(!is.null(input$file5)) {stack(input$file5$datapath)},
-                          xz = if(!is.null(input$file3)) {stack(input$file3$datapath)},
-                          yz = if(!is.null(input$file4)) {stack(input$file4$datapath)})
-    }
+                          xy = if(!is.null(input$file2)) {terra::rast(input$file2$datapath)},
+                          yx = if(!is.null(input$file5)) {terra::rast(input$file5$datapath)},
+                          xz = if(!is.null(input$file3)) {terra::rast(input$file3$datapath)},
+                          yz = if(!is.null(input$file4)) {terra::rast(input$file4$datapath)})
+      terra::crs(orthofile) <- NA
+      }
     
     
     df.sub2<-df.sub() 
@@ -2324,13 +2339,14 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
     p <- ggplot2::ggplot()
     if (!is.null(orthofile)){
       
-      p<-p + ggRGB(img = orthofile,
-                   r = 1,
-                   g = 2,
-                   b = 3,
-                   maxpixels =500000,
-                   ggLayer = T)
-    }   
+      # p<-p + ggRGB(img = orthofile,
+      #              r = 1,
+      #              g = 2,
+      #              b = 3,
+      #              maxpixels =500000,
+      #              ggLayer = T)
+      p<-p + geom_spatraster_rgb(data=orthofile)
+      }   
     
     p<- p + ggplot2::geom_point(data = df.sub2,
                                 aes(x = .data[[var]],
@@ -2526,10 +2542,10 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
     orthofile<-NULL
     if (input$var.ortho2 == "yes" ){
       orthofile <- switch(input$var3,
-                          xy = if(!is.null(input$file2)) {stack(input$file2$datapath)},
-                          yx = if(!is.null(input$file5)) {stack(input$file5$datapath)},
-                          xz = if(!is.null(input$file3)) {stack(input$file3$datapath)},
-                          yz = if(!is.null(input$file4)) {stack(input$file4$datapath)}) }
+                          xy = if(!is.null(input$file2)) {terra::rast(input$file2$datapath)},
+                          yx = if(!is.null(input$file5)) {terra::rast(input$file5$datapath)},
+                          xz = if(!is.null(input$file3)) {terra::rast(input$file3$datapath)},
+                          yz = if(!is.null(input$file4)) {terra::rast(input$file4$datapath)}) }
     
     list.parameter.info<-var.function(input$var3)
     var<-list.parameter.info[[1]]
@@ -2584,12 +2600,14 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
         ggplot2::coord_fixed(ratio.simple()) 
       # {if (input$ratio.to.coord)coord_fixed()}
       
-    } else { p <- ggplot2::ggplot()+ ggRGB(img = orthofile,
-                                           r = 1,
-                                           g = 2,
-                                           b = 3,
-                                           maxpixels =500000,
-                                           ggLayer = T) +
+    } else { p <- ggplot2::ggplot()+ 
+      # ggRGB(img = orthofile,
+      #                                      r = 1,
+      #                                      g = 2,
+      #                                      b = 3,
+      #                                      maxpixels =500000,
+      #                                      ggLayer = T) +
+      geom_spatraster_rgb(data=orthofile)+
       ggplot2::geom_point(df.sub4,mapping=aes(.data[[var]], .data[[var2]], color = density),alpha=transpar(), size=df.sub4$point.size2)+
       ggplot2::labs(x = nameaxis[1],y = nameaxis[2])
     }
