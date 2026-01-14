@@ -1,3 +1,4 @@
+#v1.9.5 # 01/2026
 
 app_server <- function(input, output, session) {
     digitnumber<-reactiveVal(11)
@@ -160,28 +161,6 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
   observeEvent(input$point.size,{
     size.scale(input$point.size)
   })
-   output$X.limx2=renderUI({
-    req(input$checkbox.auto.limits==FALSE)
-    req(!is.null(fileisupload()))
-    req(input$xslider)
-    z2min=df$df[,input$setx] %>% floor() %>% min(na.rm = TRUE)
-    z2max=df$df[,input$setx] %>% ceiling() %>% max(na.rm = TRUE)
-    z2diff=z2max-z2min
-    zmin=z2min-z2diff*25/100
-    zmax=z2max+z2diff*25/100
-    sliderInput('X.limx','X lim',min=zmin,max=zmax,value=c(zmin,zmax),step=0.5)
-  }) 
-  output$Y.limx2=renderUI({
-    req(input$checkbox.auto.limits==FALSE)
-    req(!is.null(fileisupload()))
-    req(input$yslider)
-    z2min=df$df[,input$sety] %>% floor() %>% min(na.rm = TRUE)
-    z2max=df$df[,input$sety] %>% ceiling() %>% max(na.rm = TRUE)
-    z2diff=z2max-z2min
-    zmin=z2min-z2diff*25/100
-    zmax=z2max+z2diff*25/100
-    sliderInput('Y.limx','Y lim',min=zmin,max=zmax,value=c(zmin,zmax),step=0.5)
-  }) 
   
   icon_svg_path = "M10,6.536c-2.263,0-4.099,1.836-4.099,4.098S7.737,14.732,10,14.732s4.099-1.836,4.099-4.098S12.263,6.536,10,6.536M10,13.871c-1.784,0-3.235-1.453-3.235-3.237S8.216,7.399,10,7.399c1.784,0,3.235,1.452,3.235,3.235S11.784,13.871,10,13.871M17.118,5.672l-3.237,0.014L12.52,3.697c-0.082-0.105-0.209-0.168-0.343-0.168H7.824c-0.134,0-0.261,0.062-0.343,0.168L6.12,5.686H2.882c-0.951,0-1.726,0.748-1.726,1.699v7.362c0,0.951,0.774,1.725,1.726,1.725h14.236c0.951,0,1.726-0.773,1.726-1.725V7.195C18.844,6.244,18.069,5.672,17.118,5.672 M17.98,14.746c0,0.477-0.386,0.861-0.862,0.861H2.882c-0.477,0-0.863-0.385-0.863-0.861V7.384c0-0.477,0.386-0.85,0.863-0.85l3.451,0.014c0.134,0,0.261-0.062,0.343-0.168l1.361-1.989h3.926l1.361,1.989c0.082,0.105,0.209,0.168,0.343,0.168l3.451-0.014c0.477,0,0.862,0.184,0.862,0.661V14.746z"
   
@@ -578,6 +557,7 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
           size.scale <- size.scale()
           myvaluesx<-unlist(myvaluesx())
           # to correct the color for ggplot2
+       
           myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub.a$layer2)))]
           shapeX<-df.sub.a$shapeX
           shape.level<-levels(as.factor(shapeX))
@@ -937,10 +917,7 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
     req(input$setz)
     nameZ(input$Name.Z)
   })
-
-
-
-           
+  
   ##### verification ----
   observeEvent(ignoreInit = TRUE, c(setXX(),setYY(),setZZ(),input$setID), {
     if( sum(is.na(as.numeric(df$df[,input$setx])))>0 || sum(is.na(as.numeric(df$df[,input$sety])))>0 || sum(is.na(as.numeric(df$df[,input$setz])))>0 || (dim(df$df[duplicated(df$df[,input$setID]),])[1]>0 & input$setID != "null")) {
@@ -1140,7 +1117,7 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
     df$file.fit2[,input$setID]<-as.character(df$file.fit2[,input$setID]) ## same format to avoid pb
     df$df[,input$setID]<-as.character(df$df[,input$setID])                ## same format to avoid pb
     data.fit(df$file.fit2)
-    
+
   }) 
   
   observeEvent(data.fit(), {
@@ -1381,10 +1358,29 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
                 choices = names(df$df)[c(3:ncol(df$df))])
   })
   output$shape2.var2=renderUI({ 
-    req(!is.null(fileisupload()))
+    req(!is.null(fileisupload()),
+        !is.null(input$setshape2.1)
+        )
+    
     df$Sh2<-df$df
-    selectInput("setshape2.2", h5("Select variable modality for secondary shape"),
-                choices = levels(as.factor(df$Sh2[,input$setshape2.1])),selected = factor(df$Sh2[,input$shape2.var1]))
+
+    choices <- levels(
+      factor(df$Sh2[[input$setshape2.1]])
+    )
+    selected <- as.character(
+      df$Sh2[[input$setshape2.1]][1]
+    )
+
+    selectInput(
+      "setshape2.2",
+      h5("Select variable modality for secondary shape"),
+      choices = choices,
+      selected = selected
+    )
+    # selectInput("setshape2.2", h5("Select variable modality for secondary shape"),
+    #             choices = levels(as.factor(df$Sh2[,input$setshape2.1])),selected = factor(df$Sh2[,input$shape2.var1]))
+    
+
   })
   
   tt<-reactiveVal()
@@ -1462,6 +1458,7 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
   basiccolor= reactive({
     req(!is.null(fileisupload()))
     name<-"colorvar"
+    #req(inputcolor() != "null")
     color.function(df$df[[inputcolor()]],name,1,mypaletteofcolors())
   }) 
   
@@ -1639,9 +1636,10 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
                 choices = names(df$df)[c(3:ncol(df$df))])
   }) 
   output$var.gris.2D.1=renderUI({ 
-    req(!is.null(fileisupload()))
+    req(!is.null(fileisupload()),
+        !is.null(input$set.var.gris.2D))
     checkboxGroupInput("set.var.gris.2D.1", h4("Levels of variable"),
-                       choices = levels(as.factor(df$df[,input$set.var.gris.2D])),selected = factor(df$df[,input$set.var.gris.2D]))
+                       choices = levels(as.factor(df$df[[input$set.var.gris.2D]])),selected = factor(df$df[[input$set.var.gris.2D]]))
   }) 
   
   output$sectionXx3=renderUI({
@@ -2384,11 +2382,35 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
     p<-p+scale_x_continuous(breaks=seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xtickmarks.size), minor_breaks = seq(floor(min(df.sub2[[var]])),max(df.sub2[[var]]),Xminor.breaks))+
       scale_y_continuous(breaks=seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Ytickmarks.size), minor_breaks = seq(floor(min(df.sub2[[var2]])),max(df.sub2[[var2]]),Yminor.breaks))
     if (input$checkbox.auto.limits==FALSE) {
-      p<-p + ggplot2::expand_limits(x=c(input$X.limx[1],input$X.limx[2]), y=c(input$Y.limx[1], input$Y.limx[2]))
+      p<-p+expand_limits(x=c(input$X.limx[1],input$X.limx[2]), y=c(input$Y.limx[1], input$Y.limx[2]))
     }
-      p   
+    p   
     
   }) #end plot2D.react 
+  
+
+  output$X.limx2=renderUI({
+    req(input$checkbox.auto.limits==FALSE)
+    req(!is.null(fileisupload()))
+    req(input$xslider)
+    z2min=df$df[,input$setx] %>% floor() %>% min(na.rm = TRUE)
+    z2max=df$df[,input$setx] %>% ceiling() %>% max(na.rm = TRUE)
+    z2diff=z2max-z2min
+    zmin=z2min-z2diff*25/100
+    zmax=z2max+z2diff*25/100
+    sliderInput('X.limx','X lim',min=zmin,max=zmax,value=c(zmin,zmax),step=0.5)
+  }) 
+  output$Y.limx2=renderUI({
+    req(input$checkbox.auto.limits==FALSE)
+    req(!is.null(fileisupload()))
+    req(input$yslider)
+    z2min=df$df[,input$sety] %>% floor() %>% min(na.rm = TRUE)
+    z2max=df$df[,input$sety] %>% ceiling() %>% max(na.rm = TRUE)
+    z2diff=z2max-z2min
+    zmin=z2min-z2diff*25/100
+    zmax=z2max+z2diff*25/100
+    sliderInput('Y.limx','Y lim',min=zmin,max=zmax,value=c(zmin,zmax),step=0.5)
+  }) 
   
   
   ##### 2D slice ---- 
@@ -3482,6 +3504,7 @@ req(nexstep()==1)
  data.fit2(global.load$data.fit2) ##for import fit data
  data.fit3(global.load$data.fit3) ##for import fit data
  data.fit.3D(global.load$data.fit.3D) ## for refit data for 3D plot
+
  colorofrefit(global.load$colorofrefit)## color base for refit
  #save.col.react.fit(global.load$save.col.react.fit)
  mypaletteofcolors.fit(global.load$mypaletteofcolors.fit)
@@ -3597,6 +3620,7 @@ observeEvent(nexstep(),{
                      selected =  global.load$Colors)
    inputcolor(global.load$Colors)
    basiccolor()
+  
  })
 
  observeEvent(input$file.set, {
