@@ -1,8 +1,8 @@
 Package: SEAHORS
 Type: Package
 Title: Spatial Exploration of ArcHaeological Objects in R Shiny
-Version: 1.9.0
-Date: 2025-05-27
+Version: 1.9.5
+Date: 2026-01-15
 Authors@R: c(person("Aurelien", "Royer", email = "aurelien.royer@u-bourgogne.fr", role = "aut", comment = c(ORCID = "0000-0002-0139-8765")),
              person("Sebastien", "Plutniak", email = "sebastien.plutniak@posteo.net", role = "cre", comment = c(ORCID = "0000-0002-6674-3806")),
              person("Emmanuel", "Discamps", email = "emmanuel.discamps@cnrs.fr", role = "ctb", comment = c(ORCID = "0000-0002-2464-0761")),
@@ -33,6 +33,8 @@ Imports:
 	MASS,
 	readxl,
 	raster,
+	terra,
+	tidyterra,
 	stringr,
 	viridis,
     rmarkdown,
@@ -43,3 +45,4 @@ VignetteBuilder: knitr
 URL: https://github.com/AurelienRoyer/SEAHORS
 BugReports: https://github.com/AurelienRoyer/SEAHORS/issues
 RoxygenNote: 7.3.2
+
