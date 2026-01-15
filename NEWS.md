@@ -1,3 +1,8 @@
+# SEAHORS 1.9.5
+Released: 15-01-2026
+* corrections bugs xml dataframe
+* corrections raster package to terra
+
 # SEAHORS 1.9
 Released: 27-05-2025
 * graphical change pannel "load data "
