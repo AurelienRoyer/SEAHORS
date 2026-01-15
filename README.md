@@ -133,3 +133,4 @@ sub-tab:
  - 01/2024 : addition option in "figure options" panel to expand limits of X and Y for "simple 2D plot" projection.  
  - 01/2024 : modification of the button "options for loading file" in the "import XYZ data" panel and addition of a numeric imput modifying the number of significant digit when the data are imported. 
  - 14/05/2025 : bug with refits fixed
+ - 15/01/2026 : bug with xml dataframe corrected. Changes raster package to terra package
