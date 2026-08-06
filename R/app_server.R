@@ -2076,6 +2076,10 @@ fileisupload.avoidload<-reactiveVal() ## add for 1.9
       df.sub3<-df.sub.minpoint()
       myvaluesx<-unlist(myvaluesx())
       size.scale <- size.scale()
+        
+     size.scale <-size.scale*3  # correctif taille ggplotly
+      min.size2<-min.size2*3
+        
       # if (nrow(df.sub3)>0){
       #   df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
       #}
