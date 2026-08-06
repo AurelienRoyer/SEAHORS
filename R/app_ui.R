@@ -294,7 +294,7 @@ ui <- shinyUI(
                                                                                 
                                                                                 "),
                                                          
-                                                         bsModal(
+                                                         shinyBS::bsModal(
                                                            id = "bsmodal_param",
                                                            title = tags$h4(style = "color: red;","Options for loading file"),
                                                            trigger = "chr_setting",size = "large",
