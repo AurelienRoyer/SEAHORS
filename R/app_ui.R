@@ -280,33 +280,8 @@ ui <- shinyUI(
                                                            style = "unite",
                                                            color = "danger",
                                                            icon = icon("fas fa-cogs",lib = "font-awesome")
-                                                         ),
-                                                         tags$style("#bsmodal_param .modal-dialog{ width:1200px} 
-                                                                .modal-backdrop {
-                                                                                    display: none;
-                                                                                    z-index: 1040 !important;
-                                                                                }
-                                                                                
-                                                                                .modal-content {
-                                                                                    margin: 2px auto;
-                                                                                    z-index: 1100 !important;
-                                                                                }
-                                                                                
-                                                                                "),
-                                                         
-                                                         shinyBS::bsModal(
-                                                           id = "bsmodal_param",
-                                                           title = tags$h4(style = "color: red;","Options for loading file"),
-                                                           trigger = "chr_setting",size = "large",
-                                                           
-                                                           
-                                                           checkboxInput("header", "Header", TRUE),
-                                                           checkboxInput("set.dec", "Check this option to automatically correct for the presence of comma in decimal numbers", TRUE),
-                                                         
-                                                         
-                                                           numericInput("digit.number", "To control the number of significant digit", 11, min = 1, step=1, max=30)
-                                                     
-                                                         ),)
+                                                         )
+                                                         ,)
                                                   
                                                   
                                                   ),
