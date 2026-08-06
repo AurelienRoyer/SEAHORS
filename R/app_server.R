@@ -74,6 +74,67 @@ app_server <- function(input, output, session) {
   ratio.slice<-reactiveVal(1)
   nb.slice<-reactiveVal(1) ##nb of slice for saving it
 fileisupload.avoidload<-reactiveVal() ## add for 1.9
+
+####correctif showmodal add 08/2026
+observeEvent(input$chr_setting, {
+  
+  showModal(
+    modalDialog(
+      
+      title = tags$h4(
+        style = "color: red;",
+        "Options for loading file"
+      ),
+      
+      checkboxInput(
+        inputId = "header",
+        label = "Header",
+        value = TRUE
+      ),
+      
+      checkboxInput(
+        inputId = "set.dec",
+        label = "Check this option to automatically correct for the presence of comma in decimal numbers",
+        value = TRUE
+      ),
+      
+      numericInput(
+        inputId = "digit.number",
+        label = "To control the number of significant digit",
+        value = 11,
+        min = 1,
+        step = 1,
+        max = 30
+      ),
+      
+      size = "l",
+      easyClose = TRUE,
+      footer = modalButton("Close"),
+      
+      tags$style(HTML("
+          .modal-dialog {
+            width: 1200px;
+            max-width: 95%;
+          }
+          
+          .modal-backdrop {
+            display: none !important;
+            z-index: 1040 !important;
+          }
+          
+          .modal-content {
+            margin: 2px auto;
+            z-index: 1100 !important;
+          }
+        "))
+    )
+  )
+  
+})
+
+
+
+
     
   ##### import data----
   df<-reactiveValues( #creation df 
