@@ -3,8 +3,8 @@
 app_server <- function(input, output, session) {
     digitnumber<-reactiveVal(11)
   base::options(digits=11) ##add 1.8.x
-  observeEvent(input$digit.number, { 
-    digitnumber(input$digit.number)
+  observeEvent(digit_number_value(), { 
+    digitnumber(digit_number_value())
     base::options(digits=digitnumber())
     })
   ##### set variable to avoid notes in R package----
@@ -76,6 +76,13 @@ app_server <- function(input, output, session) {
 fileisupload.avoidload<-reactiveVal() ## add for 1.9
 
 ####correctif showmodal add 08/2026
+header_value <- reactiveVal(TRUE) 
+set_dec_value <- reactiveVal(TRUE) 
+digit_number_value <- reactiveVal(11)
+observe({ if (!is.null(input$header)) { header_value(input$header) } 
+  if (!is.null(input$set.dec)) { set_dec_value(input$set.dec) } 
+  if (!is.null(input$digit.number)) { digit_number_value(input$digit.number) } })
+
 observeEvent(input$chr_setting, {
   
   showModal(
@@ -89,19 +96,19 @@ observeEvent(input$chr_setting, {
       checkboxInput(
         inputId = "header",
         label = "Header",
-        value = TRUE
+        value = header_value()
       ),
       
       checkboxInput(
         inputId = "set.dec",
         label = "Check this option to automatically correct for the presence of comma in decimal numbers",
-        value = TRUE
+        value = set_dec_value()
       ),
       
       numericInput(
         inputId = "digit.number",
         label = "To control the number of significant digit",
-        value = 11,
+        value = digit_number_value(),
         min = 1,
         step = 1,
         max = 30
@@ -131,8 +138,6 @@ observeEvent(input$chr_setting, {
   )
   
 })
-
-
 
 
     
@@ -169,7 +174,7 @@ observeEvent(input$chr_setting, {
                        } else if ( "\t" %in% strsplit(readLines(input_file1.datapath(), n=1)[1], split="")[[1]] ){"\t"
                        } else {";"}
                        utils::read.csv(input_file1.datapath(),
-                                       header = input$header,
+                                       header = header_value(),
                                        sep = sep2, stringsAsFactors = F,  fileEncoding="latin1",
                                        dec=".")},
                      xls = readxl::read_xls(input_file1.datapath(), sheet=input$worksheet),
@@ -184,7 +189,7 @@ observeEvent(input$chr_setting, {
     null<-"0"
     shapeX<-shape_all()
     df$df<-df$df2[,!sapply(df$df2, function(x) is.logical(x))] ##remove column without data
-    if (input$set.dec == TRUE){
+    if (set_dec_value() == TRUE){
       df$df[] <- apply(df$df,2,function (x) stringr::str_replace_all(x,",","."))
     } else{}
     if(!is.null(df$df[sapply(df$df, function(x) !is.numeric(x))])) {
@@ -1032,7 +1037,7 @@ observeEvent(input$chr_setting, {
                                   } else if ( "\t" %in% strsplit(readLines(input$file.extradata$datapath, n=1)[1], split="")[[1]] ){"\t"
                                   } else {";"}
                                   utils::read.csv(input$file.extradata$datapath,
-                                                  header = input$header,
+                                                  header = header_value(),
                                                   sep = sep2, stringsAsFactors = F,fileEncoding="latin1", 
                                                   dec=".")},
                                 xls = readxl::read_xls(input$file.extradata$datapath),
@@ -1119,7 +1124,7 @@ observeEvent(input$chr_setting, {
                             } else if ( "\t" %in% strsplit(readLines(input$file.fit$datapath, n=1)[1], split="")[[1]] ){"\t"
                             } else {";"}
                             utils::read.csv(input$file.fit$datapath,
-                                            header = input$header,
+                                            header = header_value(),
                                             sep = sep2, stringsAsFactors = F, 
                                             dec=".",fileEncoding="latin1")},
                           xls = readxl::read_xls(input$file.fit$datapath),
@@ -1542,7 +1547,7 @@ observeEvent(input$chr_setting, {
                               } else if ( "\t" %in% strsplit(readLines(input$file.color$datapath, n=1)[1], split="")[[1]] ){"\t"
                               } else {";"}
                               utils::read.csv(input$file.color$datapath,
-                                              header = input$header,
+                                              header = header_value(),
                                               sep = sep2, stringsAsFactors = F, 
                                               dec=".")},
                             xls = readxl::read_xls(input$file.color$datapath),
@@ -1634,7 +1639,7 @@ observeEvent(input$chr_setting, {
                                   } else if ( "\t" %in% strsplit(readLines(input$file.color.fit$datapath, n=1)[1], split="")[[1]] ){"\t"
                                   } else {";"}
                                   utils::read.csv(input$file.color.fit$datapath,
-                                                  header = input$header,
+                                                  header = header_value(),
                                                   sep = sep2, stringsAsFactors = F, 
                                                   dec=".")},
                                 xls = readxl::read_xls(input$file.color.fit$datapath),
@@ -3455,8 +3460,8 @@ output$export.settings<- downloadHandler(
     global$separatormerge<-input$separatormerge
     global$var.fit.3D<-input$var.fit.3D
     #checkboxinput
-    global$header<-input$header
-    global$set.dec<-input$set.dec
+    global$header<-header_value()
+    global$set.dec<-set_dec_value()
     global$advanced.slice<-input$advanced.slice
     
     to_save <- reactiveValuesToList(global)
