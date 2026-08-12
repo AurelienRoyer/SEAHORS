@@ -1,0 +1,13 @@
+.radio-inline {
+  padding: 0 3px;
+  text-align: center;
+  margin-left: 0 !important;
+  line-height: 30px;
+
+}
+.radio-inline input {
+  top: 20px;
+  left: 50%;
+  margin-left: -6px !important;
+  line-height: 30px;
+}
