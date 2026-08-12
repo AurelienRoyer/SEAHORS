@@ -1,39 +1,371 @@
-app_ui <- function(){
-  shiny::addResourcePath("SEAHORS", system.file("R", package="SEAHORS"))
-    
-
-##### script R shiny
-options(shiny.reactlog = TRUE)
-css <- "
-.radio-inline {
-  padding: 0 3px;
-  text-align: center;
-  margin-left: 0 !important;
-  line-height: 30px;
-
-}
-.radio-inline input {
-  top: 20px;
-  left: 50%;
-  margin-left: -6px !important;
-  line-height: 30px;
-}"
-
 ui <- shinyUI(
   navbarPage(
-  windowTitle = "SEAHORS",
-  fluidPage(
-    useShinyjs(),
-    theme = shinytheme(theme = "journal"),
+    windowTitle = "SEAHORS",
+    fluidPage(
+      useShinyjs(),
+      theme = shinytheme(theme = "journal"),
+        tags$head(
+        tags$script(HTML("
+
+    $(document).on(
+      'click',
+      '#open_xz',
+      function(e) {
+        
+        e.preventDefault();
+        
+        const url =
+          window.location.origin +
+          window.location.pathname +
+          '?popup=xz';
+        
+        
+        const xzWindow = window.open(
+          
+          url,
+          
+          'XZ_window',
+          
+          'width=1100,' +
+          'height=850,' +
+          'left=1000,' +
+          'top=50,' +
+          'resizable=yes,' +
+          'scrollbars=yes'
+          
+        );
+        
+        
+        if (!xzWindow) {
+          
+          alert(
+            'The XZ window was blocked by the browser. ' +
+            'Please allow popups for this application.'
+          );
+          
+          return;
+          
+        }
+        
+        xzWindow.focus();
+        
+      }
+    );
+    ")),
+      
+  tags$script(HTML("  
+    $(document).on(
+      'click',
+      '#open_yz',
+      function(e) {
+        
+        e.preventDefault();
+        
+        const url =
+          window.location.origin +
+          window.location.pathname +
+          '?popup=yz';
+        
+        
+        const yzWindow = window.open(
+          
+          url,
+          
+          'YZ_window',
+          
+          'width=1100,' +
+          'height=850,' +
+          'left=1000,' +
+          'top=50,' +
+          'resizable=yes,' +
+          'scrollbars=yes'
+          
+        );
+        
+        
+        if (!yzWindow) {
+          
+          alert(
+            'The YZ window was blocked by the browser. ' +
+            'Please allow popups for this application.'
+          );
+          
+          return;
+          
+        }
+        
+        yzWindow.focus();
+        
+      }
+    );
+    
+  ")),
+      
+
+    
+    tags$script(HTML("
+  
+
+  function sendSelectedIDs(ids) {
+    
+    localStorage.setItem(
+      'selected_individuals',
+      JSON.stringify(ids)
+    );
+    
+  }
+  
+
+  function handlePlotlySelection(
+    plotID,
+    data
+  ) {
+    
+    if (
+      !data ||
+      !data.points ||
+      data.points.length === 0
+    ) {
+      
+      sendSelectedIDs([]);
+      
+      Shiny.setInputValue(
+        'selected_ids',
+        [],
+        {
+          priority: 'event'
+        }
+      );
+      
+      return;
+      
+    }
+    
+    
+    const ids =
+      data.points
+        .map(function(point) {
+          
+          return 
+            point.customdata
+          ;
+          
+        })
+        .filter(function(id) {
+          
+          return !isNaN(id);
+          
+        });
+    
+    
+    console.log(
+      plotID +
+      ' selected IDs:',
+      ids
+    );
+    
+    
+    sendSelectedIDs(ids);
+    
+    
+    Shiny.setInputValue(
+      'selected_ids',
+      ids,
+      {
+        priority: 'event'
+      }
+    );
+    
+  }
+
+  $(document).on(
+    'plotly_click',
+    '#plot_xy, #plot_xz',
+    function(event, data) {
+      
+      if (
+        !data ||
+        !data.points ||
+        data.points.length === 0
+      ) {
+        
+        return;
+        
+      }
+      
+      
+      const id =
+        Number(
+          data.points[0].customdata
+        );
+      
+      
+      if (
+        isNaN(id)
+      ) {
+        
+        return;
+        
+      }
+      
+      
+      const ids = [id];
+      
+      
+      console.log(
+        'Click:',
+        ids
+      );
+      
+      
+      sendSelectedIDs(
+        ids
+      );
+      
+      
+      Shiny.setInputValue(
+        'selected_ids',
+        ids,
+        {
+          priority: 'event'
+        }
+      );
+      
+    }
+  );
+  
+
+  $(document).on(
+    'plotly_selected',
+    '#plot_xy, #plot_xz',
+    function(event, data) {
+      
+      handlePlotlySelection(
+        this.id,
+        data
+      );
+      
+    }
+  );
+  
+
+  window.addEventListener(
+    'storage',
+    function(event) {
+      
+      if (
+        event.key !==
+        'selected_individuals'
+      ) {
+        
+        return;
+        
+      }
+      
+      
+      let ids = [];
+      
+      
+      try {
+        
+        ids =
+          JSON.parse(
+            event.newValue
+          );
+        
+      }
+      catch(e) {
+        
+        ids = [];
+        
+      }
+      
+      
+      console.log(
+        'Received IDs:',
+        ids
+      );
+      
+      
+      Shiny.setInputValue(
+        'selected_ids',
+        ids,
+        {
+          priority: 'event'
+        }
+      );
+      
+    }
+  );
+  
+
+  $(document).on(
+    'shiny:connected',
+    function() {
+      
+      const stored =
+        localStorage.getItem(
+          'selected_individuals'
+        );
+      
+      
+      if (
+        stored === null
+      ) {
+        
+        return;
+        
+      }
+      
+      
+      let ids = [];
+      
+      
+      try {
+        
+        ids =
+          JSON.parse(
+            stored
+          );
+        
+      }
+      catch(e) {
+        
+        ids = [];
+        
+      }
+      
+      
+      Shiny.setInputValue(
+        'selected_ids',
+        ids,
+        {
+          priority: 'event'
+        }
+      );
+      
+    }
+  );
+  
+")), 
+    ),
     sidebarLayout(
-      sidebarPanel(span(img(src = "www/logo1.png", height = 110)),
+      sidebarPanel(
+        span(img(src = "www/logo1.png", height = 110)),
                    tags$header(
                      tags$a(href = "https://github.com/AurelienRoyer/SEAHORS/",
                             "Spatial Exploration of ArcHaeological Objects in R Shiny")),
                    tags$hr(),
-                   
-                   tags$style(HTML(css)),
-                   column(12,
+        tags$head(
+          tags$link(
+            rel = "stylesheet",
+            type = "text/css",
+            href = "www/app.css"
+          )
+        ),
+                  
+
+        column(12,
                column(2,
         shinyWidgets::actionBttn(
           inputId = "save_load",
@@ -170,19 +502,19 @@ ui <- shinyUI(
                                            column(4,numericInput("Xminor.breaks", "Position of X minor breaks",1, min = 0, max=40),),
                                            column(4,numericInput("Yminor.breaks", "Position of Y minor breaks",1, min = 0, max=40),),
                                            column(4,numericInput("Zminor.breaks", "Position of Z minor breaks",1, min = 0, max=40),),),
-                                                                         column(10,
+                                     column(10,
                                             checkboxInput("checkbox.auto.limits", label = "Automatic limits", value = TRUE),
                                             uiOutput("X.limx2"),
                                             uiOutput("Y.limx2"),
                                      ),
-                                    
                                     column(12,br(),
                                            hr(),),
                                     uiOutput("themeforfigure"),
                    )# end of conditionalPanel
       ), #end sidebarpanel
-      
+
       mainPanel(
+        
         tabsetPanel(type = "tabs",id="mainpanel",
                     tabPanel("Overview", 
                              tags$div(
@@ -234,15 +566,7 @@ ui <- shinyUI(
                                HTML("<p style = 'color:blue;'> <i>ENJOY IT !</i></color> </p> </div>"),
                                       ), #end of column
                              ) # end div()
-                          #    column(12, column(2, HTML(
-                          #      "  <div style=height:50%;, align=left> 
-                          # <font size=2>
-                          # <p>Try <i>SEAHORS</i> with the <a href=https://hal.science/hal-02190243 target=_blank>Cassenade</a> Paleolithic site dataset:</p>
-                          # </font size>
-                          # </div>"),#end html
-                          #      actionButton("button_example","Click to load the Cassenade dataset",style="height:50%")),
-                          #      tags$br(),
-                               # tags$br(),),
+
                              
                     ), #end of tabPanel
                     tabPanel("Load data", 
@@ -252,16 +576,7 @@ ui <- shinyUI(
                                                   tags$br(),
                                                   tags$hr(),
                                                   tags$h4(style = "color: red;","Loading file"), 
-                                                  #fluidRow(
-                                                  #   column(10,
-                                                  #                 tags$h4(style = "color: red;","Options for loading file"), 
-                                                  #                 checkboxInput("header", "Header", TRUE),
-                                                  #                 checkboxInput("set.dec", "Check this option to automatically correct for the presence of comma in decimal numbers", TRUE),
-                                                  #                 numericInput("digit.number", "To control the number of significant digit", 11, min = 1, step=1, max=30, width="50%"),
-                                                  #                 
-                                                  #                        tags$hr(),
-                                                  # ),#endcolumn
-                                                  #),#end of fluidrow  
+
                                                   fluidRow(column(9,
                                                                   fileInput("file1", "Choose File (.csv/.xls/.xlsx)",
                                                                             multiple = TRUE,
@@ -274,13 +589,15 @@ ui <- shinyUI(
                                                                   actionButton('reset.BDD', 'Reset Input')
                                                   ),
                                                   column(3,
+                                                         
                                                          shinyWidgets::actionBttn(
                                                            inputId = "chr_setting",
                                                            label = "Options for loading file",
                                                            style = "unite",
                                                            color = "danger",
-                                                           icon = icon("fas fa-cogs",lib = "font-awesome")
+                                                           icon = icon("fas fa-cogs", lib = "font-awesome")
                                                          )
+
                                                          ,)
                                                   
                                                   
@@ -484,51 +801,7 @@ ui <- shinyUI(
                     tabPanel("2D plot", 
                              
                              tabsetPanel(type = "tabs",
-                                         tabPanel(tags$h5("Simple 2D plot"),
-                                                  fluidRow(tags$br(),
-                                                           htmlOutput("nb2.2"),
-                                                           tags$br(),
-                                                           tags$br(),
-                                                           tags$br(),
-                                                           column(12,      
-                                                                  radioButtons("var1.simple", "section",
-                                                                               choices = c(xy = "xy",
-                                                                                           yx = "yx",
-                                                                                           yz = "yz",
-                                                                                           xz = "xz"),
-                                                                               selected = "xy", inline=TRUE),
-                                                                  tags$br(),),
-                                                           
-                                                           column(12,
-                                                                  uiOutput("plot2Dbox.simple"),),
-                                                           tags$br(),),
-                                                  fluidRow(
-                                                    tags$br(),
-                                                    tags$br(),
-                                                    hr(style = "border-top: 1px solid #000000;"), 
-                                                    column(12,
-                                                           column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
-                                                           column(2),
-                                                    ),
-                                                  ),
-                                                  column(12,
-                                                         column(2,radioButtons("var.ortho.simple", "include ortho",
-                                                                               choices = c(no = "no",
-                                                                                           yes = "yes"),
-                                                                               selected = "no", inline=TRUE),  ),
-                                                         column(2, radioButtons("var.fit.table.simple", "Include refits",
-                                                                                choices = c(no = "no",
-                                                                                            yes = "yes"),
-                                                                                selected = "no", inline=TRUE),),
-                                                         column(2),
-                                                         column(6,downloadButton("downloadData2D.simple", "Download as .pdf")), 
-                                                         hr(style = "border-top: 0.5px solid #000000;"), ),
-                                                  tags$br(),
-                                                  
-                                                  
-                                         ),#end tabpanel 
                                          tabPanel(tags$h5("Advanced 2D plot"),
-                                                  
                                                   fluidRow(tags$br(),
                                                            htmlOutput("nb2"),
                                                            tags$br(),
@@ -543,11 +816,26 @@ ui <- shinyUI(
                                                                                            yz = "yz",
                                                                                            xz = "xz"),
                                                                                selected = "xy", inline=TRUE),
-                                                                  tags$br(),),
-                                                           
+                                                                  tags$br(),
+                                                           ),
+                                                           tags$div(
+                                                             id = "main_ui",
+                                                                  actionButton("open_xz",
+                                                                               "Open XZ panel",
+                                                                               class = "btn-primary"
+                                                                 
+                                                                  ),
+                                                             actionButton("open_yz",
+                                                                          "Open yZ panel",
+                                                                          class = "btn-primary"
+                                                                          
+                                                             ),
                                                            column(12,
                                                                   uiOutput("plot2Dbox"),),
-                                                           tags$br(),),
+                                                           tags$br(),
+                                                           ),# end of div
+                                                           
+                                                  ),
                                                   fluidRow(
                                                     tags$br(),
                                                     tags$br(),
@@ -558,9 +846,11 @@ ui <- shinyUI(
                                                              label = "Bar plot display",
                                                              style = "unite",
                                                              color = "danger",
-                                                             icon = icon("fas fa-chart-column",lib = "font-awesome")
+                                                             icon = icon("fas fa-chart-column", verify_fa = FALSE ,lib = "font-awesome")
                                                            ),
                                                            ),
+                                                    
+                                                    
                                                     radioButtons("var.ortho", "include ortho",
                                                                  choices = c(no = "no",
                                                                              yes = "yes"),
@@ -595,7 +885,55 @@ ui <- shinyUI(
                                                   ) #end fluidrow
                                          ), #end sub-tabpanel
                                          
-                                            
+                                         tabPanel(tags$h5("Simple 2D plot"),
+                                                  fluidRow(tags$br(),
+                                                           htmlOutput("nb2.2"),
+                                                           tags$br(),
+                                                           tags$br(),
+                                                           tags$br(),
+                                                           column(12,      
+                                                                  radioButtons("var1.simple", "section",
+                                                                               choices = c(xy = "xy",
+                                                                                           yx = "yx",
+                                                                                           yz = "yz",
+                                                                                           xz = "xz"),
+                                                                               selected = "xy", inline=TRUE),
+                                                                  tags$br(),),
+                                                           
+                                                           column(12,
+                                                                  uiOutput("plot2Dbox.simple"),),
+                                                           tags$br(),),
+                                                  fluidRow(
+                                                    tags$br(),
+                                                    tags$br(),
+                                                    hr(style = "border-top: 1px solid #000000;"), 
+                                                    column(12, #add button plot
+                                                           actionButton(
+                                                             "open_xz",
+                                                             "Open XZ plot"
+                                                           )
+                                                    ),
+                                                    column(12,
+                                                           column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
+                                                           column(2),
+                                                    ),
+                                                  ),
+                                                  column(12,
+                                                         column(2,radioButtons("var.ortho.simple", "include ortho",
+                                                                               choices = c(no = "no",
+                                                                                           yes = "yes"),
+                                                                               selected = "no", inline=TRUE),  ),
+                                                         column(2, radioButtons("var.fit.table.simple", "Include refits",
+                                                                                choices = c(no = "no",
+                                                                                            yes = "yes"),
+                                                                                selected = "no", inline=TRUE),),
+                                                         column(2),
+                                                         column(6,downloadButton("downloadData2D.simple", "Download as .pdf")), 
+                                                         hr(style = "border-top: 0.5px solid #000000;"), ),
+                                                  tags$br(),
+                                                  
+                                                  
+                                         ),#end tabpanel    
                              ), #end tabset panel
                     ), #end tabPanel
                     
@@ -611,7 +949,7 @@ ui <- shinyUI(
                                                           selected = "yz", inline=TRUE),
                                            tags$br(),),
                                     column(2),
-                                    column(3,checkboxInput("advanced.slice",label="Advanced plot", value=FALSE)),
+                                    column(3,checkboxInput("advanced.slice",label="Advanced plot", value=TRUE)),
                              ),
                              
                              column(12, numericInput("step2dslice", HTML("Thickness of slices <br> (lower this parameter to get more slices)"), 4, min = 0.1, max=10,step = 1, width="50%")),
@@ -797,7 +1135,7 @@ ui <- shinyUI(
                                                           actionButton("go.ng2", "Modify"),),
                                                   
                                          ), #end tabpanel
-
+      
                                          tabPanel(tags$h5("Export settings"), 
                                                   br(),
                                                   radioButtons("docpdfhtml", "Export format",
@@ -810,32 +1148,109 @@ ui <- shinyUI(
                                                   ),
                                                   br(),
                                                   hr(),
-                                                #  br(),
-                                                #  tags$h4("To save the settings as .csv"),
-                                                #  fluidRow(
-                                                #    column(7, downloadButton("export.settings", "Export settings as csv document")),
-                                                #    br(),
-                                                #    hr(),
-                                                #    br(),),
-                                                #  br(), 
-                                                #  tags$h4("To load settings"),
-                                                  fluidRow(
-                                               #     column(7, fileInput("file.color.set", "Choose File to import settings (.csv)",
-                                               #               multiple = TRUE,
-                                               #               accept = c("text/csv",
-                                                 #                        "text/comma-separated-values,text/plain",
-                                                 #                        ".csv")),
-                                                     
-                                                  #  actionButton("go.load.settings", "load it"))
-                                                    )
+                                                  br(),
+                                                  tags$h4("To save the settings as .csv"),
+     
+                                                  br(), 
+                                                  tags$h4("To load settings"),
+      
                                          ), #end tabpanel
                                          
                              ),#end tabsetpanel temp
                     ), # end of tabpanel
         ) #end tabset panel
       ) #end main panel
+
       ,fluid=FALSE) #sidebarLayout  
   )#endfluidPage
 ) #end navbarPage
 ) #end  shinyUI
+#}
+
+
+
+app_ui <- function(request) {
+  
+  query <- parseQueryString(
+    request$QUERY_STRING
+  )
+  if (
+    !is.null(query$popup) &&
+    query$popup == "xz"
+  ) {
+    
+    return(
+      fluidPage(
+        tags$head(
+          tags$style(HTML("
+            html,
+            body {
+              width: 100%;
+              height: 100%;
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+            }
+            plot_xz {
+              width: 100% !important;
+              height: 100% !important;
+            }
+          "))
+        ),
+        
+        
+        plotlyOutput(
+          "plot_xz",
+          width = "100%",
+          height = "100vh"
+        )
+        
+      )
+      
+    )
+    
+  }
+  if (
+    !is.null(query$popup) &&
+    query$popup == "yz"
+  ) {
+    
+    return(
+      fluidPage(
+        tags$head(
+          tags$style(HTML("
+            html,
+            body {
+              width: 100%;
+              height: 100%;
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+            }
+            plot_yz {
+              width: 100% !important;
+              height: 100% !important;
+            }
+          "))
+        ),
+        
+        
+        plotlyOutput(
+          "plot_yz",
+          width = "100%",
+          height = "100vh"
+        )
+        
+      )
+      
+    )
+    
+  }
+  
+  shiny::addResourcePath("SEAHORS", system.file("R", package="SEAHORS"))
+ # options(shiny.reactlog = TRUE)
+
+  ui
+  
 }
+

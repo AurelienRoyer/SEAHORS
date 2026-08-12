@@ -1,4 +1,5 @@
-#v1.9.5 # 01/2026
+#v2.0.0 # 08/2026
+#Add multi-panel
 
 app_server <- function(input, output, session) {
     digitnumber<-reactiveVal(11)
@@ -7,8 +8,15 @@ app_server <- function(input, output, session) {
     digitnumber(digit_number_value())
     base::options(digits=digitnumber())
     })
+  #####
+  # gestion des popup add #v2.0.0
+  plot_id <- "current_plot"
+  store <- get_shared_session("current_plot")
+  store$selection_version <- 0
+  
+  
   ##### set variable to avoid notes in R package----
-  .stretch <- NULL
+  # .stretch <- NULL
   layer2 <- NULL
   level <- NULL
   null.2 <- NULL
@@ -73,9 +81,12 @@ app_server <- function(input, output, session) {
   e<-reactiveVal(NULL) ## create an environment to save the 2D.slice pdf
   ratio.slice<-reactiveVal(1)
   nb.slice<-reactiveVal(1) ##nb of slice for saving it
-fileisupload.avoidload<-reactiveVal() ## add for 1.9
-
-####correctif showmodal add 08/2026
+  fileisupload.avoidload<-reactiveVal() ## add for 1.9
+  df_2 <- reactiveVal(NULL)
+  # update for V2.0.0
+  selected_ids <- reactiveVal(numeric(0)) 
+  
+####correct showmodal add 08/2026
 header_value <- reactiveVal(TRUE) 
 set_dec_value <- reactiveVal(TRUE) 
 digit_number_value <- reactiveVal(11)
@@ -84,27 +95,22 @@ observe({ if (!is.null(input$header)) { header_value(input$header) }
   if (!is.null(input$digit.number)) { digit_number_value(input$digit.number) } })
 
 observeEvent(input$chr_setting, {
-  
   showModal(
     modalDialog(
-      
       title = tags$h4(
         style = "color: red;",
         "Options for loading file"
       ),
-      
       checkboxInput(
         inputId = "header",
         label = "Header",
         value = header_value()
       ),
-      
       checkboxInput(
         inputId = "set.dec",
         label = "Check this option to automatically correct for the presence of comma in decimal numbers",
         value = set_dec_value()
       ),
-      
       numericInput(
         inputId = "digit.number",
         label = "To control the number of significant digit",
@@ -113,22 +119,18 @@ observeEvent(input$chr_setting, {
         step = 1,
         max = 30
       ),
-      
       size = "l",
       easyClose = TRUE,
       footer = modalButton("Close"),
-      
       tags$style(HTML("
           .modal-dialog {
             width: 1200px;
             max-width: 95%;
           }
-          
           .modal-backdrop {
             display: none !important;
             z-index: 1040 !important;
           }
-          
           .modal-content {
             margin: 2px auto;
             z-index: 1100 !important;
@@ -140,8 +142,7 @@ observeEvent(input$chr_setting, {
 })
 
 
-    
-  ##### import data----
+##### import data----
   df<-reactiveValues( #creation df 
     df=NULL) # end reactivevalues
   
@@ -186,14 +187,18 @@ observeEvent(input$chr_setting, {
   observeEvent(!is.null(fileisupload()), { ## add two necessary columns for the rest of manipulations, correct issues with comma and majuscule
     req(!is.null(fileisupload()))
      req(!is.null(fileisupload.avoidload())) #add for 1.9
+     
     null<-"0"
     shapeX<-shape_all()
     df$df<-df$df2[,!sapply(df$df2, function(x) is.logical(x))] ##remove column without data
+
     if (set_dec_value() == TRUE){
       df$df[] <- apply(df$df,2,function (x) stringr::str_replace_all(x,",","."))
     } else{}
+
     if(!is.null(df$df[sapply(df$df, function(x) !is.numeric(x))])) {
       df$df[sapply(df$df, function(x) !is.numeric(x))] <- mutate_all(df$df[sapply(df$df, function(x) !is.numeric(x))], .funs=stringr::str_to_lower)}
+    
     text<-""
     df$df<-cbind(shapeX,text,null,df$df)
     df$df[is.na(df$df)] <- ""  ### add to 1.8.x                                                                            
@@ -375,133 +380,6 @@ observeEvent(input$chr_setting, {
     }
   }
   
-  #function for orthopho import from Rstoolbox
-  .toRaster <- function(x) {
-    if (inherits(x, "SpatRaster")) {
-      return(stack(x))
-    } else {
-      return(x)
-    }
-  }
-  
-  .numBand <- function(raster, ...){
-    bands <- list(...)
-    lapply(bands, function(band) if(is.character(band)) which(names(raster) == band) else band ) 
-  }
-  ggRGB<-function(img, r = 3, g = 2, b = 1, scale, maxpixels = 5e+05, 
-                  stretch = "none", ext = NULL, limits = NULL, clipValues = "limits", 
-                  quantiles = c(0.02, 0.98), ggObj = TRUE, ggLayer = FALSE, 
-                  alpha = 1, coord_equal = TRUE, geom_raster = FALSE, nullValue = 0) 
-  {
-    img <- .toRaster(img)
-    verbose <- getOption("RStoolbox.verbose")
-    annotation <- !geom_raster
-    rgb <- unlist(.numBand(raster = img, r, g, b))
-    nComps <- length(rgb)
-    if (inherits(img, "RasterLayer")) 
-      img <- brick(img)
-    rr <- sampleRegular(img[[rgb]], maxpixels, ext = ext, asRaster = TRUE)
-    RGB <- getValues(rr)
-    if (!is.matrix(RGB)) 
-      RGB <- as.matrix(RGB)
-    if (!is.null(limits)) {
-      if (!is.matrix(limits)) {
-        limits <- matrix(limits, ncol = 2, nrow = nComps, 
-                         byrow = TRUE)
-      }
-      if (!is.matrix(clipValues)) {
-        if (!anyNA(clipValues) && clipValues[1] == "limits") {
-          clipValues <- limits
-        }
-        else {
-          clipValues <- matrix(clipValues, ncol = 2, nrow = nComps, 
-                               byrow = TRUE)
-        }
-      }
-      for (i in 1:nComps) {
-        if (verbose) {
-          message("Number of pixels clipped in ", 
-                  c("red", "green", "blue")[i], 
-                  " band:\n", "below limit: ", sum(RGB[, 
-                                                       i] < limits[i, 1], na.rm = TRUE), " | above limit: ", 
-                  sum(RGB[, i] > limits[i, 2], na.rm = TRUE))
-        }
-        RGB[RGB[, i] < limits[i, 1], i] <- clipValues[i, 
-                                                      1]
-        RGB[RGB[, i] > limits[i, 2], i] <- clipValues[i, 
-                                                      2]
-      }
-    }
-    rangeRGB <- range(RGB, na.rm = TRUE)
-    if (missing("scale")) {
-      scale <- rangeRGB[2]
-    }
-    if (rangeRGB[1] < 0) {
-      RGB <- RGB - rangeRGB[1]
-      scale <- scale - rangeRGB[1]
-      rangeRGB <- rangeRGB - rangeRGB[1]
-    }
-    if (scale < rangeRGB[2]) {
-      warning("Scale < max value. Resetting scale to max.", 
-              call. = FALSE)
-      scale <- rangeRGB[2]
-    }
-    RGB <- na.omit(RGB)
-    if (stretch != "none") {
-      stretch <- tolower(stretch)
-      for (i in seq_along(rgb)) {
-        RGB[, i] <- .stretch(RGB[, i], method = stretch, 
-                             quantiles = quantiles, band = i)
-      }
-      scale <- 1
-    }
-    naind <- as.vector(attr(RGB, "na.action"))
-    nullbands <- sapply(list(r, g, b), is.null)
-    if (any(nullbands)) {
-      RGBm <- matrix(nullValue, ncol = 3, nrow = NROW(RGB))
-      RGBm[, !nullbands] <- RGB
-      RGB <- RGBm
-    }
-    if (!is.null(naind)) {
-      z <- rep(NA, times = ncell(rr))
-      z[-naind] <- rgb(RGB[, 1], RGB[, 2], RGB[, 3], max = scale, 
-                       alpha = alpha * scale)
-    }
-    else {
-      z <- rgb(RGB[, 1], RGB[, 2], RGB[, 3], max = scale, alpha = alpha * 
-                 scale)
-    }
-    df_raster <- data.frame(coordinates(rr), fill = z, stringsAsFactors = FALSE)
-    x <- y <- fill <- NULL
-    if (ggObj) {
-      exe <- as.vector(extent(rr))
-      df <- data.frame(x = exe[1:2], y = exe[3:4])
-      if (annotation) {
-        dz <- matrix(z, nrow = nrow(rr), ncol = ncol(rr), 
-                     byrow = TRUE)
-        p <- ggplot2::annotation_raster(raster = dz, xmin = exe[1], 
-                                        xmax = exe[2], ymin = exe[3], ymax = exe[4], 
-                                        interpolate = FALSE)
-        if (!ggLayer) {
-          p <- ggplot2::ggplot() + p + ggplot2::geom_blank(data = df, aes(x = x, 
-                                                                          y = y))
-        }
-      }
-      else {
-        p <- ggplot2::geom_raster(data = df_raster, aes(x = x, y = y, 
-                                                        fill = fill), alpha = alpha)
-        if (!ggLayer) {
-          p <- ggplot2::ggplot() + p + ggplot2::scale_fill_identity()
-        }
-      }
-      if (coord_equal & !ggLayer) 
-        p <- p + ggplot2::coord_equal()
-      return(p)
-    }
-    else {
-      return(df_raster)
-    }
-  }
   # functions for 2D slice
   plotUI <- function(id) {
     ns <- NS(id)
@@ -716,73 +594,81 @@ observeEvent(input$chr_setting, {
   var.function<-function(var.xyz){
     var<-setXX()
     var2<-setYY() 
+    varZ<-setZZ()
     axis.var.name<-nameX()
     axis.var2.name<-nameY()
     Xtickmarks.size<-Xtickmarks.size()
     Ytickmarks.size<-Ytickmarks.size()
+    Ztickmarks.size<-Ztickmarks.size()
     Xminorbreaks<-Xminorbreaks()
     Yminorbreaks<-Yminorbreaks()
+    Zminorbreaks<-Zminorbreaks()
+    axis.var3.name<-nameZ()
     if (var.xyz != "xy"){
       switch(var.xyz,
-             # xy={
-             #   var<-setXX()
-             #   var2<-setYY() 
-             #   axis.var.name<-nameX()
-             #   axis.var2.name<-nameY()
-             #   Xtickmarks.size<-Xtickmarks.size()
-             #   Ytickmarks.size<-Ytickmarks.size()
-             #   Xminorbreaks<-Xminorbreaks()
-             #   Yminorbreaks<-Yminorbreaks()
-             # },
              yz={ var<-setYY()
              var2<-setZZ()
+             varZ<-setXX()
              axis.var.name<-nameY()
              axis.var2.name<-nameZ()
+             axis.var3.name<-nameX()
              Xtickmarks.size<-Ytickmarks.size()
              Ytickmarks.size<-Ztickmarks.size()
+             Ztickmarks.size<-Xtickmarks.size()
              Xminorbreaks<-Yminorbreaks()
              Yminorbreaks<-Zminorbreaks()
+             Zminorbreaks<-Xminorbreaks()
              },
              xz={   var<-setXX()
              var2<-setZZ()
+             varZ<-setYY()
              axis.var.name<-nameX()
              axis.var2.name<-nameZ()
+             axis.var3.name<-nameY()
              Xtickmarks.size<-Xtickmarks.size()
              Ytickmarks.size<-Ztickmarks.size()
+             Ztickmarks.size<-Ytickmarks.size()
              Xminorbreaks<-Xminorbreaks()
              Yminorbreaks<-Zminorbreaks()
+             Zminorbreaks<-Yminorbreaks()
              },
              yx={ var<-setYY()
              var2<-setXX()
+             varZ<-setZZ()
              axis.var.name<-nameY()
              axis.var2.name<-nameX()
+             axis.var3.name<-nameZ()
              Xtickmarks.size<-Ytickmarks.size()
              Ytickmarks.size<-Xtickmarks.size()
+             Ztickmarks.size<-Ztickmarks.size()
              Xminorbreaks<-Yminorbreaks()
              Yminorbreaks<-Xminorbreaks()
+             Zminorbreaks<-Zminorbreaks()
+
              }
       ) } else {} # enf of if
-    
-    new.list.parameter<-list(var,var2,axis.var.name,axis.var2.name,Xtickmarks.size,Ytickmarks.size,Xminorbreaks,Yminorbreaks)
+
+    store$varX <- var
+    store$varY <- var2
+    store$varZ <- varZ
+    store$Xtickmarks.size<-Xtickmarks.size
+    store$Ytickmarks.size<-Ytickmarks.size
+    store$Ztickmarks.size<-Ztickmarks.size
+    store$Xminorbreaks<-Xminorbreaks
+    store$Yminorbreaks<-Yminorbreaks
+    store$Zminorbreaks<-Zminorbreaks
+
+    store$name.var1<-paste0(axis.var.name,axis.var3.name)
+    store$name.var2<-paste0(axis.var2.name,axis.var3.name)
+    store$name.var3<-paste0(axis.var2.name,axis.var.name)
+    store$name.axis.1<-axis.var.name
+    store$name.axis.2<-axis.var2.name
+    store$name.axis.3<-axis.var3.name
+    store$save<-var.xyz
+    new.list.parameter<-list(var,var2,axis.var.name,axis.var2.name,Xtickmarks.size,Ytickmarks.size,Xminorbreaks,Yminorbreaks,varZ,axis.var.name,axis.var2.name,axis.var3.name,Ztickmarks.size,Zminorbreaks)
     return(new.list.parameter)
   }
-  # # function for minor grid
-  # minor.grid.info.function<-function(var.xyz,var,var2,Xminorbreaks,Xtickmarks.size,Yminorbreaks,Ytickmarks.size){
-  #   Xtval<-seq(floor(min(var.xyz[[var]])),max(var.xyz[[var]]), Xminorbreaks)
-  #   Xttxt <- rep("",length(Xtval)) 
-  #   Xttxt[seq(1,length(Xtval),Xtickmarks.size)]<-as.character(Xtval)[seq(1,length(Xtval),Xtickmarks.size)]
-  #   
-  #   Ytval<-seq(floor(min(var.xyz[[var2]])),max(var.xyz[[var2]]), Yminorbreaks)
-  #   Yttxt <- rep("",length(Ytval)) 
-  #   Yttxt[seq(1,length(Ytval),Ytickmarks.size)]<-as.character(Ytval)[seq(1,length(Ytval),Ytickmarks.size)]
-  #   
-  #   Ztval<-seq(floor(min(var.xyz[[setZZ()]])),max(var.xyz[[setZZ()]]), Zminorbreaks())
-  #   Zttxt <- rep("",length(Ztval)) 
-  #   Zttxt[seq(1,length(Ztval),Ztickmarks.size())]<-as.character(Ztval)[seq(1,length(Ztval),Ztickmarks.size())]
-  # 
-  # minor.grid.info<-list(Xtval,Xttxt,Ytval,Yttxt,Ztval,Zttxt)
-  # return(minor.grid.info)
-  # }
+  
   
   # function for rotated 2DPlot ----
   rotated.table<-reactive({
@@ -1267,34 +1153,34 @@ observeEvent(input$chr_setting, {
   ##### ortho slide import ----
   observe({                                  ### ortho xy
     req(input$file2)
-    df$ortho.2<-stack(input$file2$datapath) 
+    df$ortho.2<-terra::rast(input$file2$datapath) 
   })
   output$liste.ortho.file2=renderUI({
     req(input$file2)
     renderPlot({                                                    
-      s2<-stack(input$file2$datapath)
-      plotRGB(s2,maxpixels=50000)
+      s2<-terra::rast(input$file2$datapath)
+      terra::plotRGB(s2,maxpixels=50000)
     })
   })
   output$liste.ortho.file3=renderUI({
     req(input$file3)
     renderPlot({
-      s3<-stack(input$file3$datapath)
-      plotRGB(s3,maxpixels=50000)
+      s3<-terra::rast(input$file3$datapath)
+      terra::plotRGB(s3,maxpixels=50000)
     })
   })
   output$liste.ortho.file4=renderUI({
     req(input$file4)
     renderPlot({
-      s4<-stack(input$file4$datapath)
-      plotRGB(s4,maxpixels=50000)
+      s4<-terra::rast(input$file4$datapath)
+      terra::plotRGB(s4,maxpixels=50000)
     })
   })
   output$liste.ortho.file5=renderUI({
     req(input$file5)
     renderPlot({
-      s5<-stack(input$file5$datapath)
-      plotRGB(s5,maxpixels=50000)
+      s5<-terra::rast(input$file5$datapath)
+      terra::plotRGB(s5,maxpixels=50000)
     })
   })
   
@@ -1443,9 +1329,6 @@ observeEvent(input$chr_setting, {
       choices = choices,
       selected = selected
     )
-    # selectInput("setshape2.2", h5("Select variable modality for secondary shape"),
-    #             choices = levels(as.factor(df$Sh2[,input$setshape2.1])),selected = factor(df$Sh2[,input$shape2.var1]))
-    
 
   })
   
@@ -1773,7 +1656,8 @@ observeEvent(input$chr_setting, {
   
   output$brushed<- renderPrint({
     g1 <- df$df
-    d <- event_data('plotly_selected')
+    d <- event_data('plotly_selecting', source="xy")
+    print(d)
     if (is.null(d)) return()
     if (length(d)==0) {
       vv(NULL)
@@ -1789,6 +1673,120 @@ observeEvent(input$chr_setting, {
     vv(vv)
     vv
   })  
+  
+  ### Plotly selection management ----
+  observeEvent(
+    input$plotly_selected,{
+      ids <- input$plotly_selected
+      if (
+        is.null(ids)
+      ) {
+        ids <- numeric(0) }
+      ids <- as.numeric(ids)
+      ids <- ids[
+        !is.na(ids)
+      ]
+      selected_ids(
+        ids
+      )
+    },
+    ignoreInit = FALSE
+  )
+  observeEvent(
+    event_data("plotly_selected", source = "xy"),
+    {
+      sel <- event_data(
+        "plotly_selected",
+        source = "xy"
+      )
+      if (!is.null(sel) && 
+          is.data.frame(sel) &&
+          nrow(sel) > 0 &&
+          "customdata" %in% names(sel)
+      ) {
+        store$selected_ids <- unique(
+          sel$customdata
+        )
+      } else {
+        store$selected_ids <- character(0)
+      }
+    },
+    ignoreInit = TRUE
+  )
+  
+  observeEvent(
+    event_data("plotly_click", source = "xy"),
+    {
+      sel <- event_data(
+        "plotly_click",
+        source = "xy"
+      )
+      if (!is.null(sel) && nrow(sel) > 0) {
+        store$selected_ids <- unique(
+          sel$customdata
+        )
+      }
+    },
+    ignoreInit = TRUE
+  )
+  ### a modif dans xy pour que ca change 
+  observeEvent(
+    event_data("plotly_selected", source = "xz_popup"),
+    {
+      
+      sel <- event_data(
+        "plotly_selected",
+        source = "xz_popup"
+      )
+      
+      if (!is.null(sel) && nrow(sel) > 0) {
+        
+        store$selected_ids <- unique(sel$customdata)
+        
+      } else {
+        
+        store$selected_ids <- character(0)
+        
+      }
+    }
+  )
+  
+  observeEvent(
+    event_data("plotly_click", source = "xz"),
+    {
+      
+      sel <- event_data(
+        "plotly_click",
+        source = "xy"
+      )
+      
+      if (!is.null(sel) && nrow(sel) > 0) {
+        
+        store$selected_ids <- unique(
+          sel$customdata
+        )
+        
+      }
+      
+    },
+    ignoreInit = TRUE
+  )
+
+  selected_ids_reactive <- reactivePoll(
+    100,
+    session,
+    checkFunc = function() {
+      ids <- store$selected_ids
+      if (is.null(ids)) {
+        return("")
+      }
+      paste(ids, collapse = "|")
+      
+    },
+    valueFunc = function() {
+      store$selected_ids
+    }
+  )
   
   observeEvent(input$Change2, {
     showModal(dataModal())
@@ -1817,6 +1815,20 @@ observeEvent(input$chr_setting, {
   observeEvent(input$go.ng2, { 
     req(!is.null(input$liste.newgroup3))
     df$df[,input$liste.newgroup.rename][df$df[,input$liste.newgroup.rename]==input$liste.newgroup3]<-input$text.new.group2
+  })
+  
+  #### name of supplementary button panel 
+  observeEvent(input$var1,{ ## bug dans la réactivité. don't kwno why
+    updateActionButton(
+      session,
+      "open_xz",
+      label = paste0(store$name.var1," panel")
+    )
+    updateActionButton(
+      session,
+      "open_yz",
+      label = paste0(store$name.var2," panel")
+    )
   })
   
   
@@ -2006,9 +2018,6 @@ observeEvent(input$chr_setting, {
     myvaluesx<-unlist(myvaluesx())
     
     size.scale <- size.scale()
-    # if (nrow(df.sub3)>0){
-    #   df.sub$point.size[!((df.sub[,input$setx] %in% df.sub3[,input$setx]) & (df.sub[,input$sety] %in% df.sub3[,input$sety]) & (df.sub[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-    # } 
     if (nrow(df.sub3)>0 && input$setID != "null"){
       df.sub$point.size[!((df.sub[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
     }
@@ -2096,33 +2105,43 @@ observeEvent(input$chr_setting, {
     p
   })
   
+ 
   
   ##### 2D plot ---- 
+
+  observeEvent(input$open_xz, {
+    shinyjs::toggle(
+      id = "window_xz",
+      condition = TRUE
+    )
+  })
+  
   ##advanced plot ----
   output$plot2Dbox <- renderUI({
     plotlyOutput("sectionYplot", height = height.size())
   })
   
   output$sectionYplot <- renderPlotly({
-    plot2D.react()
-    session_store$plt2D<- plot2D.react()
+    p <- plot2D.react()
+    session_store$plt2D <- p
+    p
   })
+
   plot2D.react<-reactive({ 
     input$run_button
     min.size2<-minsize()
     orthofile<-NULL
+
     if (input$var.ortho == "yes" ){
       orthofile <- switch(input$var1,
-                          xy = if(!is.null(input$file2)) {stack(input$file2$datapath)},
-                          yx = if(!is.null(input$file5)) {stack(input$file5$datapath)},
-                          xz = if(!is.null(input$file3)) {stack(input$file3$datapath)},
-                          yz = if(!is.null(input$file4)) {stack(input$file4$datapath)})
+                          xy = if(!is.null(input$file2)) {terra::rast(input$file2$datapath)},
+                          yx = if(!is.null(input$file5)) {terra::rast(input$file5$datapath)},
+                          xz = if(!is.null(input$file3)) {terra::rast(input$file3$datapath)},
+                          yz = if(!is.null(input$file4)) {terra::rast(input$file4$datapath)})
     }
     
     height.size2<-height.size()
     width.size2 <- width.size()
-    
-    
     
     list.parameter.info<-var.function(input$var1)
     var<-list.parameter.info[[1]]
@@ -2134,41 +2153,91 @@ observeEvent(input$chr_setting, {
     Xminorbreaks<-list.parameter.info[[7]]
     Yminorbreaks<-list.parameter.info[[8]]
     
-    
     isolate ({
       df.sub2<-df.sub() 
-      # minor.grid.info<-minor.grid.info.function(df.sub2,var,var2,Xminorbreaks,Xtickmarks.size,Yminorbreaks,Ytickmarks.size)
-      
       df.sub3<-df.sub.minpoint()
       myvaluesx<-unlist(myvaluesx())
       size.scale <- size.scale()
-        
-     size.scale <-size.scale*3  # correctif taille ggplotly
+
+      size.scale <-size.scale*3  # correctif taille ggplotly
       min.size2<-min.size2*3
-        
-      # if (nrow(df.sub3)>0){
-      #   df.sub2$point.size2[!((df.sub2[,input$setx] %in% df.sub3[,input$setx]) & (df.sub2[,input$sety] %in% df.sub3[,input$sety]) & (df.sub2[,input$setz] %in% df.sub3[,input$setz]))]<-min.size2
-      #}
+
       if (nrow(df.sub3)>0 && input$setID != "null"){
         df.sub2$point.size2[!((df.sub2[,input$setID] %in% df.sub3[,input$setID]))]<-min.size2
       }
       shapeX<-df.sub2$shapeX
       shape.level<-levels(as.factor(shapeX))
       
+    #add V2X
+      df.sub2$ID_plotly <- df.sub2[,input$setID]
+              ids <-selected_ids()
+              if (
+                length(ids) == 0
+              ) {
+                df.sub2$selected <- FALSE
+              } else {
+                df.sub2$selected <-
+                  df.sub2$ID_plotly %in% ids
+              }
+   
+      # df.sub2$point.size <-
+      #   ifelse(
+      #     df.sub2$selected,
+      #     14,
+      #     7
+      #   )
+      # df.sub2$point.opacity <-
+      #   ifelse(
+      #     df.sub2$selected,
+      #     1,
+      #     0.35
+      #   )
+              
+       store$data2D <- df.sub2
+       store$min.size2<-min.size2
+       store$size.scale<-size.scale
+       store$myvaluesx<-myvaluesx
+       store$shape.level<-shape.level
+      
+      
+      assign("df.sub2",df.sub2,envir = .GlobalEnv)
       if (is.null(orthofile)){
-        p<- plot_ly(height = height.size(),
+        p<- plot_ly( data = df.sub2,
+                     source = "xy",
+                     height = height.size(),
                     width = width.size())
-        p<- add_trace(p, x = ~df.sub2[[var]], y = ~df.sub2[[var2]],
+        p<- add_trace(p, x = ~.data[[var]], y = ~.data[[var2]],
                       type="scatter",
-                      color = ~df.sub2$layer2,
+                      mode = "markers", 
+                      # customdata = ~ID,
+                      customdata = ~ID_plotly,
+                      color = ~layer2,
                       colors = myvaluesx,
-                      size  = ~df.sub2$point.size2,
+                      size  = ~point.size2,
                       sizes = c(min.size2,size.scale),
-                      mode   = 'markers',
                       fill = ~'',
-                      symbol = ~df.sub2$shapeX, 
+                      symbol = ~shapeX, 
                       symbols = shape.level,
-                      text=df.sub2$text,                                   
+                      text=df.sub2$text, 
+                      selected = list(
+                        marker = list(
+                          opacity = 1,
+                          line = list(
+                            color = "black",
+                            width = 2.5
+                          )
+                        )
+                      ),
+                      
+                      unselected = list(
+                        marker = list(
+                          opacity = 0.8
+                        )
+                      ),
+                      # marker = list( #ajout V2X
+                      #   size = ~point.size,
+                      #   opacity = ~point.opacity
+                      # ),
                       hovertemplate = paste('<b>X</b>: %{x:.4}',
                                             '<br><b>Y</b>: %{y}',
                                             '<b>%{text}</b>'))
@@ -2225,19 +2294,34 @@ observeEvent(input$chr_setting, {
                                         titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
                            
                            dragmode = "select")%>%
-          event_register("plotly_selecting")
+          event_register("plotly_selecting") %>%
+          event_register("plotly_click") %>%
+           event_register("plotly_selected")
         
       } else {
         # to correct the color for ggplot2
         myvaluesx2<-myvaluesx[levels(as.factor(df.sub()$layer2)) %in% levels(as.factor(droplevels(df.sub2$layer2)))]
+        df_raster <- as.data.frame(orthofile, xy = TRUE, na.rm = FALSE)
+        df_raster$rgb <- rgb(
+          df_raster$red,
+          df_raster$green,
+          df_raster$blue,
+          maxColorValue = 255
+        )
         
         p <- ggplot2::ggplot()+
-          ggRGB(img = orthofile,
-                r = 1,
-                g = 2,
-                b = 3,
-                maxpixels =500000,
-                ggLayer = T)+
+          # ggRGB(img = orthofile,
+          #       r = 1,
+          #       g = 2,
+          #       b = 3,
+          #       maxpixels =50000,
+          #       ggLayer = T)+
+          geom_raster(
+            data = df_raster,
+            aes(x = x, y = y, fill = rgb)
+          ) +
+          scale_fill_identity() +
+        
           ggplot2::geom_point(data = df.sub2,
                               aes(x = .data[[var]],
                                   y = .data[[var2]],
@@ -2295,12 +2379,333 @@ observeEvent(input$chr_setting, {
                  format = "svg")
         )
       
+      p
     }) #end isolate
     
   }) #plot2D.react
 
+
+  output$plot_xz <- renderPlotly({ #ajout V2X a modif
+    dat <- store$data2D
+    req(!is.null(dat))
+    ids <- selected_ids_reactive()
+    dat$selected <-
+      as.character(dat$ID_plotly) %in%
+      as.character(ids)
+    selected_idx <- which(
+      as.character(dat$ID_plotly) %in% as.character(ids)
+    )
+    dat$point.opacity <-
+      ifelse(
+        dat$selected,
+        1,
+        0.75
+      )
+    
+    if(length(ids)==0){
+      dat$point.opacity <-
+        ifelse(dat$selected,1,1)
+    }
+    
+    var<- store$varX 
+    varZ<-store$varZ 
+
+    Xtickmarks.size<-store$Xtickmarks.size
+    Ytickmarks.size<-store$Ztickmarks.size
+    Xminorbreaks<-store$Xminorbreaks
+    Yminorbreaks<-store$Zminorbreaks
+    axis.var.name<-store$name.axis.1
+    axis.var2.name<-store$name.axis.3
+    
+    myvaluesx<-store$myvaluesx
+    min.size2<-store$min.size2*3
+    size.scale<-store$size.scale*3
+
+    shape.level<-store$shape.level
+    dat$plot_size <- dat$point.size2 * 3
+    dat_not_selected <- dat[!dat$selected, , drop = FALSE]
+    dat_selected <- dat[dat$selected, , drop = FALSE]
+
+    p<- plot_ly( data = dat_not_selected,
+                 height = height.size(),
+                 width = width.size())
+    p<- add_trace(p, x = ~.data[[var]], y = ~.data[[varZ]],
+                  type="scatter",
+                  mode = "markers", 
+                  customdata = ~ID_plotly,
+                  color = ~layer2,
+                  colors = myvaluesx,
+                  size  = ~plot_size,
+                  sizes = c(min.size2,size.scale),
+                  symbol = ~shapeX, 
+                  symbols = shape.level,
+                  text=~text, 
+                  marker = list( #ajout V2X
+                    #color="black",
+                    #size = dat$point.size,
+                    # sizes = c(1,3),
+                    # opacity = dat$point.opacity
+                    opacity = ~point.opacity
+                  ),
+                  hovertemplate = paste('<b>X</b>: %{x:.4}',
+                                        '<br><b>Y</b>: %{y}',
+                                        '<b>%{text}</b>'))
+    
+    p <- add_trace(
+      p,
+      data = dat_selected,
+      x = ~.data[[var]],
+      y = ~.data[[varZ]],
+      type = "scatter",
+      mode = "markers",
+      customdata = ~ID_plotly,
+      color = ~layer2,
+      colors = myvaluesx,
+      size = ~plot_size,
+      symbol = ~shapeX,
+      symbols = shape.level,
+      text = ~text,
+      marker = list(
+        opacity = 1,
+        line = list(
+          color = "black",
+          width = 2.5
+        )
+      )
+    )
+    
+    
+    # refit a voir plus tard
+    # if (input$var.fit.table == "yes" & !is.null(data.fit.3D())){
+    #   colorvalues<-unlist(colorvalues())
+    #   data.fit.3D<-data.fit.3D() 
+    #   
+    #   data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
+    #   
+    #   data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
+    #   
+    #   if (length(levels(as.factor(data.fit.3D$color.fit)))>1){
+    #     for (i in 1:length (levels(as.factor(data.fit.3D[,input$setREM])))) {
+    #       data.fit.3D.2<-data.fit.3D[data.fit.3D[,input$setREM]==levels(as.factor(data.fit.3D[,input$setREM]))[i],]
+    #       if (length(levels(as.factor(data.fit.3D.2[["color.fit"]])))>1){
+    #         data.fit.3D$color.fit[((data.fit.3D[,input$setx] %in% data.fit.3D.2[,input$setx]) & (data.fit.3D[,input$sety] %in% data.fit.3D.2[,input$sety]) & (data.fit.3D[,input$setz] %in% data.fit.3D.2[,input$setz]))]<-c("#000000") # Black color for refit variable mixing 
+    #       }}} #end of if
+    #   
+    #   data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
+    #   
+    #   p<-add_trace(p,x = ~data.fit.3D[[var]], y = ~data.fit.3D[[var2]], split = ~data.fit.3D[,input$setREM],   
+    #                line = list(color=~data.fit.3D$color.fit,width=input$w2),
+    #                type = "scatter", mode = "lines", showlegend = legendplotlyfig(), inherit = F)
+    #   
+    # } # end of refit 
+    # 
+    Xtval<-seq(floor(min(dat[[var]])),max(dat[[var]]),Xminorbreaks)
+    Xttxt <- rep("",length(Xtval))
+    Xttxt[seq(1,length(Xtval),Xtickmarks.size)]<-as.character(Xtval)[seq(1,length(Xtval),Xtickmarks.size)]
+
+    Ytval<-seq(floor(min(dat[[varZ]])),max(dat[[varZ]]), Yminorbreaks)
+    Yttxt <- rep("",length(Ytval))
+    Yttxt[seq(1,length(Ytval),Ytickmarks.size)]<-as.character(Ytval)[seq(1,length(Ytval),Ytickmarks.size)]
+
+
+    p <-  p %>% layout(showlegend = legendplotlyfig(),
+                       scene = list( aspectmode = "manual",
+                                     aspectratio=list(x=ratiox(),y=ratioy()),
+                                     autosize=FALSE),
+                       xaxis = list(title = paste(axis.var.name),
+                                    dtick = Xtickmarks.size,
+                                    tick0 = floor(min(dat[[var]])),
+                                    tickvals=Xtval,
+                                    ticktext=Xttxt,
+                                    titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+                       yaxis = list(title = paste(axis.var2.name),
+                                    dtick = Ytickmarks.size,
+                                    tick0 = floor(min(dat[[varZ]])),
+                                    tickvals=Ytval,
+                                    ticktext=Yttxt,
+                                    titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+
+                       dragmode = "select")
+
+  })
+  
+  
+  output$plot_yz <- renderPlotly({ #ajout V2X a modif
+    
+    dat <- store$data2D
+    req(!is.null(dat))
+    ids <- selected_ids_reactive()
+
+    dat$selected <-
+      as.character(dat$ID_plotly) %in%
+      as.character(ids)
+    
+    selected_idx <- which(
+      as.character(dat$ID_plotly) %in% as.character(ids)
+    )
+    dat$point.opacity <-
+      ifelse(
+        dat$selected,
+        1,
+        0.75
+      )
+
+    if(length(ids)==0){
+      dat$point.opacity <-
+        ifelse(
+          dat$selected,
+          1,
+          1
+        )
+    }
+    
+    var<- store$varY 
+    varZ<-store$varZ 
+    
+    Xtickmarks.size<-store$Ytickmarks.size
+    Ytickmarks.size<-store$Ztickmarks.size
+    Xminorbreaks<-store$Yminorbreaks
+    Yminorbreaks<-store$Zminorbreaks
+    axis.var.name<-store$name.axis.2
+    axis.var2.name<-store$name.axis.3
+
+
+    if (identical(var, "z")) { # correction to avoid Z in x position
+      tmp <- var
+      var <- varZ
+      varZ <- tmp
+      
+      tmp <- Xtickmarks.size
+      Xtickmarks.size <- Ytickmarks.size
+      Ytickmarks.size <- tmp
+      
+      tmp <- Xminorbreaks
+      Xminorbreaks <- Yminorbreaks
+      Yminorbreaks <- tmp
+      
+      tmp <- axis.var.name
+      axis.var.name <- axis.var2.name
+      axis.var2.name <- tmp
+    }
+    min.size2<-store$min.size2*3
+    size.scale<-store$size.scale*3
+    
+    myvaluesx<-store$myvaluesx
+
+   
+    shape.level<-store$shape.level
+    
+    dat$plot_size <- dat$point.size2 * 3
+    
+    dat_not_selected <- dat[!dat$selected, , drop = FALSE]
+    dat_selected <- dat[dat$selected, , drop = FALSE]
+    
+    p<- plot_ly( data = dat_not_selected,
+                 height = height.size(),
+                 width = width.size())
+    p<- add_trace(p, x = ~.data[[var]], y = ~.data[[varZ]],
+                  type="scatter",
+                  mode = "markers", 
+                  customdata = ~ID_plotly,
+                  color = ~layer2,
+                  colors = myvaluesx,
+                  size  = ~plot_size,
+                  sizes = c(min.size2,size.scale),
+                  symbol = ~shapeX, 
+                  symbols = shape.level,
+                  text=~text, 
+                  marker = list( #ajout V2X
+                    #color="black",
+                    #size = dat$point.size,
+                    # sizes = c(1,3),
+                    # opacity = dat$point.opacity
+                    opacity = ~point.opacity
+                  ),
+                  
+                  hovertemplate = paste('<b>X</b>: %{x:.4}',
+                                        '<br><b>Y</b>: %{y}',
+                                        '<b>%{text}</b>'))
+    p <- add_trace(
+      p,
+      data = dat_selected,
+      x = ~.data[[var]],
+      y = ~.data[[varZ]],
+      type = "scatter",
+      mode = "markers",
+      customdata = ~ID_plotly,
+      color = ~layer2,
+      colors = myvaluesx,
+      size = ~plot_size,
+      symbol = ~shapeX,
+      symbols = shape.level,
+      text = ~text,
+      marker = list(
+        opacity = 1,
+        line = list(
+          color = "black",
+          width = 2.5
+        )
+      )
+    )
+    
+   
+    # refit a voir plus tard
+    # if (input$var.fit.table == "yes" & !is.null(data.fit.3D())){
+    #   colorvalues<-unlist(colorvalues())
+    #   data.fit.3D<-data.fit.3D() 
+    #   
+    #   data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
+    #   
+    #   data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
+    #   
+    #   if (length(levels(as.factor(data.fit.3D$color.fit)))>1){
+    #     for (i in 1:length (levels(as.factor(data.fit.3D[,input$setREM])))) {
+    #       data.fit.3D.2<-data.fit.3D[data.fit.3D[,input$setREM]==levels(as.factor(data.fit.3D[,input$setREM]))[i],]
+    #       if (length(levels(as.factor(data.fit.3D.2[["color.fit"]])))>1){
+    #         data.fit.3D$color.fit[((data.fit.3D[,input$setx] %in% data.fit.3D.2[,input$setx]) & (data.fit.3D[,input$sety] %in% data.fit.3D.2[,input$sety]) & (data.fit.3D[,input$setz] %in% data.fit.3D.2[,input$setz]))]<-c("#000000") # Black color for refit variable mixing 
+    #       }}} #end of if
+    #   
+    #   data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
+    #   
+    #   p<-add_trace(p,x = ~data.fit.3D[[var]], y = ~data.fit.3D[[var2]], split = ~data.fit.3D[,input$setREM],   
+    #                line = list(color=~data.fit.3D$color.fit,width=input$w2),
+    #                type = "scatter", mode = "lines", showlegend = legendplotlyfig(), inherit = F)
+    #   
+    # } # end of refit 
+    # 
+    
+    Xtval<-seq(floor(min(dat[[var]])),max(dat[[var]]),Xminorbreaks)
+    Xttxt <- rep("",length(Xtval))
+    Xttxt[seq(1,length(Xtval),Xtickmarks.size)]<-as.character(Xtval)[seq(1,length(Xtval),Xtickmarks.size)]
+    
+    Ytval<-seq(floor(min(dat[[varZ]])),max(dat[[varZ]]), Yminorbreaks)
+    Yttxt <- rep("",length(Ytval))
+    Yttxt[seq(1,length(Ytval),Ytickmarks.size)]<-as.character(Ytval)[seq(1,length(Ytval),Ytickmarks.size)]
+    
+    
+    p <-  p %>% layout(showlegend = legendplotlyfig(),
+                       scene = list( aspectmode = "manual",
+                                     aspectratio=list(x=ratiox(),y=ratioy()),
+                                     autosize=FALSE),
+                       xaxis = list(title = paste(axis.var.name),
+                                    dtick = Xtickmarks.size,
+                                    tick0 = floor(min(dat[[var]])),
+                                    tickvals=Xtval,
+                                    ticktext=Xttxt,
+                                    titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+                       yaxis = list(title = paste(axis.var2.name),
+                                    dtick = Ytickmarks.size,
+                                    tick0 = floor(min(dat[[varZ]])),
+                                    tickvals=Ytval,
+                                    ticktext=Yttxt,
+                                    titlefont = list(size = font_size()), tickfont = list(size = font_tick())),
+                       
+                       dragmode = "select")
+
+  })
+  
 ## interactive stack bar mode ---- 
-  df_2 <- reactiveVal(NULL)
+
   observeEvent(input$chr_settingbp, {
     req(!is.null(vv()))
     req(input$setnature != "null")
@@ -2315,8 +2720,7 @@ observeEvent(input$chr_setting, {
         title = tags$h4(style = "color: red;","Bar plot of selected points per levels and nature"),
         easyClose = T,
         plotlyOutput("sectioninteractivebarplot")
-        
-        
+
       ))
   })
   
@@ -2342,6 +2746,7 @@ observeEvent(input$chr_setting, {
 
         
   ## simple 2D plot ----
+
   output$plot2Dbox.simple <- renderUI({
     plotOutput("sectionYplot.simple", height = height.size(), width = width.size())
   })
@@ -2355,11 +2760,12 @@ observeEvent(input$chr_setting, {
     orthofile<-NULL
     if (input$var.ortho.simple == "yes" ){
       orthofile <- switch(input$var1.simple,
-                          xy = if(!is.null(input$file2)) {stack(input$file2$datapath)},
-                          yx = if(!is.null(input$file5)) {stack(input$file5$datapath)},
-                          xz = if(!is.null(input$file3)) {stack(input$file3$datapath)},
-                          yz = if(!is.null(input$file4)) {stack(input$file4$datapath)})
-    }
+                          xy = if(!is.null(input$file2)) {terra::rast(input$file2$datapath)},
+                          yx = if(!is.null(input$file5)) {terra::rast(input$file5$datapath)},
+                          xz = if(!is.null(input$file3)) {terra::rast(input$file3$datapath)},
+                          yz = if(!is.null(input$file4)) {terra::rast(input$file4$datapath)})
+      terra::crs(orthofile) <- NA
+      }
     
     
     df.sub2<-df.sub() 
@@ -2394,13 +2800,14 @@ observeEvent(input$chr_setting, {
     p <- ggplot2::ggplot()
     if (!is.null(orthofile)){
       
-      p<-p + ggRGB(img = orthofile,
-                   r = 1,
-                   g = 2,
-                   b = 3,
-                   maxpixels =500000,
-                   ggLayer = T)
-    }   
+      # p<-p + ggRGB(img = orthofile,
+      #              r = 1,
+      #              g = 2,
+      #              b = 3,
+      #              maxpixels =500000,
+      #              ggLayer = T)
+      p<-p + geom_spatraster_rgb(data=orthofile)
+      }   
     
     p<- p + ggplot2::geom_point(data = df.sub2,
                                 aes(x = .data[[var]],
@@ -2596,10 +3003,10 @@ observeEvent(input$chr_setting, {
     orthofile<-NULL
     if (input$var.ortho2 == "yes" ){
       orthofile <- switch(input$var3,
-                          xy = if(!is.null(input$file2)) {stack(input$file2$datapath)},
-                          yx = if(!is.null(input$file5)) {stack(input$file5$datapath)},
-                          xz = if(!is.null(input$file3)) {stack(input$file3$datapath)},
-                          yz = if(!is.null(input$file4)) {stack(input$file4$datapath)}) }
+                          xy = if(!is.null(input$file2)) {terra::rast(input$file2$datapath)},
+                          yx = if(!is.null(input$file5)) {terra::rast(input$file5$datapath)},
+                          xz = if(!is.null(input$file3)) {terra::rast(input$file3$datapath)},
+                          yz = if(!is.null(input$file4)) {terra::rast(input$file4$datapath)}) }
     
     list.parameter.info<-var.function(input$var3)
     var<-list.parameter.info[[1]]
@@ -2654,12 +3061,14 @@ observeEvent(input$chr_setting, {
         ggplot2::coord_fixed(ratio.simple()) 
       # {if (input$ratio.to.coord)coord_fixed()}
       
-    } else { p <- ggplot2::ggplot()+ ggRGB(img = orthofile,
-                                           r = 1,
-                                           g = 2,
-                                           b = 3,
-                                           maxpixels =500000,
-                                           ggLayer = T) +
+    } else { p <- ggplot2::ggplot()+ 
+      # ggRGB(img = orthofile,
+      #                                      r = 1,
+      #                                      g = 2,
+      #                                      b = 3,
+      #                                      maxpixels =500000,
+      #                                      ggLayer = T) +
+      geom_spatraster_rgb(data=orthofile)+
       ggplot2::geom_point(df.sub4,mapping=aes(.data[[var]], .data[[var2]], color = density),alpha=transpar(), size=df.sub4$point.size2)+
       ggplot2::labs(x = nameaxis[1],y = nameaxis[2])
     }
