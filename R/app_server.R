@@ -87,10 +87,10 @@ app_server <- function(input, output, session) {
 header_value <- reactiveVal(TRUE) 
 set_dec_value <- reactiveVal(TRUE) 
 digit_number_value <- reactiveVal(11)
-      observeEvent(digit_number_value(), { 
-    digitnumber(digit_number_value())
-    base::options(digits=digitnumber())
-    })
+observeEvent(digit_number_value(), { 
+  digitnumber(digit_number_value())
+  base::options(digits=digitnumber())
+})
 observe({ if (!is.null(input$header)) { header_value(input$header) } 
   if (!is.null(input$set.dec)) { set_dec_value(input$set.dec) } 
   if (!is.null(input$digit.number)) { digit_number_value(input$digit.number) } })
@@ -1819,7 +1819,7 @@ observeEvent(input$chr_setting, {
   })
   
   #### name of supplementary button panel 
-  observeEvent(input$var1,{ ## bug dans la réactivité. don't kwno why
+  observeEvent(list(input$var1,input$var1.simple),{ ## bug dans la réactivité. don't kwno why
     updateActionButton(
       session,
       "open_xz",
@@ -2201,7 +2201,7 @@ observeEvent(input$chr_setting, {
        store$shape.level<-shape.level
       
       
-      assign("df.sub2",df.sub2,envir = .GlobalEnv)
+      # assign("df.sub2",df.sub2,envir = .GlobalEnv)
       if (is.null(orthofile)){
         p<- plot_ly( data = df.sub2,
                      source = "xy",
@@ -2389,6 +2389,7 @@ observeEvent(input$chr_setting, {
   output$plot_xz <- renderPlotly({ #ajout V2X a modif
     dat <- store$data2D
     req(!is.null(dat))
+    
     ids <- selected_ids_reactive()
     dat$selected <-
       as.character(dat$ID_plotly) %in%
@@ -2793,10 +2794,20 @@ observeEvent(input$chr_setting, {
     Xminor.breaks<-list.parameter.info[[7]]
     Yminor.breaks<-list.parameter.info[[8]]
     
-    
     shapeX<-df.sub2$shapeX
     shape.level<-levels(as.factor(shapeX))
     #point.size3<-as.factor(df.sub2$point.size2)
+    
+    
+    store$data2D.simple <- df.sub2
+    store$min.size2<-min.size2
+    store$size.scale<-size.scale
+    store$myvaluesx<-myvaluesx
+    store$myvaluesx2<-myvaluesx2
+    store$shapeX<-shapeX
+    store$shape.level<-shape.level
+    
+    
     
     p <- ggplot2::ggplot()
     if (!is.null(orthofile)){
@@ -2890,6 +2901,185 @@ observeEvent(input$chr_setting, {
     sliderInput('Y.limx','Y lim',min=zmin,max=zmax,value=c(zmin,zmax),step=0.5)
   }) 
   
+  
+output$plot_xz_simple <- renderPlot({ #ajout V2X a modif
+    dat <- store$data2D.simple
+    req(!is.null(dat))
+    var<- store$varX
+    varZ<-store$varZ
+
+    Xtickmarks.size<-store$Xtickmarks.size
+    Ytickmarks.size<-store$Ztickmarks.size
+    Xminor.breaks<-store$Xminorbreaks
+    Yminor.breaks<-store$Zminorbreaks
+    axis.var.name<-store$name.axis.1
+    axis.var2.name<-store$name.axis.3
+
+    myvaluesx<-store$myvaluesx
+    myvaluesx2<-store$myvaluesx2
+    min.size2<-store$min.size2*3
+    size.scale<-store$size.scale*3
+    shapeX<-store$shapeX
+    shape.level<-store$shape.level
+    dat$plot_size <- dat$point.size2 
+
+
+    p <- ggplot2::ggplot()
+    p<- p + ggplot2::geom_point(data = dat,
+                                aes(x = .data[[var]],
+                                    y = .data[[varZ]],
+                                    col=factor(layer2)),
+                                size=dat$point.size2,
+                                shape=shapeX
+    )    +
+      ggplot2::coord_fixed(ratio.simple())
+    
+    # if (input$var.fit.table.simple == "yes" & !is.null(data.fit.3D())){
+    #   colorvalues<-unlist(colorvalues())
+    #   data.fit.3D<-data.fit3() 
+    #   data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
+    #   if (is.null(colorvalues)) {
+    #     data.fit.3D$color.fit <-c("black")
+    #   }
+    #   data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
+    #   
+    #   
+    #   # to have black color for refit several origins
+    #   if (length(levels(as.factor(data.fit.3D$color.fit)))>1){
+    #     for (i in 1:length(levels(as.factor(data.fit.3D[,input$setREM])))) {
+    #       data.fit.3D.2<-data.fit.3D[data.fit.3D[,input$setREM]==levels(as.factor(data.fit.3D[,input$setREM]))[i],]
+    #       if (is.na(data.fit.3D.2[[inputcolor.refit()]] != data.fit.3D.2[[paste0(inputcolor.refit(),".2")]]) || data.fit.3D.2[[inputcolor.refit()]] != data.fit.3D.2[[paste0(inputcolor.refit(),".2")]]){
+    #         data.fit.3D$color.fit[((data.fit.3D[,setXX()] %in% data.fit.3D.2[,setXX()]) & (data.fit.3D[,setYY()] %in% data.fit.3D.2[,setYY()]) & (data.fit.3D[,setZZ()] %in% data.fit.3D.2[,setZZ()]))]<-c("#000000") # Black color for refit variable mixing 
+    #       }}} #end of if
+    #   
+    #   data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
+    #   varend<-stringr::str_to_lower(paste0(var,"end"))
+    #   var2end<-stringr::str_to_lower(paste0(var2,"end"))
+    #   
+    #   p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
+    #                                           yend=.data[[var2end]]), color=data.fit.3D$color.fit, size=input$w2, inherit.aes = F)
+    # }
+    p<-p+ggplot2::scale_color_manual(values=myvaluesx2)+
+      ggplot2::scale_shape_manual(values=shape.level)+
+      ggplot2::scale_size_manual(values=c(min.size2,size.scale))+
+      xlab(paste(axis.var.name))+ylab(paste(axis.var2.name))+
+      do.call(themeforfigure.choice(), list()) +
+      theme(axis.title.x = element_text(size=font_size()),
+            axis.title.y = element_text(size=font_size()),
+            axis.text.x = element_text(size=font_tick()),
+            axis.text.y = element_text(size=font_tick()),
+            legend.title = element_blank())+
+      theme(legend.position='none')
+    
+    
+    p<-p+scale_x_continuous(breaks=seq(floor(min(dat[[var]])),max(dat[[var]]),Xtickmarks.size), minor_breaks = seq(floor(min(dat[[var]])),max(dat[[var]]),Xminor.breaks))+
+      scale_y_continuous(breaks=seq(floor(min(dat[[varZ]])),max(dat[[varZ]]),Ytickmarks.size), minor_breaks = seq(floor(min(dat[[varZ]])),max(dat[[varZ]]),Yminor.breaks))
+    # if (input$checkbox.auto.limits==FALSE) {
+    #   p<-p+expand_limits(x=c(input$X.limx[1],input$X.limx[2]), y=c(input$Y.limx[1], input$Y.limx[2]))
+    # }
+    p
+    
+  })
+  
+output$plot_yz_simple <- renderPlot({ #ajout V2X a modif
+  dat <- store$data2D.simple
+  req(!is.null(dat))
+  var<- store$varY 
+  varZ<-store$varZ 
+  
+  Xtickmarks.size<-store$Ytickmarks.size
+  Ytickmarks.size<-store$Ztickmarks.size
+  Xminor.breaks<-store$Yminorbreaks
+  Yminor.breaks<-store$Zminorbreaks
+  axis.var.name<-store$name.axis.2
+  axis.var2.name<-store$name.axis.3
+  
+  
+
+  if (identical(var, "Z")) { # correction to avoid Z in x position
+    tmp <- var
+    var <- varZ
+    varZ <- tmp
+    
+    tmp <- Xtickmarks.size
+    Xtickmarks.size <- Ytickmarks.size
+    Ytickmarks.size <- tmp
+    
+    tmp <- Xminorbreaks
+    Xminorbreaks <- Yminorbreaks
+    Yminorbreaks <- tmp
+    
+    tmp <- axis.var.name
+    axis.var.name <- axis.var2.name
+    axis.var2.name <- tmp
+  }
+  
+  myvaluesx<-store$myvaluesx
+  myvaluesx2<-store$myvaluesx2
+  min.size2<-store$min.size2*3
+  size.scale<-store$size.scale*3
+  shapeX<-store$shapeX
+  shape.level<-store$shape.level
+
+
+  p <- ggplot2::ggplot()
+  p<- p + ggplot2::geom_point(data = dat,
+                              aes(x = .data[[var]],
+                                  y = .data[[varZ]],
+                                  col=factor(layer2)),
+                              size=dat$point.size2,
+                              shape=shapeX
+  )    +
+    ggplot2::coord_fixed(ratio.simple())
+  
+  # if (input$var.fit.table.simple == "yes" & !is.null(data.fit.3D())){
+  #   colorvalues<-unlist(colorvalues())
+  #   data.fit.3D<-data.fit3() 
+  #   data.fit.3D$color.fit<-colorvalues[match(data.fit.3D[[inputcolor.refit()]],levels(as.factor(data.fit.3D[[inputcolor.refit()]])))] # set up the list of color 
+  #   if (is.null(colorvalues)) {
+  #     data.fit.3D$color.fit <-c("black")
+  #   }
+  #   data.fit.3D<-data.fit.3D %>% filter((.data[[input$setID]] %in% df.sub2[,input$setID]))
+  #   
+  #   
+  #   # to have black color for refit several origins
+  #   if (length(levels(as.factor(data.fit.3D$color.fit)))>1){
+  #     for (i in 1:length(levels(as.factor(data.fit.3D[,input$setREM])))) {
+  #       data.fit.3D.2<-data.fit.3D[data.fit.3D[,input$setREM]==levels(as.factor(data.fit.3D[,input$setREM]))[i],]
+  #       if (is.na(data.fit.3D.2[[inputcolor.refit()]] != data.fit.3D.2[[paste0(inputcolor.refit(),".2")]]) || data.fit.3D.2[[inputcolor.refit()]] != data.fit.3D.2[[paste0(inputcolor.refit(),".2")]]){
+  #         data.fit.3D$color.fit[((data.fit.3D[,setXX()] %in% data.fit.3D.2[,setXX()]) & (data.fit.3D[,setYY()] %in% data.fit.3D.2[,setYY()]) & (data.fit.3D[,setZZ()] %in% data.fit.3D.2[,setZZ()]))]<-c("#000000") # Black color for refit variable mixing 
+  #       }}} #end of if
+  #   
+  #   data.fit.3D<-data.fit.3D[data.fit.3D[,react.var.rerefit()] %in% react.listevarrefit(),]
+  #   varend<-stringr::str_to_lower(paste0(var,"end"))
+  #   var2end<-stringr::str_to_lower(paste0(var2,"end"))
+  #   
+  #   p<-p+geom_segment(data=data.fit.3D, aes(x = .data[[var]], y = .data[[var2]], xend=.data[[varend]],
+  #                                           yend=.data[[var2end]]), color=data.fit.3D$color.fit, size=input$w2, inherit.aes = F)
+  # }
+  p<-p+ggplot2::scale_color_manual(values=myvaluesx2)+
+    ggplot2::scale_shape_manual(values=shape.level)+
+    ggplot2::scale_size_manual(values=c(min.size2,size.scale))+
+    xlab(paste(axis.var.name))+ylab(paste(axis.var2.name))+
+    do.call(themeforfigure.choice(), list()) +
+    theme(axis.title.x = element_text(size=font_size()),
+          axis.title.y = element_text(size=font_size()),
+          axis.text.x = element_text(size=font_tick()),
+          axis.text.y = element_text(size=font_tick()),
+          legend.title = element_blank())+
+    theme(legend.position='none')
+  
+  print(input$checkbox.auto.limits)
+  
+  p<-p+scale_x_continuous(breaks=seq(floor(min(dat[[var]])),max(dat[[var]]),Xtickmarks.size), minor_breaks = seq(floor(min(dat[[var]])),max(dat[[var]]),Xminor.breaks))+
+    scale_y_continuous(breaks=seq(floor(min(dat[[varZ]])),max(dat[[varZ]]),Ytickmarks.size), minor_breaks = seq(floor(min(dat[[varZ]])),max(dat[[varZ]]),Yminor.breaks))
+  # if (input$checkbox.auto.limits==FALSE) {
+  #   p<-p+expand_limits(x=c(input$X.limx[1],input$X.limx[2]), y=c(input$Y.limx[1], input$Y.limx[2]))
+  # }
+  p
+  
+})
+
   
   ##### 2D slice ---- 
   set.var.2d.slice<-reactiveVal()

@@ -101,8 +101,102 @@ ui <- shinyUI(
     
   ")),
       
-
+  tags$script(HTML("  
+    $(document).on(
+      'click',
+      '#open_yz_simple',
+      function(e) {
+        
+        e.preventDefault();
+        
+        const url =
+          window.location.origin +
+          window.location.pathname +
+          '?popup=yz_simple';
+        
+        
+        const yzWindow = window.open(
+          
+          url,
+          
+          'YZ_window',
+          
+          'width=1100,' +
+          'height=850,' +
+          'left=1000,' +
+          'top=50,' +
+          'resizable=yes,' +
+          'scrollbars=yes'
+          
+        );
+        
+        
+        if (!yzWindow) {
+          
+          alert(
+            'The YZ window was blocked by the browser. ' +
+            'Please allow popups for this application.'
+          );
+          
+          return;
+          
+        }
+        
+        yzWindow.focus();
+        
+      }
+    );
     
+  ")),
+  
+  tags$script(HTML("  
+    $(document).on(
+      'click',
+      '#open_xz_simple',
+      function(e) {
+        
+        e.preventDefault();
+        
+        const url =
+          window.location.origin +
+          window.location.pathname +
+          '?popup=xz_simple';
+        
+        
+        const xzWindow = window.open(
+          
+          url,
+          
+          'XZ_window',
+          
+          'width=1100,' +
+          'height=850,' +
+          'left=1000,' +
+          'top=50,' +
+          'resizable=yes,' +
+          'scrollbars=yes'
+          
+        );
+        
+        
+        if (!xzWindow) {
+          
+          alert(
+            'The XZ window was blocked by the browser. ' +
+            'Please allow popups for this application.'
+          );
+          
+          return;
+          
+        }
+        
+        xzWindow.focus();
+        
+      }
+    );
+    
+  ")),
+  
     tags$script(HTML("
   
 
@@ -899,20 +993,32 @@ ui <- shinyUI(
                                                                                            xz = "xz"),
                                                                                selected = "xy", inline=TRUE),
                                                                   tags$br(),),
-                                                           
+                                                           tags$div(
+                                                             id = "main_ui",
+                                                             actionButton("open_xz_simple",
+                                                                          "Open XZ panel",
+                                                                          class = "btn-primary"
+                                                                          
+                                                             ),
+                                                             actionButton("open_yz_simple",
+                                                                          "Open yZ panel",
+                                                                          class = "btn-primary"
+                                                                          
+                                                             ),
                                                            column(12,
                                                                   uiOutput("plot2Dbox.simple"),),
                                                            tags$br(),),
+                                                  ),# end of div
                                                   fluidRow(
                                                     tags$br(),
                                                     tags$br(),
                                                     hr(style = "border-top: 1px solid #000000;"), 
-                                                    column(12, #add button plot
-                                                           actionButton(
-                                                             "open_xz",
-                                                             "Open XZ plot"
-                                                           )
-                                                    ),
+                                                    # column(12, #add button plot
+                                                    #        actionButton(
+                                                    #          "open_xz",
+                                                    #          "Open XZ plot"
+                                                    #        )
+                                                    # ),
                                                     column(12,
                                                            column(2,numericInput("ratio.to.coord.simple", label = h5("Ratio figure"), value = 1),),
                                                            column(2),
@@ -1244,9 +1350,117 @@ app_ui <- function(request) {
       )
       
     )
+  }   
+    if (
+    !is.null(query$popup) &&
+    query$popup == "yz"
+  ) {
     
-  }
-  
+    return(
+      fluidPage(
+        tags$head(
+          tags$style(HTML("
+            html,
+            body {
+              width: 100%;
+              height: 100%;
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+            }
+            plot_yz {
+              width: 100% !important;
+              height: 100% !important;
+            }
+          "))
+        ),
+        
+        
+        plotlyOutput(
+          "plot_yz",
+          width = "100%",
+          height = "100vh"
+        )
+        
+      )
+      
+    )
+    
+    }
+    
+  if (
+      !is.null(query$popup) &&
+      query$popup == "xz_simple"
+    ) {
+      
+      return(
+        fluidPage(
+          tags$head(
+            tags$style(HTML("
+            html,
+            body {
+              width: 100%;
+              height: 100%;
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+            }
+            plot_xz_simple {
+              width: 100% !important;
+              height: 100% !important;
+            }
+          "))
+          ),
+          
+          
+          plotOutput(
+            "plot_xz_simple",
+            width = "100%",
+            height = "100vh"
+          )
+          
+        )
+        
+      )
+      
+    }
+  if (
+    !is.null(query$popup) &&
+    query$popup == "yz_simple"
+  ) {
+    
+    return(
+      fluidPage(
+        tags$head(
+          tags$style(HTML("
+            html,
+            body {
+              width: 100%;
+              height: 100%;
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+            }
+            plot_yz_simple {
+              width: 100% !important;
+              height: 100% !important;
+            }
+          "))
+        ),
+        
+        
+        plotOutput(
+          "plot_yz_simple",
+          width = "100%",
+          height = "100vh"
+        )
+        
+      )
+      
+    )
+    
+  } 
+    
   shiny::addResourcePath("SEAHORS", system.file("R", package="SEAHORS"))
  # options(shiny.reactlog = TRUE)
 
