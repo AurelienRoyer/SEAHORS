@@ -4,10 +4,7 @@
 app_server <- function(input, output, session) {
     digitnumber<-reactiveVal(11)
   base::options(digits=11) ##add 1.8.x
-  observeEvent(digit_number_value(), { 
-    digitnumber(digit_number_value())
-    base::options(digits=digitnumber())
-    })
+
   #####
   # gestion des popup add #v2.0.0
   plot_id <- "current_plot"
@@ -90,6 +87,10 @@ app_server <- function(input, output, session) {
 header_value <- reactiveVal(TRUE) 
 set_dec_value <- reactiveVal(TRUE) 
 digit_number_value <- reactiveVal(11)
+      observeEvent(digit_number_value(), { 
+    digitnumber(digit_number_value())
+    base::options(digits=digitnumber())
+    })
 observe({ if (!is.null(input$header)) { header_value(input$header) } 
   if (!is.null(input$set.dec)) { set_dec_value(input$set.dec) } 
   if (!is.null(input$digit.number)) { digit_number_value(input$digit.number) } })
