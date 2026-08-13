@@ -136,4 +136,4 @@ sub-tab:
  - 15/01/2026 : bug with xml dataframe corrected. Changes raster package to terra package
  - 12/08/2028 : V2.0 add news panel windows to show in advanced plot + correction minor bugs
 
-note: help from AI was requested to assist with last improvements to the script. 
+note: help from AI was requested to assist with last improvements (v2.0) to the script. 
