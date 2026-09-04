@@ -1,3 +1,10 @@
+# SEAHORS 1.10.0
+Released: 09-04-2026
+* add news panel windows to show others xyz views with advanced plot
+* add table to remove the selected ids
+* correction minor bugs as modal dialog not showing
+* changes "change group assignment" record to be quicker
+
 # SEAHORS 1.9.5
 Released: 15-01-2026
 * corrections bugs xml dataframe
