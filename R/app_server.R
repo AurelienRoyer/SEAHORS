@@ -1,4 +1,4 @@
-#v2.0.0 # 08/2026
+#v1.10.0 # 08/2026
 #Add multi-panel
 
 app_server <- function(input, output, session) {
@@ -6,7 +6,7 @@ app_server <- function(input, output, session) {
   base::options(digits=11) ##add 1.8.x
 
   #####
-  # gestion des popup add #v2.0.0
+  # gestion des popup add #v1.10.0
   plot_id <- "current_plot"
   store <- get_shared_session("current_plot")
   store$selection_version <- 0
@@ -1657,19 +1657,32 @@ observeEvent(input$chr_setting, {
   
   output$brushed<- renderPrint({
     g1 <- df$df
-    d <- event_data('plotly_selecting', source="xy")
-    print(d)
+    # d <- event_data('plotly_selecting', source="xy")
+    d<-selected_ids_reactive()
+
     if (is.null(d)) return()
     if (length(d)==0) {
       vv(NULL)
       return()
     }
-    dd <- cbind(d[[3]],d[[4]])
+    
+    # dd <- cbind(d[[3]],d[[4]])
+    
+ 
+    ids <- selected_ids_reactive()
+    dat <- store$data2D
+    dat$selected <-
+      as.character(dat$ID_plotly) %in%
+      as.character(ids)
+    dat<-as.data.frame(dat)
+    dd<-dat[dat$selected,]
+
     
     list.parameter.info<-var.function(input$var1)
     var<-list.parameter.info[[1]]
-    var2<-list.parameter.info[[2]]         
-    WW<-which(g1[[var]] %in% dd[,1] & g1[[var2]] %in% dd[,2]) 
+    var2<-list.parameter.info[[2]] 
+    # WW<-which(g1[[var]] %in% dd[,1] & g1[[var2]] %in% dd[,2]) 
+    WW<-which(g1[[var]] %in% dd[[var]] & g1[[var2]] %in% dd[[var2]]) 
     vv<-df$df[WW,4:ncol(df$df)]
     vv(vv)
     vv
@@ -1755,20 +1768,16 @@ observeEvent(input$chr_setting, {
   observeEvent(
     event_data("plotly_click", source = "xz"),
     {
-      
       sel <- event_data(
         "plotly_click",
         source = "xy"
       )
-      
       if (!is.null(sel) && nrow(sel) > 0) {
-        
         store$selected_ids <- unique(
           sel$customdata
         )
         
       }
-      
     },
     ignoreInit = TRUE
   )
@@ -1789,8 +1798,75 @@ observeEvent(input$chr_setting, {
     }
   )
   
+####renderdatable checkbox ID selected
+
+output$tbl <- DT::renderDT({
+  
+  dat <- store$data2D
+  req(!is.null(dat))
+  ids <- selected_ids_reactive()
+  dat$selected <-
+    as.character(dat$ID_plotly) %in%
+    as.character(ids)
+  dat<-as.data.frame(dat)
+  dat<- dat[dat$selected, , drop = FALSE]
+
+  dat$Supprimer <- sprintf(
+    '<input type="checkbox" class="delete-checkbox" value="%s">',
+    dat$ID
+  )
+    DT::datatable(
+      # test_data_current(), 
+      dat[,6:ncol(dat)],
+      extensions = 'Buttons', 
+      escape = FALSE,
+      select = "none",
+      options = list(
+        columnDefs = list(
+          list(targets = "_all", className = "dt-center")
+        ),
+        preDrawCallback = 
+          JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
+        drawCallback = 
+          JS('function() { Shiny.bindAll(this.api().table().node()); } '),
+        lengthMenu = list(c(5, 15,50,100, -1), c('5', '15','50','100', 'All')),
+        pageLength = 10,
+        # fontSize = "1px"
+        initComplete = htmlwidgets::JS(
+          "function(settings, json) {",
+          paste0("$(this.api().table().container()).css({'font-size': '", font.size, "'});"),
+          "}")
+      )
+  )
+})
+
+observeEvent(input$remove_id, {
+  ids <- input$delete_ids
+  if (is.null(ids) || length(ids) == 0)
+    return()
+  dataaaa<-selected_ids_reactive()
+
+  selected_idx <- which(
+    as.character(selected_ids_reactive()) %in% as.character(ids)
+  )
+  temp<-  as.character(selected_ids_reactive()) %in%
+    as.character(ids)
+  dataaaa<-dataaaa[!temp,drop=FALSE]
+  store$selected_ids<-dataaaa
+ 
+})  
+  
+
   observeEvent(input$Change2, {
-    showModal(dataModal())
+    if(is.null(values$newgroup)){ 
+      
+      showModal(modalDialog(
+        title = tags$h4(style = "color: red;","First you need to create a new group"),
+        easyClose = T,
+        tags$h5(style = "color: blue;"," go to the RECORD NEW GROUP subpanel in the ADDITIONAL SETTINGS panel"))
+      )
+      } else {
+    showModal(dataModal())}
   })
   observeEvent(input$Change, {
     req(!is.null(input$Change))
@@ -2384,7 +2460,7 @@ observeEvent(input$chr_setting, {
     }) #end isolate
     
   }) #plot2D.react
-
+#### plot XZ advanced ----
 
   output$plot_xz <- renderPlotly({ #ajout V2X a modif
     dat <- store$data2D

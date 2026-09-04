@@ -5,6 +5,33 @@ ui <- shinyUI(
       useShinyjs(),
       theme = shinytheme(theme = "journal"),
         tags$head(
+          
+          tags$script(HTML("
+  $(document).on('click', '#table_id', function() {
+    document.getElementById('myDialog').showModal();
+  });
+
+  $(document).on('click', '#close_dialog', function() {
+    document.getElementById('myDialog').close();
+  });
+")),
+          tags$script(HTML("
+  $(document).on('change', '.delete-checkbox', function() {
+
+    var ids = [];
+
+    $('.delete-checkbox:checked').each(function() {
+      ids.push($(this).val());
+    });
+
+    Shiny.setInputValue(
+      'delete_ids',
+      ids,
+      {priority: 'event'}
+    );
+
+  });
+")), 
         tags$script(HTML("
 
     $(document).on(
@@ -903,6 +930,8 @@ ui <- shinyUI(
                                                            tags$br(),
                                                            tags$br(),
                                                            tags$br(),
+                                                           tags$div(
+                                                             id = "main_ui",
                                                            column(12,      
                                                                   radioButtons("var1", "section",
                                                                                choices = c(xy = "xy",
@@ -912,9 +941,15 @@ ui <- shinyUI(
                                                                                selected = "xy", inline=TRUE),
                                                                   tags$br(),
                                                            ),
-                                                           tags$div(
-                                                             id = "main_ui",
-                                                                  actionButton("open_xz",
+
+                                                             tags$div(
+                                                               style = "
+                                                                    display: flex;
+                                                                    align-items: left;
+                                                                    gap: 8px;
+                                                                    margin-bottom: 10px;
+                                                                  ",
+                                                           actionButton("open_xz",
                                                                                "Open XZ panel",
                                                                                class = "btn-primary"
                                                                  
@@ -924,11 +959,43 @@ ui <- shinyUI(
                                                                           class = "btn-primary"
                                                                           
                                                              ),
+                                                            
+                                                                actionButton("table_id",
+                                                                          "selected ID table",
+                                                                          class = "btn-primary" )
+
+                                                             ),
+                                                           
                                                            column(12,
                                                                   uiOutput("plot2Dbox"),),
                                                            tags$br(),
+                                                             # ),
                                                            ),# end of div
-                                                           
+                                                          
+                                                  ),
+                                                       
+                                                  tags$dialog(
+                                                    id = "myDialog",
+                                                    
+                                                    tags$h4(
+                                                      style = "color:red;",
+                                                      "Selected ID(s)"
+                                                    ),
+                                                    
+                                                    dataTableOutput("tbl"),
+                                                    column(7,
+                                                    actionButton(
+                                                      "remove_id",
+                                                      "Remove point"
+                                                    ),
+                                                    ),
+                                                    tags$br(),
+                                                    column(7,
+                                                    actionButton(
+
+                                                      "close_dialog",
+                                                      "Close"
+                                                    ))
                                                   ),
                                                   fluidRow(
                                                     tags$br(),
