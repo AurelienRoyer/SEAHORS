@@ -1880,8 +1880,9 @@ observeEvent(input$remove_id, {
     list.parameter.info<-var.function(input$var1)
     var<-list.parameter.info[[1]]
     var2<-list.parameter.info[[2]] 
-    
-    WW<-which(g1[[var]] %in% dd[[var]] & g1[[var2]] %in% dd[[var2]]) 
+    var3<-list.parameter.info[[9]] 
+      
+    WW<-which(g1[[var]] %in% dd[[var]] & g1[[var2]] %in% dd[[var2]] & g1[[var3]] %in% dd[[var3]]) 
     vv2<-df$df[WW,4:ncol(df$df)]
     vv(vv2)
     
