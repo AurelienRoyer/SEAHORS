@@ -134,6 +134,6 @@ sub-tab:
  - 01/2024 : modification of the button "options for loading file" in the "import XYZ data" panel and addition of a numeric imput modifying the number of significant digit when the data are imported. 
  - 14/05/2025 : bug with refits fixed
  - 15/01/2026 : bug with xml dataframe corrected. Changes raster package to terra package
- - 12/08/2028 : V2.0 add news panel windows to show in advanced plot + correction minor bugs
+ - 12/08/2028 : V1.10.0 add news panel windows to show in advanced plot + a table to remove the selected ids with 2D advanced plot + correction minor bugs
 
-note: help from AI was requested to assist with last improvements (v2.0) to the script. 
+note: help from AI was requested to assist with last improvements (v1.10.0) to the script. 
