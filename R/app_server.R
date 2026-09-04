@@ -1671,7 +1671,7 @@ observeEvent(input$chr_setting, {
     as.character(d)
     dat<-as.data.frame(dat)
     dd<-dat[dat$selected,]
-    dd<-dd[,6:ncol(dat)]
+    dd<-dd[,7:ncol(dat)]
     dd
     # dd <- cbind(d[[3]],d[[4]])
     # ids <- selected_ids_reactive()
