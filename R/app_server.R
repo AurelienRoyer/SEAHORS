@@ -1656,7 +1656,7 @@ observeEvent(input$chr_setting, {
   })
   
   output$brushed<- renderPrint({
-    g1 <- df$df
+     # g1 <- df$df
     # d <- event_data('plotly_selecting', source="xy")
     d<-selected_ids_reactive()
 
@@ -1665,27 +1665,24 @@ observeEvent(input$chr_setting, {
       vv(NULL)
       return()
     }
-    
-    # dd <- cbind(d[[3]],d[[4]])
-    
- 
-    ids <- selected_ids_reactive()
     dat <- store$data2D
     dat$selected <-
-      as.character(dat$ID_plotly) %in%
-      as.character(ids)
+    as.character(dat$ID_plotly) %in%
+    as.character(d)
     dat<-as.data.frame(dat)
     dd<-dat[dat$selected,]
-
-    
-    list.parameter.info<-var.function(input$var1)
-    var<-list.parameter.info[[1]]
-    var2<-list.parameter.info[[2]] 
-    # WW<-which(g1[[var]] %in% dd[,1] & g1[[var2]] %in% dd[,2]) 
-    WW<-which(g1[[var]] %in% dd[[var]] & g1[[var2]] %in% dd[[var2]]) 
-    vv<-df$df[WW,4:ncol(df$df)]
-    vv(vv)
-    vv
+    dd<-dd[,6:ncol(dat)]
+    dd
+    # dd <- cbind(d[[3]],d[[4]])
+    # ids <- selected_ids_reactive()
+     # list.parameter.info<-var.function(input$var1)
+    # var<-list.parameter.info[[1]]
+    # var2<-list.parameter.info[[2]]
+    # # WW<-which(g1[[var]] %in% dd[,1] & g1[[var2]] %in% dd[,2])
+    # WW<-which(g1[[var]] %in% dd[[var]] & g1[[var2]] %in% dd[[var2]])
+    # vv<-df$df[WW,4:ncol(df$df)]
+     # vv(vv)
+     # vv
   })  
   
   ### Plotly selection management ----
@@ -1870,8 +1867,27 @@ observeEvent(input$remove_id, {
   })
   observeEvent(input$Change, {
     req(!is.null(input$Change))
-    df$df[which(row.names(df$df) %in% row.names(vv())),][input$text.new.group] <-
-      input$NewGroup
+    
+    g1 <- df$df
+    d<-selected_ids_reactive()
+    ids <- selected_ids_reactive()
+    dat <- store$data2D
+    dat$selected <-
+      as.character(dat$ID_plotly) %in%
+      as.character(ids)
+    dat<-as.data.frame(dat)
+    dd<-dat[dat$selected,]
+    list.parameter.info<-var.function(input$var1)
+    var<-list.parameter.info[[1]]
+    var2<-list.parameter.info[[2]] 
+    
+    WW<-which(g1[[var]] %in% dd[[var]] & g1[[var2]] %in% dd[[var2]]) 
+    vv2<-df$df[WW,4:ncol(df$df)]
+    vv(vv2)
+    
+    df$df[which(row.names(df$df) %in% row.names(vv2)),][input$text.new.group] <- input$NewGroup
+    # df$df[which(row.names(df$df) %in% row.names(vv())),][input$text.new.group] <-
+      
     removeModal()
   }) # end of Observe Event
   
@@ -2308,7 +2324,7 @@ observeEvent(input$remove_id, {
                       
                       unselected = list(
                         marker = list(
-                          opacity = 0.8
+                          opacity = 0.7 ## opacité des objets non selectionnés
                         )
                       ),
                       # marker = list( #ajout V2X
